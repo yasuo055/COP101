@@ -1,5 +1,45 @@
 <?php
 include('Conn.php');
+session_start();
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+  $username = $_POST['username'];
+  $password = $_POST['password'];
+
+  try {
+      // Query the database for the user
+      $stmt = $connpdo->prepare("SELECT USERID, PASSWORD FROM USERS WHERE USERNAME = :username");
+      $stmt->bindParam(':username', $username);
+      $stmt->execute();
+
+      // Check if user exists
+      if ($stmt->rowCount() > 0) {
+          $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+          // Verify password
+          if (password_verify($password, $user['PASSWORD'])) {
+              // Set session variables
+              $_SESSION['USERID'] = $user['USERID'];
+
+              // Redirect to homepage
+              header("Location: user.html");
+              exit;
+          } else {
+              $error = "Invalid password.";
+          }
+      } else {
+          $error = "No user found with this username.";
+      }
+  } catch (PDOException $e) {
+      error_log("Login error: " . $e->getMessage());
+      $error = "An error occurred. Please try again.";
+  }
+}
+
+// Display error (if any) on the login page
+if (isset($error)) {
+  echo "<p style='color: red;'>$error</p>";
+}
 ?>
 
 
@@ -19,6 +59,7 @@ include('Conn.php');
     <div class="left-por-log">
       <img src="/asset/image 15.png" class="img-left-log">
     </div>
+    <form method ="POST">
     <div class="right-por-log">
       <div class="head-log">
         <img src="/icon/PONDTECH__2_-removebg-preview 2.png" class="head-log-sub">
@@ -33,13 +74,13 @@ include('Conn.php');
         <p class="us-head-log-txt">
           Username
         </p>
-        <input type="text" placeholder="Enter Username" class="us-log-inp">
+        <input type="text" name="username" placeholder="Enter Username" class="us-log-inp" required>
       </div>
       <div class="sub-log">
         <p class="pas-head-log-txt">
           Password
         </p>
-        <input type="password" placeholder="Enter Password" class="us-log-inp">
+        <input type="password" name="password" placeholder="Enter Password" class="us-log-inp" required>
       </div>
       <div class="sub-log">
         <div class="input-log">
@@ -58,12 +99,10 @@ include('Conn.php');
           </div>
         </div>
       </div>
-      <div class="bottom-log">
         <a href="/signup.html">
-        <button class="btn-log">
-          Login
-        </button>
+        <button type="submit" class="btn-log">Login</button>
        </a>
+</form>
         <p class="bot-head-log-txt">
           Don't you have an account yes? 
           <a href="signup.html">

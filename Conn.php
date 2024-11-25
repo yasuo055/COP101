@@ -2,8 +2,8 @@
     //database config
     $host = 'localhost'; //hostname
     $dbname ='aquasensedb'; //dbname
-    $username = 'ponduser'; //username
-    $password = 'happyfishday'; //password
+    $username = 'root'; //username
+    $password = ''; //password
 
     //pdo conn string
     $conn = "mysql:host=$host;dbname=$dbname;charset=utf8mb4";
