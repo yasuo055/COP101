@@ -36,7 +36,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   }
 }
 
-// Display error (if any) on the login page
 if (isset($error)) {
   echo "<p style='color: red;'>$error</p>";
 }
