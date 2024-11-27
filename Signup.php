@@ -19,7 +19,6 @@ include('Conn.php');
     <div class="left-por-log">
       <img src="/asset/image 15.png" class="img-left-signup">
     </div>
-
     <div class="right-por-log">
       <div class="head-log">
         <img src="/icon/PONDTECH__2_-removebg-preview 2.png" class="head-signup-sub">
@@ -30,25 +29,26 @@ include('Conn.php');
           Sign Up to have an account
         </p>
       </div>
+      <form action="#" method="POST">
       <div class="sub-log">
         <p class="pas-head-log-txt">
           Username
         </p>
-        <input type="input" placeholder="Enter Username" class="us-log-inp">
+        <input type="input" placeholder="Enter Username" id="username" class="us-log-inp">
       </div>
 
       <div class="sub-log">
         <p class="pas-head-log-txt">
           Phone Number
         </p>
-        <input type="number" placeholder="Enter Phone Number" class="us-log-inp" max="00000000000">
+        <input type="number" placeholder="Enter Phone Number" id="contact" class="us-log-inp" max="00000000000">
       </div>
 
       <div class="sub-log">
         <p class="pas-head-log-txt">
           Password
         </p>
-        <input type="password" placeholder="Enter Password" class="us-log-inp">
+        <input type="password" placeholder="Enter Password" id="contact" class="us-log-inp">
       </div>
 
       <div class="bottom-log">
