@@ -22,7 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
               $_SESSION['USERID'] = $user['USERID'];
 
               // Redirect to homepage
-              header("Location: user.html");
+              header("Location: User_Homepg.php");
               exit;
           } else {
               $error = "Invalid password.";

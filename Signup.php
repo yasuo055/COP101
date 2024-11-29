@@ -29,34 +29,62 @@ include('Conn.php');
           Sign Up to have an account
         </p>
       </div>
-      <form action="#" method="POST">
+      <form action="backend/register-process.php" method="POST">
+      <div class="sub-log">
+        <p class="pas-head-log-txt">
+          First Name
+        </p>
+        <input type="input" placeholder="Enter First Name" name="fname" class="us-log-inp">
+      </div>
+
+      <div class="sub-log">
+        <p class="pas-head-log-txt">
+          Last Name
+        </p>
+        <input type="input" placeholder="Enter Last Name" name="lname" class="us-log-inp">
+      </div>
+      <div class="sub-log">
+        <p class="pas-head-log-txt">
+          Middle Name
+        </p>
+        <input type="input" placeholder="Enter Middle Nname" name="mname" class="us-log-inp">
+      </div>
+
       <div class="sub-log">
         <p class="pas-head-log-txt">
           Username
         </p>
-        <input type="input" placeholder="Enter Username" id="username" class="us-log-inp">
+        <input type="input" placeholder="Enter Username" name="username" class="us-log-inp">
       </div>
 
       <div class="sub-log">
         <p class="pas-head-log-txt">
           Phone Number
         </p>
-        <input type="number" placeholder="Enter Phone Number" id="contact" class="us-log-inp" max="00000000000">
+        <input type="input" placeholder="Enter Phone Number" name="contact" class="us-log-inp">
+      </div>
+
+      <div class="sub-log">
+        <p class="pas-head-log-txt">
+          Email
+        </p>
+        <input type="email" placeholder="Enter Email" name="email" class="us-log-inp">
       </div>
 
       <div class="sub-log">
         <p class="pas-head-log-txt">
           Password
         </p>
-        <input type="password" placeholder="Enter Password" id="contact" class="us-log-inp">
+        <input type="password" placeholder="Enter Password" name="password" class="us-log-inp">
       </div>
 
       <div class="bottom-log">
         <a href="login.html">
-        <button class="btn-log">
+        <button class="btn-log" name="submit">
           Sign Up
         </button>
       </a>
+</form>
         <p class="bot-head-log-txt">
           Already have an account?
           <a href="login.html">
