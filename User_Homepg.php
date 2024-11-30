@@ -1,5 +1,49 @@
 <?php 
 include('Conn.php');
+
+
+// Fetch sensor data from ESP32
+$esp32_url = 'http://192.168.5.100/sensor_data'; // Ensure this is the correct IP
+
+// Initialize variables with default values
+$ph = '--';
+$temperature = '--';
+$ammonia = '--';
+$do_level = '--';
+
+// Initialize a cURL session
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $esp32_url);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+curl_setopt($ch, CURLOPT_TIMEOUT, 5);  // Timeout after 5 seconds
+
+$response = curl_exec($ch);
+
+// Check for errors
+if ($response === FALSE) {
+    die('Error fetching data from ESP32: ' . curl_error($ch));
+}
+
+// Get HTTP status code
+$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+curl_close($ch);
+
+// Check if the request was successful (HTTP 200)
+if ($http_code !== 200) {
+    die("Error fetching data from ESP32: HTTP status code $http_code");
+}
+
+// Decode the JSON data from ESP32
+$data = json_decode($response, true);
+
+// Ensure we have valid data before assigning to variables
+if ($data !== null) {
+    $ph = isset($data['ph_level']) ? $data['ph_level'] : '--';
+    $temperature = isset($data['temperature']) ? $data['temperature'] : '--';
+    $ammonia = isset($data['ammonia_level']) ? $data['ammonia_level'] : '--';
+    $do_level = isset($data['do_level']) ? $data['do_level'] : '--';
+}
+
 session_start();
 
 if (!isset($_SESSION['USERID'])){
@@ -12,7 +56,6 @@ if (!isset($_SESSION['USERID'])){
   $user = $statement->fetch(PDO::FETCH_ASSOC);
 }
 
-
 ?>
 
 <!DOCTYPE html>
@@ -20,12 +63,6 @@ if (!isset($_SESSION['USERID'])){
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
@@ -119,10 +156,10 @@ if (!isset($_SESSION['USERID'])){
 
             <div class="readings">
                 <h2>Readings</h2>
-                <span>PH Reading: <span id="phReading">--</span></span>
-                <span>Temperature Reading: <span id="temperatureReading">--</span></span>
-                <span>Ammonia Reading: <span id="ammoniaReading">--</span></span>
-                <span>Dissolved Oxygen Reading: <span id="doReading">--</span></span>
+                <span>pH Reading: <span id="phReading"><?php echo $ph; ?></span></span><br>
+                <span>Temperature Reading: <span id="temperatureReading"><?php echo $temperature; ?> °C</span></span><br>
+                <span>Ammonia Reading: <span id="ammoniaReading"><?php echo $ammonia; ?> ppm</span></span><br>
+                <span>Dissolved Oxygen Reading: <span id="doReading"><?php echo $do_level; ?> mg/L</span></span><br>
             </div>
 
             <button class="button">Test</button>
@@ -161,6 +198,10 @@ if (!isset($_SESSION['USERID'])){
         </div>
         </form>
     </div>
+  </div>
+
+  <!-- JavaScript to update readings -->
+ 
 
 </body>
 </html>
