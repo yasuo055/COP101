@@ -29,7 +29,7 @@ if (isset($_SESSION['otp'], $_SESSION['otp_expiration'])) {
             $mail->Host = 'smtp.gmail.com';
             $mail->SMTPAuth = true;
             $mail->Username = '4quas3nse@gmail.com';
-            $mail->Password = 'ontariqamuplakdu';
+            $mail->Password = '';//ontariqamuplakdu
             $mail->SMTPSecure = 'tls';
             $mail->Port = 587;
 
