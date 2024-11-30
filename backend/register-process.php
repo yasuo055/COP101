@@ -61,12 +61,4 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['submit'])) {
     } else {
         echo "Failed to register user in the database.";
     }
-<<<<<<< Updated upstream
- //else {
-   // echo "Invalid form submission.";
-//}
-
-=======
- 
->>>>>>> Stashed changes
 ?>
