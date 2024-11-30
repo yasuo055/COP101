@@ -1,7 +1,6 @@
 <?php 
+session_start();
 include('Conn.php');
-
-
 // Fetch sensor data from ESP32
 $esp32_url = 'http://192.168.5.100/sensor_data'; // Ensure this is the correct IP
 
@@ -44,7 +43,7 @@ if ($data !== null) {
     $do_level = isset($data['do_level']) ? $data['do_level'] : '--';
 }
 
-session_start();
+
 
 if (!isset($_SESSION['USERID'])){
   header("Location: Login.php");
@@ -201,7 +200,34 @@ if (!isset($_SESSION['USERID'])){
   </div>
 
   <!-- JavaScript to update readings -->
- 
+  <script>
+// Function to fetch sensor data from ESP32 and update the page
+function fetchSensorData() {
+    fetch('http://192.168.5.100/sensor_data')  // Use your ESP32's IP address
+    .then(response => response.json())  // Convert the response to JSON
+    .then(data => {
+        // Update pH level reading
+        document.getElementById('phReading').innerHTML = data.ph_level.toFixed(2) + '<br><span>pH</span>';
+        
+        // Update Ammonia level reading
+        document.getElementById('ammoniaReading').innerHTML = data.ammonia_level.toFixed(2) + ' <span>ppm</span>';
+        
+        // Update Temperature reading
+        document.getElementById('temperatureReading').innerHTML = data.temperature.toFixed(2) + '°C';  // Ensure temperature includes °C
 
+        // Update Dissolved Oxygen reading (if available in the response)
+        if (data.do_level) {
+            document.getElementById('doReading').innerHTML = data.do_level.toFixed(2) + ' mg/L';
+        }
+    })
+    .catch(error => console.error('Error fetching sensor data:', error));  // Handle any fetch errors
+}
+
+// Fetch the data initially on page load
+fetchSensorData();
+
+// Update the data every 2 seconds
+setInterval(fetchSensorData, 2000);  // 2000 ms = 2 seconds
+</script>
 </body>
 </html>
