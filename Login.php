@@ -103,13 +103,8 @@ if (isset($error)) {
        </a>
 </form>
         <p class="bot-head-log-txt">
-<<<<<<< Updated upstream
-          You don't have an account yet? Click
-          <a href="signup.php">
-=======
           Don't you have an account yes? 
           <a href="Signup.php">
->>>>>>> Stashed changes
           <span class="sgn-up-log"> Sign Up </span>
           </a>
           to start
