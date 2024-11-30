@@ -28,9 +28,6 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
-<<<<<<< Updated upstream
-
-=======
         'psr/log' => array(
             'pretty_version' => '3.0.2',
             'version' => '3.0.2.0',
@@ -40,6 +37,5 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
->>>>>>> Stashed changes
     ),
 );
