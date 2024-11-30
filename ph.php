@@ -53,7 +53,7 @@ include('Conn.php');
       <a href="ph.php">
       <button class="ph" style="background-color: #BFEDFE;">
         <img src="/icon/Group.png" class="ph-icon">
-        PH Level
+        pH Level
       </button>
       </a>
       <a href="temperature.php">
