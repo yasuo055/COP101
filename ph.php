@@ -64,7 +64,7 @@ include('Conn.php');
       </a>
       <button class="amn">
         <img src="/icon/Vector (2).png" class="amn-icon">
-        Amonia
+        Ammonia
       </button>
       <button class="oxy">
         <img src="/icon/Vector (3).png" class="oxy-icon">

@@ -53,7 +53,7 @@ include('Conn.php');
       <a href="ph.php">
       <button class="ph">
         <img src="/icon/Group.png" class="ph-icon">
-        PH Level
+        pH Level
       </button>
       </a>
       <button class="temp" style="background-color: #BFEDFE;">
@@ -63,7 +63,7 @@ include('Conn.php');
       <a href="ammonia.php">
         <button class="amn">
           <img src="/icon/Vector (2).png" class="amn-icon">
-          Amonia
+          Ammonia
         </button>
       </a>
       <button class="oxy">
