@@ -4,14 +4,9 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-<<<<<<< Updated upstream
 
-
-    "content-hash": "baf0b1b659e688a64051c5ee9742a77e",
-
-=======
     "content-hash": "04ce00735177e520e557e3097304f28b",
->>>>>>> Stashed changes
+
 
     "packages": [
         {
