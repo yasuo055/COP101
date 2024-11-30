@@ -42,7 +42,7 @@ include('Conn.php');
   </div>
   <div class="sidebar">
     <div class="upper-portion">
-      <a href="user.html">
+      <a href="User_Homepg.php">
       <img src="/icon/Vector.png" class="side-wat">
       <p class="drp">
         Water Parameters
@@ -50,7 +50,7 @@ include('Conn.php');
       </a>
     </div>
     <div class="middle-portion">
-      <a href="ph.html">
+      <a href="ph.php">
       <button class="ph">
         <img src="/icon/Group.png" class="ph-icon">
         PH Level
@@ -60,7 +60,7 @@ include('Conn.php');
         <img src="/icon/Vector (1).png" class="temp-icon">
         Temperature
       </button>
-      <a href="amonia.html">
+      <a href="ammonia.php">
         <button class="amn">
           <img src="/icon/Vector (2).png" class="amn-icon">
           Amonia
@@ -70,7 +70,7 @@ include('Conn.php');
         <img src="/icon/Vector (3).png" class="oxy-icon">
         Oxygen
       </button>
-      <a href="notification.html">
+      <a href="notification.php">
         <button class="not">
           <img src="/icon/notifications.png" class="not-icon">
           Notification
