@@ -1,3 +1,7 @@
+<?php 
+include('Conn.php');
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -91,6 +95,7 @@
       <p class="heading-cont">
         Water Parameters
       </p>
+
     <div class="container">
         <!-- Left Column: Connect Sensor and Readings -->
         <div class="section">
@@ -140,15 +145,6 @@
             </div>
         </div>
     </div>
-</body>
-</html>
 
-    </div>
-    <div class="ai">
-      <button class="ai-btn">
-        <img src="/icon/Group (1).png" class="ai-icon">
-      </button>
-    </div>
-  </div>
 </body>
 </html>

@@ -1,3 +1,7 @@
+<?php 
+include('Conn.php');
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

@@ -1,3 +1,7 @@
+<?php 
+include('Conn.php');
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,7 +41,7 @@
     </div>
   </div>
   <div class="sidebar">
-    <div class="upper-portion" style="background-color: #BFEDFE;">
+    <div class="upper-portion">
       <a href="user.html">
       <img src="/icon/Vector.png" class="side-wat">
       <p class="drp">
@@ -52,24 +56,20 @@
         PH Level
       </button>
       </a>
-      <a href="temperature.html">
-        <button class="temp">
-          <img src="/icon/Vector (1).png" class="temp-icon">
-          Temperature
-        </button>
-      </a>
+      <button class="temp" style="background-color: #BFEDFE;">
+        <img src="/icon/Vector (1).png" class="temp-icon">
+        Temperature
+      </button>
       <a href="amonia.html">
         <button class="amn">
           <img src="/icon/Vector (2).png" class="amn-icon">
           Amonia
         </button>
       </a>
-      <a href="oxygen.html">
-        <button class="oxy">
-          <img src="/icon/Vector (3).png" class="oxy-icon">
-          Oxygen
-        </button>
-      </a>
+      <button class="oxy">
+        <img src="/icon/Vector (3).png" class="oxy-icon">
+        Oxygen
+      </button>
       <a href="notification.html">
         <button class="not">
           <img src="/icon/notifications.png" class="not-icon">
@@ -89,13 +89,84 @@
   <div class="content">
     <div class="head-content">
       <p class="heading-cont">
-        Water Parameters
+        Temperature Level
       </p>
-    </div>
-    <div class="ai">
-      <button class="ai-btn">
-        <img src="/icon/Group (1).png" class="ai-icon">
-      </button>
+      <div class="heading-level">
+        <p class="ph-lvl-txt">
+          Current Fish Pond Temperature Level
+        </p>
+        <p class="ph-count">
+          20°C
+        </p>
+        <p class="ph-state">
+          Healthy
+        </p>
+      </div>
+      <div class="analytics">
+        <img src="/mockup-pic/Group 1673.png" class="analytics">
+      </div>
+
+      <div class="breakdown">
+        <div class="first-row-break">
+          <p>
+            Breakdown Data As of <span class="first-head">October 28, 12:00 PM</span>
+          </p>
+          <button class="ph-report">
+            See All Reports
+          </button>
+        </div>
+        <div class="second-row-break">
+          <p>
+            Date/Time
+          </p>
+          <p>
+            Level
+          </p>
+          <p>
+            AI Simulation
+          </p>
+          <p>
+            Added Elements
+          </p>
+          <p>
+            Measurement
+          </p>
+        </div>
+        <div class="third-row-break">
+          <p class="third-lvl-head">
+            October 26,2024, 12:00 PM
+          </p>
+          <p class="third-lvl">
+            6.5PH
+          </p>
+          <p class="third-hel">
+            Healthy
+          </p>
+          <p class="third-elem">
+            None
+          </p>
+          <p class="third-stab">
+            Stable
+          </p>
+        </div>
+        <div class="third-row-break">
+          <p class="third-lvl-head">
+            October 28,2024, 14:00 PM
+          </p>
+          <p class="third-lvl">
+            6.5PH
+          </p>
+          <p class="third-hel">
+            Healthy
+          </p>
+          <p class="third-elem">
+            None
+          </p>
+          <p class="third-stab">
+            Stable
+          </p>
+        </div>
+      </div>
     </div>
   </div>
 </body>

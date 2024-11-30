@@ -1,3 +1,7 @@
+<?php 
+include('Conn.php');
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -47,27 +51,29 @@
     </div>
     <div class="middle-portion">
       <a href="ph.html">
-      <button class="ph" style="background-color: #BFEDFE;">
+      <button class="ph">
         <img src="/icon/Group.png" class="ph-icon">
         PH Level
       </button>
       </a>
-      <a href="temperature.html">
       <button class="temp">
         <img src="/icon/Vector (1).png" class="temp-icon">
         Temperature
       </button>
-      </a>
+      <a href="amonia.html">
       <button class="amn">
         <img src="/icon/Vector (2).png" class="amn-icon">
         Amonia
       </button>
-      <button class="oxy">
-        <img src="/icon/Vector (3).png" class="oxy-icon">
-        Oxygen
-      </button>
+      </a>
+      <a href="oxygen.html">
+        <button class="oxy">
+          <img src="/icon/Vector (3).png" class="oxy-icon">
+          Oxygen
+        </button>
+      </a>
       <a href="notification.html">
-        <button class="not">
+        <button class="not" style="background-color: #BFEDFE;">
           <img src="/icon/notifications.png" class="not-icon">
           Notification
         </button>
@@ -82,85 +88,115 @@
       </button>
     </div>
   </div>
-  <div class="content">
-    <div class="head-content">
-      <p class="heading-cont">
-        PH Level
+
+  <div class="notification">
+    <div class="head-notif">
+      <img src="/icon/Group (2).png" class="notif-head">
+      <p class="list-notif-head">
+        List of Notifications
       </p>
-      <div class="heading-level">
-        <p class="ph-lvl-txt">
-          Current Fish Pond PH Level
-        </p>
-        <p class="ph-count">
-          6.5 PH
-        </p>
-        <p class="ph-state">
-          Healthy
-        </p>
+    </div>
+    <div class="sub-notif">
+      <div class="left-notif">
+        15 Notifications
       </div>
-      <div class="analytics">
-        <img src="/mockup-pic/Group 1673.png" class="analytics">
+      <div class="mid-notif">
+        <input type="text" class="input-notif" placeholder="Search">
       </div>
 
-      <div class="breakdown">
-        <div class="first-row-break">
-          <p>
-            Breakdown Data As of <span class="first-head">October 28, 12:00 PM</span>
-          </p>
-          <button class="ph-report">
-            See All Reports
+      <div class="right-notif">
+        <div class="ph-notif">
+          <button class="ph-notif-btn">
+            <p class="ph-txt-notif">
+              PH-Level
+            </p>
+            <img src="/icon/gridicons_dropdown.png" class="drop-ph-notif">
           </button>
         </div>
-        <div class="second-row-break">
-          <p>
-            Date/Time
-          </p>
-          <p>
-            Level
-          </p>
-          <p>
-            AI Simulation
-          </p>
-          <p>
-            Added Elements
-          </p>
-          <p>
-            Measurement
-          </p>
+        <div class="temp-notif">
+            <button class="temp-notif-drop">
+              <p class="ph-txt-notif">
+                Temperature
+              </p>
+              <img src="/icon/gridicons_dropdown.png" class="drop-temp-notif">
+            </button>
         </div>
-        <div class="third-row-break">
-          <p class="third-lvl-head">
-            October 26,2024, 12:00 PM
-          </p>
-          <p class="third-lvl">
-            6.5PH
-          </p>
-          <p class="third-hel">
-            Healthy
-          </p>
-          <p class="third-elem">
-            None
-          </p>
-          <p class="third-stab">
-            Stable
-          </p>
+        <div class="amn-notif">
+          <button class="amn-notif-btn">
+            <p class="ph-txt-notif">
+              Amonia
+            </p>
+            <img src="/icon/gridicons_dropdown.png" class="drop-amn-notif">
+          </button>
         </div>
-        <div class="third-row-break">
-          <p class="third-lvl-head">
-            October 28,2024, 14:00 PM
+
+        <div class="oxy-notif">
+          <button class="oxy-notif-btn">
+            <p class="ph-txt-notif">
+              Oxygen
+            </p>
+            <img src="/icon/gridicons_dropdown.png" class="drop-oxy-notif">
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="middle-notif">
+
+      <div class="left-heading-notif">
+        <img src="/icon/notifications.png" class="pos-icon">
+        <p class="left-heading-num">
+          15
+        </p>
+        <p class="left-heading-prim">
+          Primary
+        </p>
+      </div>
+
+      <div class="middle-heading-notif">
+        <img src="/icon/notifications.png" class="pos-icon">
+        <p class="num-heading">
+          5
+        </p>
+        <p class="num-read">
+          Unread
+        </p>
+      </div>
+
+      <div class="right-heading-notif">
+        <button class="mnth-head">
+          <p class="ph-txt-notif">
+            Month
           </p>
-          <p class="third-lvl">
-            6.5PH
+          <img src="/icon/gridicons_dropdown.png" class="drop-amn-notif">
+        </button>
+        <button class="day-head">
+          <p class="ph-txt-notif">
+            Day
           </p>
-          <p class="third-hel">
-            Healthy
+          <img src="/icon/gridicons_dropdown.png" class="drop-amn-notif">
+        </button>
+        <button class="yr-head">
+          <p class="ph-txt-notif">
+            Year
           </p>
-          <p class="third-elem">
-            None
-          </p>
-          <p class="third-stab">
-            Stable
-          </p>
+          <img src="/icon/gridicons_dropdown.png" class="drop-amn-notif">
+        </button>
+      </div>
+    </div>
+    <div class="content">
+      <div class="left-content">
+        <img src="/icon/Vector (7).png" class="">
+        <p>
+          As of 1:09 PM The PH Level is in Normal Condition.
+        </p>
+      </div>
+      <div class="mid-content">
+        <img src="/icon/Vector (5).png" class="">
+      </div>
+      <div class="right">
+        <div class="p">
+          Just Now
         </div>
       </div>
     </div>

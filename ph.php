@@ -1,3 +1,7 @@
+<?php 
+include('Conn.php');
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -47,21 +51,21 @@
     </div>
     <div class="middle-portion">
       <a href="ph.html">
-      <button class="ph">
+      <button class="ph" style="background-color: #BFEDFE;">
         <img src="/icon/Group.png" class="ph-icon">
         PH Level
       </button>
       </a>
-      <button class="temp" style="background-color: #BFEDFE;">
+      <a href="temperature.html">
+      <button class="temp">
         <img src="/icon/Vector (1).png" class="temp-icon">
         Temperature
       </button>
-      <a href="amonia.html">
-        <button class="amn">
-          <img src="/icon/Vector (2).png" class="amn-icon">
-          Amonia
-        </button>
       </a>
+      <button class="amn">
+        <img src="/icon/Vector (2).png" class="amn-icon">
+        Amonia
+      </button>
       <button class="oxy">
         <img src="/icon/Vector (3).png" class="oxy-icon">
         Oxygen
@@ -85,14 +89,14 @@
   <div class="content">
     <div class="head-content">
       <p class="heading-cont">
-        Temperature Level
+        PH Level
       </p>
       <div class="heading-level">
         <p class="ph-lvl-txt">
-          Current Fish Pond Temperature Level
+          Current Fish Pond PH Level
         </p>
         <p class="ph-count">
-          20°C
+          6.5 PH
         </p>
         <p class="ph-state">
           Healthy

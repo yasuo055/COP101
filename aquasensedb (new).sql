@@ -99,8 +99,12 @@ CREATE TABLE `userpond` (
 
 CREATE TABLE `users` (
   `USERID` int(11) NOT NULL,
+  `FNAME` varchar(60) NOT NULL,
+  `LNAME` varchar(60) NOT NULL,
+  `MNAME` varchar(60) NOT NULL,
   `USERNAME` varchar(25) NOT NULL,
   `PASSWORD` varchar(255) NOT NULL,
+  `EMAIL` varchar(200) NOT NULL,
   `CONTACT` varchar(11) DEFAULT NULL,
   `DATECREATED` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -109,8 +113,8 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`USERID`, `USERNAME`, `PASSWORD`, `CONTACT`, `DATECREATED`) VALUES
-(1, 'japet', '$2y$10$eRkjdfg2sU1Z3aQz9E1ySOy3n9CefWkL9f8KLad7ZFoUdPYkpFZam\r\n', '09123456789', '2024-11-25 18:52:12');
+INSERT INTO `users` (`USERID`,`FNAME`,`LNAME`,`MNAME`, `USERNAME`, `PASSWORD`, `EMAIL`,`CONTACT`, `DATECREATED`) VALUES
+(1, 'JAP', 'RUZ', 'NUNEZ', 'japet', '$2y$10$VX/ZcJhRxUaMt.QAj2Plye/9R12PXA8rMqPBKhm82mhJnCod7pBU2','japet@gmail.com', '09858399110', '2024-11-25 18:52:12');
 
 --
 -- Indexes for dumped tables
