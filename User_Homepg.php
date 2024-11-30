@@ -42,7 +42,7 @@ include('Conn.php');
   </div>
   <div class="sidebar">
     <div class="upper-portion" style="background-color: #BFEDFE;">
-      <a href="user.html">
+      <a href="User_Homepg.php">
       <img src="/icon/Vector.png" class="side-wat">
       <p class="drp">
         Water Parameters
