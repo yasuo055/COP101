@@ -87,7 +87,7 @@ include('Conn.php');
 </form>
         <p class="bot-head-log-txt">
           Already have an account?
-          <a href="login.html">
+          <a href="Login.php">
           <span class="sgn-up-log"> Log In </span>
         </a>
         </p>

@@ -95,12 +95,56 @@ include('Conn.php');
       <p class="heading-cont">
         Water Parameters
       </p>
+
+    <div class="container">
+        <!-- Left Column: Connect Sensor and Readings -->
+        <div class="section">
+            <h2>Connect to Sensor</h2>
+            <button class="button">Connect</button>
+
+            <div class="readings">
+                <h2>Readings</h2>
+                <span>PH Reading: <span id="phReading">--</span></span>
+                <span>Temperature Reading: <span id="temperatureReading">--</span></span>
+                <span>Ammonia Reading: <span id="ammoniaReading">--</span></span>
+                <span>Dissolved Oxygen Reading: <span id="doReading">--</span></span>
+            </div>
+
+            <button class="button">Test</button>
+        </div>
+        <!-- Right Column: Set Water Parameters -->
+        <div class="section">
+            <h2>SET WATER PARAMETERS OF THE SAFE AND CRITICAL LEVEL OF THE POND</h2>
+
+            <div class="set-params">
+                <label for="phMin">PH:</label>
+                <div class="min-max">
+                    <input type="number" id="phMin" class="input-field" placeholder="Min">
+                    <input type="number" id="phMax" class="input-field" placeholder="Max">
+                </div>
+
+                <label for="tempMin">Temperature (°C):</label>
+                <div class="min-max">
+                    <input type="number" id="tempMin" class="input-field" placeholder="Min">
+                    <input type="number" id="tempMax" class="input-field" placeholder="Max">
+                </div>
+
+                <label for="ammoniaMin">Ammonia Level (ppm):</label>
+                <div class="min-max">
+                    <input type="number" id="ammoniaMin" class="input-field" placeholder="Min">
+                    <input type="number" id="ammoniaMax" class="input-field" placeholder="Max">
+                </div>
+
+                <label for="doMin">Dissolved Oxygen (mg/L):</label>
+                <div class="min-max">
+                    <input type="number" id="doMin" class="input-field" placeholder="Min">
+                    <input type="number" id="doMax" class="input-field" placeholder="Max">
+                </div>
+
+                <button class="button">SET PARAMETERS</button>
+            </div>
+        </div>
     </div>
-    <div class="ai">
-      <button class="ai-btn">
-        <img src="/icon/Group (1).png" class="ai-icon">
-      </button>
-    </div>
-  </div>
+
 </body>
 </html>

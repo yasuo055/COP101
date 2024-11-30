@@ -86,11 +86,11 @@ if (isset($error)) {
           <div class="rem-pas">
             <input type="checkbox" class="check-rem-pas">
             <p class="rem-pas-txt">
-              Remeber password
+              Remember password
             </p>
           </div>
           <div class="forg-pas">
-            <a href="forgot-password.html">
+            <a href="email_otp.php">
               <p class="forg-pas-txt">
                 Forgot Password
               </p>
@@ -103,10 +103,11 @@ if (isset($error)) {
        </a>
 </form>
         <p class="bot-head-log-txt">
-          Don't you have an account yes? 
-          <a href="signup.html">
+          You don't have an account yet? Click
+          <a href="signup.php">
           <span class="sgn-up-log"> Sign Up </span>
           </a>
+          to start
         </p>
       </div>
     </div>

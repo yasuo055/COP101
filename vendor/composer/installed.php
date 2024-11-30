@@ -28,5 +28,6 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
+
     ),
 );

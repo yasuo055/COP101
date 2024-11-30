@@ -55,6 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['submit'])) {
             $mail->Subject = 'Your OTP Code';
             $mail->Body = "Your OTP code is $otp. It will expire in 5 minutes.";
 
+
             $mail->send();
             header("Location: ../Signup_Verify.php");
             exit();
@@ -67,4 +68,5 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['submit'])) {
  //else {
    // echo "Invalid form submission.";
 //}
+
 ?>

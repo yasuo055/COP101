@@ -4,6 +4,12 @@ body{
   font-family: Montserrat;
 }
 
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 a{
   text-decoration: none;
 }
@@ -940,4 +946,86 @@ p{
 .for-pass-aut::placeholder{
   font-family: Montserrat;
   text-align: center;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f9;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  grid-gap: 20px;
+  padding: 20px;
+}
+
+.section {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.button {
+  padding: 10px 20px;
+  background-color: #02457A;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+.readings span {
+  display: block;
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.input-field {
+  padding: 10px;
+  margin: 10px 0;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.readings span {
+  display: block;
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.set-params {
+  margin-top: 20px;
+}
+
+.set-params label {
+  font-size: 16px;
+  margin-top: 10px;
+  display: block;
+}
+
+.set-params input {
+  width: 100px;
+  padding: 5px;
+  margin-top: 5px;
+}
+
+.set-params .min-max {
+  display: flex;
+  justify-content: space-between;
+}
+
+.set-params .min-max input {
+  width: 45%;
 }
