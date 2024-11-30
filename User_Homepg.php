@@ -1,5 +1,18 @@
 <?php 
 include('Conn.php');
+session_start();
+
+if (!isset($_SESSION['USERID'])){
+  header("Location: Login.php");
+}else{
+  $user_id = $_SESSION['USERID'];
+  $statement = $connpdo->prepare("SELECT * FROM USERS WHERE USERID = :userid");
+  $statement->bindParam(':userid',$user_id) ;
+  $statement->execute();
+  $user = $statement->fetch(PDO::FETCH_ASSOC);
+}
+
+
 ?>
 
 <!DOCTYPE html>
@@ -32,7 +45,7 @@ include('Conn.php');
       <img src="/icon/image.png" class="head-left">
       <div class="user-name">
         <p class="user-full-name">
-          Imee Nold G. Villarde
+        <?php echo $user['LNAME'] . ', ' . $user['FNAME']; ?>
         </p>
         <p class="user-type">
           User
@@ -84,9 +97,11 @@ include('Conn.php');
     <div class="bottom-portion">
       <button class="log-out">
         <img src="/icon/solar_logout-2-broken.png" class="side-log">
+        <a href="../backend/unset_session.php">
         <p class="log">
           Log Out
         </p>
+        </a>
       </button>
     </div>
   </div>
@@ -113,37 +128,38 @@ include('Conn.php');
             <button class="button">Test</button>
         </div>
         <!-- Right Column: Set Water Parameters -->
+         <form method="POST" action="../backend/set_water_params.php">
         <div class="section">
             <h2>SET WATER PARAMETERS OF THE SAFE AND CRITICAL LEVEL OF THE POND</h2>
 
             <div class="set-params">
                 <label for="phMin">PH:</label>
                 <div class="min-max">
-                    <input type="number" id="phMin" class="input-field" placeholder="Min">
-                    <input type="number" id="phMax" class="input-field" placeholder="Max">
+                    <input type="number" id="phMin" class="input-field" placeholder="Min" name="min_ph" step="any" required>
+                    <input type="number" id="phMax" step="any" class="input-field" placeholder="Max" name="max_ph" required>
                 </div>
 
                 <label for="tempMin">Temperature (°C):</label>
                 <div class="min-max">
-                    <input type="number" id="tempMin" class="input-field" placeholder="Min">
-                    <input type="number" id="tempMax" class="input-field" placeholder="Max">
+                    <input type="number" id="tempMin" class="input-field" placeholder="Min" name="min_temp" step="any" required>
+                    <input type="number" id="tempMax" class="input-field" placeholder="Max" name="max_temp" step="any" required>
                 </div>
 
                 <label for="ammoniaMin">Ammonia Level (ppm):</label>
                 <div class="min-max">
-                    <input type="number" id="ammoniaMin" class="input-field" placeholder="Min">
-                    <input type="number" id="ammoniaMax" class="input-field" placeholder="Max">
+                    <input type="number" id="ammoniaMin" class="input-field" placeholder="Min" name="min_nh3" step="any" required>
+                    <input type="number" id="ammoniaMax" class="input-field" placeholder="Max" name="max_nh3" step="any" required>
                 </div>
 
                 <label for="doMin">Dissolved Oxygen (mg/L):</label>
                 <div class="min-max">
-                    <input type="number" id="doMin" class="input-field" placeholder="Min">
-                    <input type="number" id="doMax" class="input-field" placeholder="Max">
+                    <input type="number" id="doMin" class="input-field" placeholder="Min" name="min_o2" step="any" required>
                 </div>
 
-                <button class="button">SET PARAMETERS</button>
+                <button class="button" type="submit" name="submit">SET PARAMETERS</button>
             </div>
         </div>
+        </form>
     </div>
 
 </body>
