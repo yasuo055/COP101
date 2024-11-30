@@ -23,12 +23,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['submit'])) {
         if (filter_var($raw_email, FILTER_VALIDATE_EMAIL)) {
             // Sanitize for safe HTML output
            $input_email = htmlspecialchars($raw_email, ENT_QUOTES, 'UTF-8');
-           return $input_email;
-        } else {
-            echo "Invalid email address.";
         }
-    
-        
+
         $otp = rand(100000, 999999);// Generate and send OTP
         $_SESSION['otp'] = $otp;
         $_SESSION['otp_expiration'] = time() + 300;
@@ -46,7 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['submit'])) {
             $mail->Host = 'smtp.gmail.com';
             $mail->SMTPAuth = true;
             $mail->Username = '4quas3nse@gmail.com'; 
-            $mail->Password = 'asdasdasd'; 
+            $mail->Password = 'ontariqamuplakdu';
             $mail->SMTPSecure = 'tls';
             $mail->Port = 587;
 
@@ -65,8 +61,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['submit'])) {
     } else {
         echo "Failed to register user in the database.";
     }
+<<<<<<< Updated upstream
  //else {
    // echo "Invalid form submission.";
 //}
 
+=======
+ 
+>>>>>>> Stashed changes
 ?>

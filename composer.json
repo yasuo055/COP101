@@ -1,10 +1,15 @@
 {
     "require": {
+<<<<<<< Updated upstream
 
         "phpmailer/phpmailer": "^6.9",
         "psr/log": "*"
 
         
 
+=======
+        "phpmailer/phpmailer": "^6.9",
+        "psr/log": "^3.0"
+>>>>>>> Stashed changes
     }
 }

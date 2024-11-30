@@ -13,7 +13,9 @@ include('Conn.php');
   <title>Aqua Sense</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
+
   <div class="cont">
 
     <div class="left-por-log">
@@ -29,7 +31,7 @@ include('Conn.php');
           Sign Up to have an account
         </p>
       </div>
-      <form action="backend/register-process.php" method="POST">
+      <form action="../backend/register-process.php" method="POST" id="signup-form">
       <div class="sub-log">
         <p class="pas-head-log-txt">
           First Name
@@ -54,36 +56,45 @@ include('Conn.php');
         <p class="pas-head-log-txt">
           Username
         </p>
-        <input type="input" placeholder="Enter Username" name="username" class="us-log-inp">
+        <input type="input" placeholder="Enter Username" name="username" id="username" class="us-log-inp">
+        <span id="notification"></span>
       </div>
 
       <div class="sub-log">
         <p class="pas-head-log-txt">
           Phone Number
         </p>
-        <input type="input" placeholder="Enter Phone Number" name="contact" class="us-log-inp">
+        <input type="input" placeholder="Enter Phone Number" name="contact"  class="us-log-inp">
       </div>
 
       <div class="sub-log">
         <p class="pas-head-log-txt">
           Email
         </p>
-        <input type="email" placeholder="Enter Email" name="email" class="us-log-inp">
+        <input type="email" placeholder="Enter Email" name="email" id="email" class="us-log-inp">
+        <span id="Enotification"></span>
       </div>
 
       <div class="sub-log">
         <p class="pas-head-log-txt">
           Password
         </p>
-        <input type="password" placeholder="Enter Password" name="password" class="us-log-inp">
+        <input type="password" placeholder="Enter Password" name="password" id="password" class="us-log-inp">
+        <span id="pass-notification"></span>
+      </div>
+
+      <div class="sub-log">
+        <p class="pas-head-log-txt">
+          Confirm Password
+        </p>
+        <input type="password" placeholder="Confirm Password" name="cpassword" id="cpassword" class="us-log-inp">
       </div>
 
       <div class="bottom-log">
-        <a href="login.html">
-        <button class="btn-log" name="submit">
+        <button class="btn-log" name="submit" type="submit">
           Sign Up
         </button>
-      </a>
+        
 </form>
         <p class="bot-head-log-txt">
           Already have an account?
@@ -94,5 +105,10 @@ include('Conn.php');
       </div>
     </div>
   </div>
+  
 </body>
+
+
+
+
 </html>
