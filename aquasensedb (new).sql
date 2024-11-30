@@ -30,7 +30,7 @@ SET time_zone = "+00:00";
 CREATE TABLE `nh3readings` (
   `ID` int(11) NOT NULL,
   `POND_ID` int(11) NOT NULL,
-  `NH3Level` decimal(3,3) NOT NULL,
+  `NH3Level` decimal(5,3) NOT NULL,
   `Date_Time` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -43,7 +43,7 @@ CREATE TABLE `nh3readings` (
 CREATE TABLE `o2readings` (
   `ID` int(11) NOT NULL,
   `POND_ID` int(11) NOT NULL,
-  `O2Level` decimal(3,3) NOT NULL,
+  `O2Level` decimal(5,3) NOT NULL,
   `Date_Time` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -56,7 +56,7 @@ CREATE TABLE `o2readings` (
 CREATE TABLE `phreadings` (
   `ID` int(11) NOT NULL,
   `POND_ID` int(11) NOT NULL,
-  `PHLevel` decimal(3,3) NOT NULL,
+  `PHLevel` decimal(5,3) NOT NULL,
   `Date_Time` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -69,7 +69,7 @@ CREATE TABLE `phreadings` (
 CREATE TABLE `tempreadings` (
   `ID` int(11) NOT NULL,
   `POND_ID` int(11) NOT NULL,
-  `TEMPLevel` decimal(3,3) NOT NULL,
+  `TEMPLevel` decimal(5,3) NOT NULL,
   `Date_Time` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -82,13 +82,13 @@ CREATE TABLE `tempreadings` (
 CREATE TABLE `userpond` (
   `POND_ID` int(11) NOT NULL,
   `USERID` int(11) NOT NULL,
-  `MinimO2` decimal(3,3) NOT NULL,
-  `MinimNH3` decimal(3,3) NOT NULL,
-  `MaxNH3` decimal(3,3) NOT NULL,
-  `MinimPH` decimal(3,3) NOT NULL,
-  `MaxPH` decimal(3,3) NOT NULL,
-  `Mintemp_Celsius` decimal(3,3) NOT NULL,
-  `Maxtemp_Celsius` decimal(3,3) NOT NULL
+  `MinimO2` decimal(5,3) NOT NULL,
+  `MinimNH3` decimal(5,3) NOT NULL,
+  `MaxNH3` decimal(5,3) NOT NULL,
+  `MinimPH` decimal(5,3) NOT NULL,
+  `MaxPH` decimal(5,3) NOT NULL,
+  `Mintemp_Celsius` decimal(5,3) NOT NULL,
+  `Maxtemp_Celsius` decimal(5,3) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
