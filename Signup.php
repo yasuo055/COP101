@@ -1,5 +1,15 @@
 <?php 
 include('Conn.php');
+
+session_start();
+
+// Check if there's an error message in the session
+if (isset($_SESSION['error_message'])) {
+    echo "<script type='text/javascript'>
+            alert('" . $_SESSION['error_message'] . "');
+          </script>";
+    unset($_SESSION['error_message']);
+}
 ?>
 
 <!DOCTYPE html>
@@ -32,55 +42,53 @@ include('Conn.php');
         </p>
       </div>
       <form action="../backend/register-process.php" method="POST" id="signup-form">
+
       <div class="sub-log">
         <p class="pas-head-log-txt">
           First Name
         </p>
-        <input type="input" placeholder="Enter First Name" name="fname" class="us-log-inp">
+        <input type="input" placeholder="Enter First Name" name="fname" class="us-log-inp" >
       </div>
 
       <div class="sub-log">
         <p class="pas-head-log-txt">
           Last Name
         </p>
-        <input type="input" placeholder="Enter Last Name" name="lname" class="us-log-inp">
+        <input type="input" placeholder="Enter Last Name" name="lname" class="us-log-inp" >
       </div>
       <div class="sub-log">
         <p class="pas-head-log-txt">
           Middle Name
         </p>
-        <input type="input" placeholder="Enter Middle Nname" name="mname" class="us-log-inp">
+        <input type="input" placeholder="Enter Middle Nname" name="mname" class="us-log-inp" >
       </div>
 
       <div class="sub-log">
         <p class="pas-head-log-txt">
           Username
         </p>
-        <input type="input" placeholder="Enter Username" name="username" id="username" class="us-log-inp">
-        <span id="notification"></span>
+        <input type="input" placeholder="Enter Username" name="username" id="username" class="us-log-inp" >
       </div>
 
       <div class="sub-log">
         <p class="pas-head-log-txt">
           Phone Number
         </p>
-        <input type="input" placeholder="Enter Phone Number" name="contact"  class="us-log-inp">
+        <input type="input" placeholder="Enter Phone Number" name="contact"  class="us-log-inp" >
       </div>
 
       <div class="sub-log">
         <p class="pas-head-log-txt">
           Email
         </p>
-        <input type="email" placeholder="Enter Email" name="email" id="email" class="us-log-inp">
-        <span id="Enotification"></span>
+        <input type="email" placeholder="Enter Email" name="email" id="email" class="us-log-inp" >
       </div>
 
       <div class="sub-log">
         <p class="pas-head-log-txt">
           Password
         </p>
-        <input type="password" placeholder="Enter Password" name="password" id="password" class="us-log-inp">
-        <span id="pass-notification"></span>
+        <input type="password" placeholder="Enter Password" name="password" id="password" class="us-log-inp" >
       </div>
 
       <div class="sub-log">

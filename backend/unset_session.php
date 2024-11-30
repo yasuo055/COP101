@@ -6,4 +6,5 @@ session_unset();
 
 // Destroy the session
 session_destroy();
+header("Location: ../Signup.php")
 ?>

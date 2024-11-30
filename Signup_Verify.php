@@ -1,17 +1,24 @@
 <?php
 include('Conn.php');
-if (isset($_SESSION['otp'], $_SESSION['otp_expiration'], $_SESSION['fname'], $_SESSION['lname'], $_SESSION['mname'],
-$_SESSION['username'], $_SESSION['password'],  $_SESSION['email'],  $_SESSION['contact'])) {
-    
-        if (time() > $_SESSION['otp_expiration']) {
-                unset($_SESSION['otp'], $_SESSION['otp_expiration']); // Clear expired OTP
-                echo "<script type='text/javascript'>
-                            alert('The OTP has expired. Please request a new one.');
-                            window.location.href = '../Signup_Verify.php';
-                    </script>";
-                }
-    }else{
-        header('../Signup.php');
+session_start();
+// Check if there's an error message in the session
+if (isset($_SESSION['error_message'])) {
+    echo "<script type='text/javascript'>
+            alert('" . $_SESSION['error_message'] . "');
+          </script>";
+    unset($_SESSION['error_message']);
+}
+if(!isset($_SESSION['fname'], $_SESSION['lname'], $_SESSION['mname'],
+    $_SESSION['username'], $_SESSION['password'],  $_SESSION['email'],  $_SESSION['contact'])){
+        header("Location: Signup.php");
+    }
+if (isset($_SESSION['otp'], $_SESSION['otp_expiration'])) {
+    if (time() > $_SESSION['otp_expiration']) {
+        unset($_SESSION['otp'], $_SESSION['otp_expiration']); // Clear expired OTP
+        echo "<script type='text/javascript'>
+                    alert('The OTP has expired. Please request a new one.');
+            </script>";
+        }
     }
 ?>
 
