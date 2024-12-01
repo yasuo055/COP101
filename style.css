@@ -827,6 +827,20 @@ p{
   transition: opacity 0.15s;
 }
 
+.btn-log-1{
+  padding: 10px;
+  font-family: Montserrat;
+  background-color: #5BCFE5;
+  border: none;
+  font-size: 13px;
+  width: 100px;
+  margin-bottom: 5px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  margin-left: 10px;
+  width: 120px;
+}
+
 .btn-log:hover{
   opacity: 0.4;
 }
@@ -956,7 +970,7 @@ body {
 
 .container {
   display: grid;
-  grid-template-columns: 1fr 2fr 1fr;
+  grid-template-columns: 1fr 2fr;
   grid-gap: 20px;
   padding: 20px;
 }
@@ -966,6 +980,14 @@ body {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.section-1{
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 750px;
 }
 
 h2 {
@@ -997,6 +1019,7 @@ h2 {
   border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 16px;
+  font-family: Montserrat;
 }
 
 .readings span {
@@ -1028,4 +1051,57 @@ h2 {
 
 .set-params .min-max input {
   width: 45%;
+}
+
+.password-txt-font{
+  font-size: 12px;
+}
+
+.middle-portion-reset-password-1{
+  margin-left: 5px;
+}
+
+.email_verifier_forg_pass{
+  padding: 10px;
+  width: 250px;
+  font-family: Montserrat;
+}
+
+.flex-bottom-end-portion{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;  
+}
+
+.btn-resend-otp-new-pass{
+  background-color: #5BCFE5;
+  border: none;
+}
+
+.button-sensor-homepage{
+  padding: 10px;
+  background-color: #02457A;
+  color: white;
+  font-family: Montserrat;
+  border: none;
+  border-radius: 4px;
+}
+
+.button-sensor-homepage-1{
+  padding: 15px;
+  background-color: #02457A;
+  color: white;
+  font-family: Montserrat;
+  border: none;
+  border-radius: 4px;
+  width: 100px;
+}
+
+.ai-img-btn{
+  width: 25px;
+}
+
+.ai-button{
+  position: relative;
 }
