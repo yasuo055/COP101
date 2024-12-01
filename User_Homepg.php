@@ -1,9 +1,8 @@
 <?php 
 include('Conn.php');
 
-
 // Fetch sensor data from ESP32
-$esp32_url = 'http://192.168.5.100/sensor_data'; // Ensure this is the correct IP
+$esp32_url = 'http://192.168.190.100/sensor_data'; // Ensure this is the correct IP
 
 // Initialize variables with default values
 $ph = '--';
@@ -43,19 +42,6 @@ if ($data !== null) {
     $ammonia = isset($data['ammonia_level']) ? $data['ammonia_level'] : '--';
     $do_level = isset($data['do_level']) ? $data['do_level'] : '--';
 }
-
-session_start();
-
-if (!isset($_SESSION['USERID'])){
-  header("Location: Login.php");
-}else{
-  $user_id = $_SESSION['USERID'];
-  $statement = $connpdo->prepare("SELECT * FROM USERS WHERE USERID = :userid");
-  $statement->bindParam(':userid',$user_id) ;
-  $statement->execute();
-  $user = $statement->fetch(PDO::FETCH_ASSOC);
-}
-
 ?>
 
 <!DOCTYPE html>
@@ -82,7 +68,7 @@ if (!isset($_SESSION['USERID'])){
       <img src="/icon/image.png" class="head-left">
       <div class="user-name">
         <p class="user-full-name">
-        <?php echo $user['LNAME'] . ', ' . $user['FNAME']; ?>
+          Imee Nold G. Villarde
         </p>
         <p class="user-type">
           User
@@ -134,11 +120,9 @@ if (!isset($_SESSION['USERID'])){
     <div class="bottom-portion">
       <button class="log-out">
         <img src="/icon/solar_logout-2-broken.png" class="side-log">
-        <a href="../backend/unset_session.php">
         <p class="log">
           Log Out
         </p>
-        </a>
       </button>
     </div>
   </div>
@@ -165,43 +149,70 @@ if (!isset($_SESSION['USERID'])){
             <button class="button">Test</button>
         </div>
         <!-- Right Column: Set Water Parameters -->
-         <form method="POST" action="../backend/set_water_params.php">
         <div class="section">
             <h2>SET WATER PARAMETERS OF THE SAFE AND CRITICAL LEVEL OF THE POND</h2>
 
             <div class="set-params">
                 <label for="phMin">PH:</label>
                 <div class="min-max">
-                    <input type="number" id="phMin" class="input-field" placeholder="Min" name="min_ph" step="any" required>
-                    <input type="number" id="phMax" step="any" class="input-field" placeholder="Max" name="max_ph" required>
+                    <input type="number" id="phMin" class="input-field" placeholder="Min">
+                    <input type="number" id="phMax" class="input-field" placeholder="Max">
                 </div>
 
                 <label for="tempMin">Temperature (°C):</label>
                 <div class="min-max">
-                    <input type="number" id="tempMin" class="input-field" placeholder="Min" name="min_temp" step="any" required>
-                    <input type="number" id="tempMax" class="input-field" placeholder="Max" name="max_temp" step="any" required>
+                    <input type="number" id="tempMin" class="input-field" placeholder="Min">
+                    <input type="number" id="tempMax" class="input-field" placeholder="Max">
                 </div>
 
                 <label for="ammoniaMin">Ammonia Level (ppm):</label>
                 <div class="min-max">
-                    <input type="number" id="ammoniaMin" class="input-field" placeholder="Min" name="min_nh3" step="any" required>
-                    <input type="number" id="ammoniaMax" class="input-field" placeholder="Max" name="max_nh3" step="any" required>
+                    <input type="number" id="ammoniaMin" class="input-field" placeholder="Min">
+                    <input type="number" id="ammoniaMax" class="input-field" placeholder="Max">
                 </div>
 
                 <label for="doMin">Dissolved Oxygen (mg/L):</label>
                 <div class="min-max">
-                    <input type="number" id="doMin" class="input-field" placeholder="Min" name="min_o2" step="any" required>
+                    <input type="number" id="doMin" class="input-field" placeholder="Min">
+                    <input type="number" id="doMax" class="input-field" placeholder="Max">
                 </div>
 
-                <button class="button" type="submit" name="submit">SET PARAMETERS</button>
+                <button class="button">SET PARAMETERS</button>
             </div>
         </div>
-        </form>
     </div>
   </div>
 
   <!-- JavaScript to update readings -->
- 
+<script>
+// Function to fetch sensor data from ESP32 and update the page
+function fetchSensorData() {
+    fetch('http://192.168.190.100/sensor_data')  // Use your ESP32's IP address
+    .then(response => response.json())  // Convert the response to JSON
+    .then(data => {
+        // Update pH level reading
+        document.getElementById('phReading').innerHTML = data.ph_level.toFixed(2) + '<br><span>pH</span>';
+        
+        // Update Ammonia level reading
+        document.getElementById('ammoniaReading').innerHTML = data.ammonia_level.toFixed(2) + ' <span>ppm</span>';
+        
+        // Update Temperature reading
+        document.getElementById('temperatureReading').innerHTML = data.temperature.toFixed(2) + '°C';  // Ensure temperature includes °C
+
+        // Update Dissolved Oxygen reading (if available in the response)
+        if (data.do_level) {
+            document.getElementById('doReading').innerHTML = data.do_level.toFixed(2) + ' mg/L';
+        }
+    })
+    .catch(error => console.error('Error fetching sensor data:', error));  // Handle any fetch errors
+}
+
+// Fetch the data initially on page load
+fetchSensorData();
+
+// Update the data every 2 seconds
+setInterval(fetchSensorData, 2000);  // 2000 ms = 2 seconds
+</script>
 
 </body>
 </html>
