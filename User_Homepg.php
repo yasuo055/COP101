@@ -1,4 +1,4 @@
-<?php 
+<?php
 include('Conn.php');
 
 // Fetch sensor data from ESP32
@@ -10,51 +10,58 @@ $temperature = '--';
 $ammonia = '--';
 $do_level = '--';
 
-// Initialize a cURL session
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $esp32_url);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-curl_setopt($ch, CURLOPT_TIMEOUT, 5);  // Timeout after 5 seconds
+// Try fetching data from ESP32
+try {
+    // Initialize a cURL session
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $esp32_url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 5); // Timeout after 5 seconds
 
-$response = curl_exec($ch);
+    $response = curl_exec($ch);
 
-// Check for errors
-if ($response === FALSE) {
-    die('Error fetching data from ESP32: ' . curl_error($ch));
+    // Check for errors
+    if ($response === false) {
+        throw new Exception('Error fetching data from ESP32: ' . curl_error($ch));
+    }
+
+    // Get HTTP status code
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    // Check if the request was successful (HTTP 200)
+    if ($http_code !== 200) {
+        throw new Exception("HTTP status code $http_code");
+    }
+
+    // Decode the JSON data from ESP32
+    $data = json_decode($response, true);
+
+    // Ensure we have valid data before assigning to variables
+    if ($data !== null) {
+        $ph = isset($data['ph_level']) ? $data['ph_level'] : '--';
+        $temperature = isset($data['temperature']) ? $data['temperature'] : '--';
+        $ammonia = isset($data['ammonia_level']) ? $data['ammonia_level'] : '--';
+        $do_level = isset($data['do_level']) ? $data['do_level'] : '--';
+    }
+} catch (Exception $e) {
+    // Log the error (optional)
+    error_log($e->getMessage());
 }
 
-// Get HTTP status code
-$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-curl_close($ch);
-
-// Check if the request was successful (HTTP 200)
-if ($http_code !== 200) {
-    die("Error fetching data from ESP32: HTTP status code $http_code");
-}
-
-// Decode the JSON data from ESP32
-$data = json_decode($response, true);
-
-// Ensure we have valid data before assigning to variables
-if ($data !== null) {
-    $ph = isset($data['ph_level']) ? $data['ph_level'] : '--';
-    $temperature = isset($data['temperature']) ? $data['temperature'] : '--';
-    $ammonia = isset($data['ammonia_level']) ? $data['ammonia_level'] : '--';
-    $do_level = isset($data['do_level']) ? $data['do_level'] : '--';
-}
-
+// Session handling for user authentication
 session_start();
 
-if (!isset($_SESSION['USERID'])){
-  header("Location: Login.php");
-}else{
-  $user_id = $_SESSION['USERID'];
-  $statement = $connpdo->prepare("SELECT * FROM USERS WHERE USERID = :userid");
-  $statement->bindParam(':userid',$user_id) ;
-  $statement->execute();
-  $user = $statement->fetch(PDO::FETCH_ASSOC);
+if (!isset($_SESSION['USERID'])) {
+    header("Location: Login.php");
+    exit();
+} else {
+    $user_id = $_SESSION['USERID'];
+    $statement = $connpdo->prepare("SELECT * FROM USERS WHERE USERID = :userid");
+    $statement->bindParam(':userid', $user_id);
+    $statement->execute();
+    $user = $statement->fetch(PDO::FETCH_ASSOC);
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -150,51 +157,47 @@ if (!isset($_SESSION['USERID'])){
     <div class="container">
         <!-- Left Column: Connect Sensor and Readings -->
         <div class="section">
-            <h2>Connect to Sensor</h2>
-            <button class="button">Connect</button>
-
             <div class="readings">
-                <h2>Readings</h2>
+                <h1>Water Readings</h1>
                 <span>pH Reading: <span id="phReading"><?php echo $ph; ?></span></span><br>
                 <span>Temperature Reading: <span id="temperatureReading"><?php echo $temperature; ?> °C</span></span><br>
                 <span>Ammonia Reading: <span id="ammoniaReading"><?php echo $ammonia; ?> ppm</span></span><br>
                 <span>Dissolved Oxygen Reading: <span id="doReading"><?php echo $do_level; ?> mg/L</span></span><br>
             </div>
-
-            <button class="button">Test</button>
         </div>
         <!-- Right Column: Set Water Parameters -->
+        <form method="POST" action="../backend/set_water_params.php">
         <div class="section">
             <h2>SET WATER PARAMETERS OF THE SAFE AND CRITICAL LEVEL OF THE POND</h2>
 
             <div class="set-params">
                 <label for="phMin">PH:</label>
                 <div class="min-max">
-                    <input type="number" id="phMin" class="input-field" placeholder="Min">
-                    <input type="number" id="phMax" class="input-field" placeholder="Max">
+                    <input type="number" id="phMin" class="input-field" placeholder="Min" name="min_ph" step="any" required>
+                    <input type="number" id="phMax" step="any" class="input-field" placeholder="Max" name="max_ph" required>
                 </div>
 
                 <label for="tempMin">Temperature (°C):</label>
                 <div class="min-max">
-                    <input type="number" id="tempMin" class="input-field" placeholder="Min">
-                    <input type="number" id="tempMax" class="input-field" placeholder="Max">
+                    <input type="number" id="tempMin" class="input-field" placeholder="Min" name="min_temp" step="any" required>
+                    <input type="number" id="tempMax" class="input-field" placeholder="Max" name="max_temp" step="any" required>
                 </div>
 
                 <label for="ammoniaMin">Ammonia Level (ppm):</label>
                 <div class="min-max">
-                    <input type="number" id="ammoniaMin" class="input-field" placeholder="Min">
-                    <input type="number" id="ammoniaMax" class="input-field" placeholder="Max">
+                    <input type="number" id="ammoniaMin" class="input-field" placeholder="Min" name="min_nh3" step="any" required>
+                    <input type="number" id="ammoniaMax" class="input-field" placeholder="Max" name="max_nh3" step="any" required>
                 </div>
 
                 <label for="doMin">Dissolved Oxygen (mg/L):</label>
                 <div class="min-max">
-                    <input type="number" id="doMin" class="input-field" placeholder="Min">
-                    <input type="number" id="doMax" class="input-field" placeholder="Max">
+                    <input type="number" id="doMin" class="input-field" placeholder="Min" name="min_o2" step="any" required>
                 </div>
 
-                <button class="button">SET PARAMETERS</button>
+                <button class="button" type="submit" name="submit">SET PARAMETERS</button>
             </div>
         </div>
+        </form>
     </div>
   </div>
 

@@ -84,9 +84,11 @@ include('Conn.php');
     <div class="bottom-portion">
       <button class="log-out">
         <img src="/icon/solar_logout-2-broken.png" class="side-log">
+        <a href="../backend/unset_session.php">
         <p class="log">
           Log Out
         </p>
+        </a>
       </button>
     </div>
   </div>

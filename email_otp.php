@@ -13,56 +13,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username'], $_POST['e
     $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
 
     if (!$username || !$email) {
-        die('Please provide a valid username and email.');
-    }
+        echo "<script>alert('Please provide a valid username and email.');</script>";
+    } else {
+        // Step 1: Check if the username exists
+        $stmt = $connpdo->prepare("SELECT * FROM users WHERE USERNAME = :username");
+        $stmt->execute(['username' => $username]);
+        $user = $stmt->fetch();
 
-    // Step 1: Check if the username exists
-    $stmt = $connpdo->prepare("SELECT * FROM users WHERE USERNAME = :username");
-    $stmt->execute(['username' => $username]);
-    $user = $stmt->fetch();
+        if (!$user) {
+            // If the username is not found in the database
+            echo "<script>alert('The username does not exist. Please try again.');</script>";
+        } elseif ($user['EMAIL'] !== $email) {
+            // Step 2: Check if the email matches the username
+            echo "<script>alert('The email address is not registered to the provided username.');</script>";
+        } else {
+            // Step 3: Generate a 6-digit OTP
+            $otp = random_int(100000, 999999);
+            $_SESSION['otp'] = $otp; // Store OTP in the session
+            $_SESSION['email'] = $email; // Store email for verification later
 
-    if (!$user) {
-        // If the username is not found in the database
-        echo "The username doesn't exist.";
-        exit;
-    }
+            // Step 4: Prepare and send the email
+            $mail = new PHPMailer(true);
 
-    // Step 2: Check if the email matches the username
-    if ($user['EMAIL'] !== $email) {
-        echo "The email address is not registered to the provided username.";
-        exit;
-    }
+            try {
+                $mail->isSMTP();
+                $mail->Host = 'smtp.gmail.com';
+                $mail->SMTPAuth = true;
+                $mail->Username = '4quas3nse@gmail.com'; 
+                $mail->Password = 'ontariqamuplakdu'; // ontariqamuplakdu
+                $mail->SMTPSecure = 'tls';
+                $mail->Port = 587;
 
-    // Step 3: Generate a 6-digit OTP
-    $otp = random_int(100000, 999999);
-    $_SESSION['otp'] = $otp; // Store OTP in the session
-    $_SESSION['email'] = $email; // Store email for verification later
+                $mail->setFrom('4quas3nse@gmail.com', 'AquaSense'); // Sender details
+                $mail->addAddress($email); // Recipient's email
 
-    // Step 4: Prepare and send the email
-    $mail = new PHPMailer(true);
+                $mail->isHTML(true);
+                $mail->Subject = 'AquaSense - OTP for Password Reset';
+                $mail->Body = "<p>Your OTP code is: <strong>$otp</strong></p>";
 
-    try {
-        $mail->isSMTP();
-        $mail->Host = 'smtp.gmail.com';
-        $mail->SMTPAuth = true;
-        $mail->Username = '4quas3nse@gmail.com'; 
-        $mail->Password = ''; //ontariqamuplakdu
-        $mail->SMTPSecure = 'tls';
-        $mail->Port = 587;
-
-        $mail->setFrom('', 'AquaSense'); // Sender details
-        $mail->addAddress($email); // Recipient's email
-
-        $mail->isHTML(true);
-        $mail->Subject = 'AquaSense - OTP for Password Reset';
-        $mail->Body = "<p>Your OTP code is: <strong>$otp</strong></p>";
-
-        $mail->send();
-        echo "OTP sent successfully to $email.";
-        header('Location: verify_otp.php');
-        exit;
-    } catch (Exception $e) {
-        die("Error: Could not send email. {$mail->ErrorInfo}");
+                $mail->send();
+                echo "<script>alert('OTP sent successfully to $email. Redirecting to OTP verification.');</script>";
+                header('Location: verify_otp.php');
+                exit;
+            } catch (Exception $e) {
+                echo "<script>alert('Error: Could not send email. {$mail->ErrorInfo}');</script>";
+            }
+        }
     }
 }
 ?>

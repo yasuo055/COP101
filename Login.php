@@ -25,10 +25,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
               header("Location: User_Homepg.php");
               exit;
           } else {
-              $error = "Invalid password.";
+            echo "<script>alert('Invalid Password');</script>";
           }
       } else {
-          $error = "No user found with this username.";
+        echo "<script>alert('No user found with this username.');</script>";
       }
   } catch (PDOException $e) {
       error_log("Login error: " . $e->getMessage());

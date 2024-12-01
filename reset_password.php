@@ -4,8 +4,8 @@ include('Conn.php'); // Include your database connection
 session_start();
 
 // Redirect if user is not authorized
-if ( !isset($_SESSION['email'])) {
-    header("Location: verify_otp.php"); // Redirect to OTP verification
+if (!isset($_SESSION['email'])) {
+    echo "<script>alert('Unauthorized access. Please verify your OTP first.'); window.location.href = 'verify_otp.php';</script>";
     exit;
 }
 
@@ -13,31 +13,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
     // Sanitize and retrieve user inputs
     $new_password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
 
-    // Hash the new password using Bcrypt
-    $hashed_password = password_hash($new_password, PASSWORD_BCRYPT);
+    if (!$new_password) {
+        echo "<script>alert('Please enter a valid password.');</script>";
+    } else {
+        // Hash the new password using Bcrypt
+        $hashed_password = password_hash($new_password, PASSWORD_BCRYPT);
 
-    $email = $_SESSION['email']; // Retrieved from session
-    
-    try {
-        // Update the password in the database
-        $stmt = $connpdo->prepare("UPDATE users SET PASSWORD = :password WHERE EMAIL = :email");
-        $stmt->execute([
-            'password' => $hashed_password,
-            'email' => $email,
-        ]);
+        $email = $_SESSION['email']; // Retrieved from session
 
-        if ($stmt->rowCount() > 0) {
-            echo "Password reset successful!";
-            header('Location: Login.php');
-        } else {
-            echo "Failed to reset password. Please try again.";
+        try {
+            // Update the password in the database
+            $stmt = $connpdo->prepare("UPDATE users SET PASSWORD = :password WHERE EMAIL = :email");
+            $stmt->execute([
+                'password' => $hashed_password,
+                'email' => $email,
+            ]);
+
+            if ($stmt->rowCount() > 0) {
+                echo "<script>alert('Password reset successful! Redirecting to login page.'); window.location.href = 'Login.php';</script>";
+            } else {
+                echo "<script>alert('Failed to reset password. Please try again.');</script>";
+            }
+        } catch (PDOException $e) {
+            echo "<script>alert('Error: " . addslashes($e->getMessage()) . "');</script>";
         }
-    } catch (PDOException $e) {
-        die("Error: " . $e->getMessage());
-    }
 
-    // Clear the session after successful password reset
-    session_destroy();
+        // Clear the session after successful password reset
+        session_unset();
+        // Destroy the session
+        session_destroy();
+        header("Location: ../Login.php");
+    }
 }
 ?>
 
