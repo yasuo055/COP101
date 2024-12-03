@@ -41,8 +41,8 @@ include('Conn.php');
     </div>
   </div>
   <div class="sidebar">
-    <div class="upper-portion">
-      <a href="User_Homepg.php">
+    <div class="upper-portion" style="background-color: #BFEDFE;">
+      <a href="user.html">
       <img src="/icon/Vector.png" class="side-wat">
       <p class="drp">
         Water Parameters
@@ -50,29 +50,31 @@ include('Conn.php');
       </a>
     </div>
     <div class="middle-portion">
-      <a href="ph.php">
+      <a href="ph.html">
       <button class="ph">
         <img src="/icon/Group.png" class="ph-icon">
-        pH Level
+        PH Level
       </button>
       </a>
-      <button class="temp">
-        <img src="/icon/Vector (1).png" class="temp-icon">
-        Temperature
-      </button>
-      <a href="ammonia.php">
-      <button class="amn">
-        <img src="/icon/Vector (2).png" class="amn-icon">
-        Ammonia
-      </button>
+      <a href="temperature.html">
+        <button class="temp">
+          <img src="/icon/Vector (1).png" class="temp-icon">
+          Temperature
+        </button>
       </a>
-      <a href="oxygen.php">
-        <button class="oxy" style="background-color: #BFEDFE;">
+      <a href="amonia.html">
+        <button class="amn">
+          <img src="/icon/Vector (2).png" class="amn-icon">
+          Amonia
+        </button>
+      </a>
+      <a href="oxygen.html">
+        <button class="oxy">
           <img src="/icon/Vector (3).png" class="oxy-icon">
           Oxygen
         </button>
       </a>
-      <a href="notification.php">
+      <a href="notification.html">
         <button class="not">
           <img src="/icon/notifications.png" class="not-icon">
           Notification
@@ -82,34 +84,101 @@ include('Conn.php');
     <div class="bottom-portion">
       <button class="log-out">
         <img src="/icon/solar_logout-2-broken.png" class="side-log">
-        <a href="../backend/unset_session.php">
         <p class="log">
           Log Out
         </p>
-        </a>
       </button>
     </div>
   </div>
+
   <div class="content">
     <div class="head-content">
-      <p class="heading-cont">
-        Oxygen Level
+      <p class="heading-cont-alt-heading">
+        Water Parameters
       </p>
-      <div class="heading-level">
-        <p class="ph-lvl-txt">
-          Current Fish Pond Oxygen
-        </p>
-        <p class="ph-count">
-          0.30mg/L
-        </p>
-        <p class="ph-state">
-          Healthy
-        </p>
+      <div class="all-portion-parameter-user">
+        <div class="ph-level-stability-user">
+          <p>
+            <img src="/icon/Vector (19).png" style="width:14px;">PH Level Stability
+          </p>
+          <p>
+            123 Level
+          </p>
+        </div>
+        <div class="temp-level-stability-user">
+          <p>
+          <img src="/icon/Vector (18).png" style="width:8px;">Temperature Stability Level
+          </p>
+          <p>
+            123 Level
+          </p>
+        </div>
+        <div class="amn-level-stability-user">
+          <p>
+            <img src="/icon/Vector (2).png" style="width:14px;">Amonia Stability Level
+          </p>
+          <p>
+            123 Level
+          </p>
+        </div>
+        <div class="oxy-level-stability-user">
+          <p>
+          <img src="/icon/Vector (3).png" style="width:14px;">Oxygen Stability Level
+          </p>
+          <p>
+            123 Level
+          </p>
+        </div>
       </div>
-      <div class="analytics">
-        <img src="/mockup-pic/Group 1673.png" class="analytics">
+      <p class="heading-cont-alt-heading">
+        Readings
+      </p>
+      <div class="reading-portion-parameter-user">
+        <div class="ph-level-reading-user">
+          <p>
+            Current PH Level
+          </p>
+          <p style="font-size: 25px; margin-top: 15px; margin-bottom: 15px;">
+            123 Level
+          </p>
+          <p style="color: #E37400;">
+            Moderate
+          </p>
+        </div>
+        <div class="temp-level-reading-user">
+          <p>
+            Current Temperature Level
+          </p>
+          <p style="font-size: 25px; margin-top: 15px; margin-bottom: 15px;">
+            123 Level
+          </p>
+          <p style="color: #026C37;">
+            Stable
+          </p>
+        </div>
+        <div class="amn-level-reading-user">
+          <p>
+            Current Amonia Level
+          </p>
+          <p style="font-size: 25px; margin-top: 15px; margin-bottom: 15px;">
+            123 Level
+          </p>
+          <p style="color: #FF0000;">
+            Moderate
+          </p>
+        </div>
+        <div class="oxy-level-reading-user">
+          <p>
+            Current Oxygen Level
+          </p>
+          <p style="font-size: 25px; margin-top: 15px; margin-bottom: 15px;">
+            123 Level
+          </p>
+          <p style="color: #026C37;">
+            Stable
+          </p>
+        </div>
       </div>
-
       <div class="breakdown">
         <div class="first-row-break">
           <p>
@@ -171,8 +240,16 @@ include('Conn.php');
           </p>
         </div>
       </div>
-      
     </div>
+
+    <!--
+    <div class="ai">
+      <button class="ai-btn">
+        <img src="/icon/Group (1).png" class="ai-icon">
+      </button>
+    </div>
+     -->
+
   </div>
 </body>
 </html>

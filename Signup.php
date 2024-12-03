@@ -26,12 +26,13 @@ if (isset($_SESSION['error_message'])) {
 
 <body>
 
-  <div class="cont">
+  <div class="cont-signup">
 
     <div class="left-por-log">
-      <img src="/asset/image 15.png" class="img-left-signup">
+      <img src="/asset/image 15.png" class="img-left-signup-1">
     </div>
-    <div class="right-por-log">
+
+    <div class="right-por-log-signup">
       <div class="head-log">
         <img src="/icon/PONDTECH__2_-removebg-preview 2.png" class="head-signup-sub">
         <p class="up-head-log-txt">
@@ -40,6 +41,9 @@ if (isset($_SESSION['error_message'])) {
         <p class="sub-heading-log">
           Sign Up to have an account
         </p>
+      </div>
+      <div class="full-name-sign-up">
+        
       </div>
       <form action="../backend/register-process.php" method="POST" id="signup-form">
 

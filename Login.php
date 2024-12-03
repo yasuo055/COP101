@@ -53,7 +53,7 @@ if (isset($error)) {
   <title>Aqua Sense</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body style="overflow: hidden; "> 
   <div class="cont">
     <div class="left-por-log">
       <img src="/asset/image 15.png" class="img-left-log">
@@ -107,7 +107,6 @@ if (isset($error)) {
           <a href="Signup.php">
           <span class="sgn-up-log"> Sign Up </span>
           </a>
-          to start
         </p>
       </div>
     </div>

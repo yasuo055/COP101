@@ -106,9 +106,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['resend'])) {
       </form>
 
       <!-- Resend OTP Section -->
-      <form method="POST">
-        <button type="submit" name="resend" class="btn-log">Resend OTP</button>
-      </form>
+       <div class="bottom-log">
+        <form method="POST">
+            <button type="submit" name="resend" class="btn-log-1">Resend OTP</button>
+          </form>
+       </div>
     </div>
   </div>
 </body>

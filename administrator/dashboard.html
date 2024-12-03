@@ -1,7 +1,3 @@
-<?php 
-include('Conn.php');
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,8 +12,8 @@ include('Conn.php');
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <link rel="icon" href="/icon/PONDTECH__2_-removebg-preview 2.png">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="icon" href="/icon/PONDTECH__2_-removebg-preview 2.png"> 
   <title>Aqua Sense</title>
 </head>
 <body>
@@ -29,87 +25,190 @@ include('Conn.php');
       <p class="tme">
         October 26, 2024 - 12:00:06PM
       </p>
-      <img src="/icon/image.png" class="head-left">
+      <img src="/icon/Ellipse 2 (1).png" class="head-left">
       <div class="user-name">
         <p class="user-full-name">
-          Imee Nold G. Villarde
+          Angel Sofia Balatucan
         </p>
         <p class="user-type">
           User
-        </p>
+        </p>  
       </div>
     </div>
   </div>
   <div class="sidebar">
-    <div class="upper-portion">
-      <a href="User_Homepg.php">
+    <div class="upper-portion" style="background-color: #BFEDFE;">
+      <a href="dashboard.html">
+      <img src="/icon/Vector (17).png" class="side-wat">
+        <p class="drp">
+          Dashboard
+        </p>
+      </a>
+    </div>
+    <div class="upper-portion-1-admin">
       <img src="/icon/Vector.png" class="side-wat">
       <p class="drp">
         Water Parameters
       </p>
-      </a>
     </div>
-    <div class="middle-portion">
-      <a href="ph.php">
-      <button class="ph">
+    <div class="middle-portion-admin">
+      <a href="ph-lvl-admin.html">
+      <button class="ph-admin">
         <img src="/icon/Group.png" class="ph-icon">
-        pH Level
+        PH Level
       </button>
       </a>
-      <button class="temp">
-        <img src="/icon/Vector (1).png" class="temp-icon">
-        Temperature
-      </button>
-      <a href="ammonia.php">
-      <button class="amn">
-        <img src="/icon/Vector (2).png" class="amn-icon">
-        Ammonia
-      </button>
+      <a href="temp-lvl-admin.html">
+        <button class="temp-admin">
+          <img src="/icon/Vector (1).png" class="temp-icon">
+          Temperature
+        </button>
       </a>
-      <a href="oxygen.php">
-        <button class="oxy" style="background-color: #BFEDFE;">
+      <a href="amn-lvl-admin.html">
+        <button class="amn-admin">
+          <img src="/icon/Vector (2).png" class="amn-icon">
+          Amonia
+        </button>
+      </a>
+      <a href="oxy-lvl-admin.html">
+        <button class="oxy-admin">
           <img src="/icon/Vector (3).png" class="oxy-icon">
           Oxygen
         </button>
       </a>
-      <a href="notification.php">
-        <button class="not">
-          <img src="/icon/notifications.png" class="not-icon">
-          Notification
-        </button>
-      </a>
+    </div>
+    <div class="end-portion-sidebar-admin-1">
+      <a href="report-administrator.html">
+      <button class="reports-admin-btn">
+        <img src="/icon/Group (4).png" class="report-icon-sidebar">
+        Reports
+      </button>
+     </a>
+    </div>
+    <div class="end-portion-sidebar-admin-2">
+     <a href="notification-admin.html">
+      <button class="notif-admin-btn">
+        <img src="/icon/Vector (20).png" class="report-icon-sidebar">
+        Notifications
+      </button>
+     </a>
+    </div>
+    <div class="end-portion-sidebar-admin-3">
+     <a href="attendance-logs-administrator.html">
+      <button class="att-log-admin-btn">
+        <img src="/icon/Vector (21).png" class="report-icon-sidebar">
+        Attendance Logs
+      </button>
+     </a>
+    </div>
+    <div class="end-portion-sidebar-admin-4">
+     <a href="user-management-dashboard.html">
+      <button class="user-manag-admin-btn">
+        <img src="/icon/carbon_id-management.png" class="report-icon-sidebar">
+        User Management
+      </button>
+    </a>
     </div>
     <div class="bottom-portion">
+     <a href="">
       <button class="log-out">
         <img src="/icon/solar_logout-2-broken.png" class="side-log">
-        <a href="../backend/unset_session.php">
         <p class="log">
           Log Out
         </p>
-        </a>
       </button>
+     </a>
     </div>
   </div>
+
   <div class="content">
     <div class="head-content">
-      <p class="heading-cont">
-        Oxygen Level
+      <p class="heading-cont-alt-heading">
+        Water Parameters
       </p>
-      <div class="heading-level">
-        <p class="ph-lvl-txt">
-          Current Fish Pond Oxygen
-        </p>
-        <p class="ph-count">
-          0.30mg/L
-        </p>
-        <p class="ph-state">
-          Healthy
-        </p>
+      <div class="all-portion-parameter-user">
+        <div class="ph-level-stability-user">
+          <p>
+            <img src="/icon/Vector (19).png" class="icon-water-parameter">PH Level Stability
+          </p>
+          <p>
+            123 Level
+          </p>
+        </div>
+        <div class="temp-level-stability-user">
+          <p>
+            <img src="/icon/Vector (18).png" class="icon-water-parameter-1">Temperature Stability Level
+          </p>
+          <p>
+            123 Level
+          </p>
+        </div>
+        <div class="amn-level-stability-user">
+          <p>
+            <img src="/icon/Vector (2).png" class="icon-water-parameter">Amonia Stability Level
+          </p>
+          <p>
+            123 Level
+          </p>
+        </div>
+        <div class="oxy-level-stability-user">
+          <p>
+            <img src="/icon/Vector (3).png" class="icon-water-parameter">Oxygen Stability Level
+          </p>
+          <p>
+            123 Level
+          </p>
+        </div>
       </div>
-      <div class="analytics">
-        <img src="/mockup-pic/Group 1673.png" class="analytics">
+      <p class="heading-cont-alt-heading">
+        Readings
+      </p>
+      <div class="reading-portion-parameter-user">
+        <div class="ph-level-reading-user">
+          <p>
+            Current PH Level
+          </p>
+          <p>
+            123 Level
+          </p>
+          <p>
+            Moderate
+          </p>
+        </div>
+        <div class="temp-level-reading-user">
+          <p>
+            Current Temperature Level
+          </p>
+          <p>
+            123 Level
+          </p>
+          <p>
+            Moderate
+          </p>
+        </div>
+        <div class="amn-level-reading-user">
+          <p>
+            Current Amonia Level
+          </p>
+          <p>
+            123 Level
+          </p>
+          <p>
+            Moderate
+          </p>
+        </div>
+        <div class="oxy-level-reading-user">
+          <p>
+            Current Oxygen Level
+          </p>
+          <p>
+            123 Level
+          </p>
+          <p>
+            Moderate
+          </p>
+        </div>
       </div>
-
       <div class="breakdown">
         <div class="first-row-break">
           <p>
@@ -171,8 +270,8 @@ include('Conn.php');
           </p>
         </div>
       </div>
-      
     </div>
+
   </div>
 </body>
 </html>
