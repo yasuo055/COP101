@@ -2,7 +2,7 @@
 include('Conn.php');
 
 // Fetch sensor data from ESP32
-$esp32_url = 'http://192.168.190.100/sensor_data'; // Ensure this is the correct IP
+$esp32_url = 'http://192.168.5.100/sensor_data'; // Ensure this is the correct IP
 
 // Initialize variables with default values
 $ph = '--';
@@ -10,43 +10,70 @@ $temperature = '--';
 $ammonia = '--';
 $do_level = '--';
 
-// Try fetching data from ESP32
-try {
-    // Initialize a cURL session
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $esp32_url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 5); // Timeout after 5 seconds
+// Get the current timestamp
+$current_timestamp = time();
 
-    $response = curl_exec($ch);
+// Retrieve the timestamp of the last recorded data from the database
+$last_saved_query = "SELECT last_saved FROM sensor_data ORDER BY last_saved DESC LIMIT 1";
+$stmt = $connpdo->prepare($last_saved_query);
+$stmt->execute();
+$last_saved = $stmt->fetchColumn();
 
-    // Check for errors
-    if ($response === false) {
-        throw new Exception('Error fetching data from ESP32: ' . curl_error($ch));
+// If the data was saved more than 2 minutes ago, fetch new data and save it
+if (!$last_saved || ($current_timestamp - $last_saved) >= 120) {  // 120 seconds = 2 minutes
+    // Try fetching data from ESP32
+    try {
+        // Initialize a cURL session
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $esp32_url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 5); // Timeout after 5 seconds
+
+        $response = curl_exec($ch);
+
+        // Check for errors
+        if ($response === false) {
+            throw new Exception('Error fetching data from ESP32: ' . curl_error($ch));
+        }
+
+        // Get HTTP status code
+        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        // Check if the request was successful (HTTP 200)
+        if ($http_code !== 200) {
+            throw new Exception("HTTP status code $http_code");
+        }
+
+        // Decode the JSON data from ESP32
+        $data = json_decode($response, true);
+
+        // Ensure we have valid data before assigning to variables
+        if ($data !== null) {
+            $ph = isset($data['ph_level']) ? $data['ph_level'] : '--';
+            $temperature = isset($data['temperature']) ? $data['temperature'] : '--';
+            $ammonia = isset($data['ammonia_level']) ? $data['ammonia_level'] : '--';
+            $do_level = isset($data['do_level']) ? $data['do_level'] : '--';
+        }
+
+        // Insert the data into the database with the current timestamp
+        $insert_query = "INSERT INTO sensor_data (ph_level, temperature, ammonia_level, do_level, last_saved) 
+                         VALUES (:ph, :temperature, :ammonia, :do_level, :last_saved)";
+        $stmt = $connpdo->prepare($insert_query);
+        $stmt->bindParam(':ph', $ph);
+        $stmt->bindParam(':temperature', $temperature);
+        $stmt->bindParam(':ammonia', $ammonia);
+        $stmt->bindParam(':do_level', $do_level);
+        $stmt->bindParam(':last_saved', $current_timestamp);
+        $stmt->execute();
+
+    } catch (Exception $e) {
+        // Log the error (optional)
+        error_log($e->getMessage());
     }
-
-    // Get HTTP status code
-    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-
-    // Check if the request was successful (HTTP 200)
-    if ($http_code !== 200) {
-        throw new Exception("HTTP status code $http_code");
-    }
-
-    // Decode the JSON data from ESP32
-    $data = json_decode($response, true);
-
-    // Ensure we have valid data before assigning to variables
-    if ($data !== null) {
-        $ph = isset($data['ph_level']) ? $data['ph_level'] : '--';
-        $temperature = isset($data['temperature']) ? $data['temperature'] : '--';
-        $ammonia = isset($data['ammonia_level']) ? $data['ammonia_level'] : '--';
-        $do_level = isset($data['do_level']) ? $data['do_level'] : '--';
-    }
-} catch (Exception $e) {
-    // Log the error (optional)
-    error_log($e->getMessage());
+} else {
+    // Optionally, you can display a message if the data was not saved
+    echo "Data not saved as it was updated less than 2 minutes ago.";
 }
 
 // Session handling for user authentication
@@ -64,10 +91,12 @@ if (!isset($_SESSION['USERID'])) {
 }
 ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="refresh" content="60">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -82,9 +111,9 @@ if (!isset($_SESSION['USERID'])) {
       <img src="/icon/PONDTECH__2_-removebg-preview 2.png" class="head-right">
     </div>
     <div class="left-portion">
-      <p class="tme">
-        October 26, 2024 - 12:00:06PM
-      </p>
+    <p class="tme" id="currentTime">
+      <?php echo date("F j, Y - h:i:s A"); ?>
+    </p>
       <img src="/icon/image.png" class="head-left">
       <div class="user-name">
         <p class="user-full-name">
@@ -165,39 +194,6 @@ if (!isset($_SESSION['USERID'])) {
                 <span>Dissolved Oxygen Reading: <span id="doReading"><?php echo $do_level; ?> mg/L</span></span><br>
             </div>
         </div>
-        <!-- Right Column: Set Water Parameters -->
-        <form method="POST" action="../backend/set_water_params.php">
-        <div class="section">
-            <h2>SET WATER PARAMETERS OF THE SAFE AND CRITICAL LEVEL OF THE POND</h2>
-
-            <div class="set-params">
-                <label for="phMin">PH:</label>
-                <div class="min-max">
-                    <input type="number" id="phMin" class="input-field" placeholder="Min" name="min_ph" step="any" required>
-                    <input type="number" id="phMax" step="any" class="input-field" placeholder="Max" name="max_ph" required>
-                </div>
-
-                <label for="tempMin">Temperature (°C):</label>
-                <div class="min-max">
-                    <input type="number" id="tempMin" class="input-field" placeholder="Min" name="min_temp" step="any" required>
-                    <input type="number" id="tempMax" class="input-field" placeholder="Max" name="max_temp" step="any" required>
-                </div>
-
-                <label for="ammoniaMin">Ammonia Level (ppm):</label>
-                <div class="min-max">
-                    <input type="number" id="ammoniaMin" class="input-field" placeholder="Min" name="min_nh3" step="any" required>
-                    <input type="number" id="ammoniaMax" class="input-field" placeholder="Max" name="max_nh3" step="any" required>
-                </div>
-
-                <label for="doMin">Dissolved Oxygen (mg/L):</label>
-                <div class="min-max">
-                    <input type="number" id="doMin" class="input-field" placeholder="Min" name="min_o2" step="any" required>
-                </div>
-
-                <button class="button" type="submit" name="submit">SET PARAMETERS</button>
-            </div>
-        </div>
-        </form>
     </div>
   </div>
 
@@ -205,7 +201,7 @@ if (!isset($_SESSION['USERID'])) {
 <script>
 // Function to fetch sensor data from ESP32 and update the page
 function fetchSensorData() {
-    fetch('http://192.168.190.100/sensor_data')  // Use your ESP32's IP address
+    fetch('http://192.168.5.100/sensor_data')  // Use your ESP32's IP address
     .then(response => response.json())  // Convert the response to JSON
     .then(data => {
         // Update pH level reading
@@ -230,7 +226,78 @@ fetchSensorData();
 
 // Update the data every 2 seconds
 setInterval(fetchSensorData, 2000);  // 2000 ms = 2 seconds
+
+function updateTime() {
+        var now = new Date();
+        var hours = now.getHours();
+        var minutes = now.getMinutes();
+        var seconds = now.getSeconds();
+        var ampm = hours >= 12 ? 'PM' : 'AM';
+        
+        // Format time in 12-hour format
+        hours = hours % 12;
+        hours = hours ? hours : 12; // 0 should be 12
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+        seconds = seconds < 10 ? '0' + seconds : seconds;
+
+        var strTime = now.toLocaleString('en-us', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) + ' - ' + hours + ':' + minutes + ':' + seconds + ' ' + ampm;
+
+        // Set the time in the element with id "currentTime"
+        document.getElementById('currentTime').textContent = strTime;
+    }
+
+    // Update the time every second
+    setInterval(updateTime, 1000);
+
 </script>
 
 </body>
 </html>
+
+<?php
+include('Conn.php');  // Include database connection
+
+// Fetch the current timestamp
+$current_timestamp = time();
+
+// Query to check when the last data was saved
+$query = "SELECT last_saved FROM sensor_data ORDER BY last_saved DESC LIMIT 1";
+$stmt = $connpdo->prepare($query);
+$stmt->execute();
+$last_saved = $stmt->fetchColumn();
+
+// Check if 2 minutes have passed since the last save
+if (!$last_saved || ($current_timestamp - $last_saved) >= 120) {
+    // Fetch new sensor data from ESP32 (via POST from JavaScript)
+    $ph = isset($_POST['ph']) ? $_POST['ph'] : '--';
+    $temperature = isset($_POST['temperature']) ? $_POST['temperature'] : '--';
+    $ammonia = isset($_POST['ammonia']) ? $_POST['ammonia'] : '--';
+    $do_level = isset($_POST['do_level']) ? $_POST['do_level'] : '--';
+
+    // Ensure numeric values are properly formatted
+    $ph = number_format((float)$ph, 2, '.', '');
+    $temperature = number_format((float)$temperature, 2, '.', '');
+    $ammonia = number_format((float)$ammonia, 2, '.', '');
+    $do_level = number_format((float)$do_level, 2, '.', '');
+
+    // Prepare the SQL insert query
+    $query = "INSERT INTO sensor_data (ph_level, temperature, ammonia_level, do_level, last_saved) 
+              VALUES (:ph, :temperature, :ammonia, :do_level, NOW())";
+    
+    $stmt = $connpdo->prepare($query);
+    $stmt->bindParam(':ph', $ph);
+    $stmt->bindParam(':temperature', $temperature);
+    $stmt->bindParam(':ammonia', $ammonia);
+    $stmt->bindParam(':do_level', $do_level);
+
+    // Execute the query
+    if ($stmt->execute()) {
+        echo "Data saved successfully";
+    } else {
+        error_log("Error inserting sensor data: " . implode(" ", $stmt->errorInfo()));
+        echo "Error saving data";
+    }
+} else {
+    error_log("No insert needed as 2 minutes haven't passed yet.");
+}
+?>
