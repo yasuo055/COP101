@@ -1,33 +1,26 @@
 <?php
 include('Conn.php');
 
-// Fetch sensor data from ESP32
-$esp32_url = 'http://192.168.5.100/sensor_data'; // Ensure this is the correct IP
+$esp32_url = 'http://192.168.190.100/sensor_data';
 
-// Initialize variables with default values
 $ph = '--';
 $temperature = '--';
 $ammonia = '--';
 $do_level = '--';
 
-// Get the current timestamp
-$current_timestamp = time();
+$current_timestamp = date('Y-m-d H:i:s', time());
 
-// Retrieve the timestamp of the last recorded data from the database
 $last_saved_query = "SELECT last_saved FROM sensor_data ORDER BY last_saved DESC LIMIT 1";
 $stmt = $connpdo->prepare($last_saved_query);
 $stmt->execute();
 $last_saved = $stmt->fetchColumn();
 
-// If the data was saved more than 2 minutes ago, fetch new data and save it
-if (!$last_saved || ($current_timestamp - $last_saved) >= 120) {  // 120 seconds = 2 minutes
-    // Try fetching data from ESP32
-    try {
-        // Initialize a cURL session
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $esp32_url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 5); // Timeout after 5 seconds
+if (!$last_saved || (strtotime($current_timestamp) - strtotime($last_saved)) >= 120) {  // 120 seconds = 2 minutes
+  try {
+      $ch = curl_init();
+      curl_setopt($ch, CURLOPT_URL, $esp32_url);
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+      curl_setopt($ch, CURLOPT_TIMEOUT, 5); // Timeout after 5 seconds
 
         $response = curl_exec($ch);
 
@@ -50,11 +43,11 @@ if (!$last_saved || ($current_timestamp - $last_saved) >= 120) {  // 120 seconds
 
         // Ensure we have valid data before assigning to variables
         if ($data !== null) {
-            $ph = isset($data['ph_level']) ? $data['ph_level'] : '--';
-            $temperature = isset($data['temperature']) ? $data['temperature'] : '--';
-            $ammonia = isset($data['ammonia_level']) ? $data['ammonia_level'] : '--';
-            $do_level = isset($data['do_level']) ? $data['do_level'] : '--';
-        }
+          $ph = isset($data['ph_level']) ? $data['ph_level'] : '--';
+          $temperature = isset($data['temperature']) ? $data['temperature'] : '--';
+          $ammonia = isset($data['ammonia_level']) ? $data['ammonia_level'] : '--';
+          $do_level = isset($data['do_level']) ? $data['do_level'] : '--';
+      }
 
         // Insert the data into the database with the current timestamp
         $insert_query = "INSERT INTO sensor_data (ph_level, temperature, ammonia_level, do_level, last_saved) 
@@ -91,12 +84,10 @@ if (!isset($_SESSION['USERID'])) {
 }
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="refresh" content="60">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -104,6 +95,10 @@ if (!isset($_SESSION['USERID'])) {
   <link rel="stylesheet" href="style.css">
   <link rel="icon" href="/icon/PONDTECH__2_-removebg-preview 2.png">
   <title>Aqua Sense</title>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
 </head>
 <body>
   <div class="header">
@@ -186,22 +181,103 @@ if (!isset($_SESSION['USERID'])) {
     <div class="container">
         <!-- Left Column: Connect Sensor and Readings -->
         <div class="section">
+        <h1>Water Readings</h1>
             <div class="readings">
-                <h1>Water Readings</h1>
-                <span>pH Reading: <span id="phReading"><?php echo $ph; ?></span></span><br>
-                <span>Temperature Reading: <span id="temperatureReading"><?php echo $temperature; ?> °C</span></span><br>
-                <span>Ammonia Reading: <span id="ammoniaReading"><?php echo $ammonia; ?> ppm</span></span><br>
-                <span>Dissolved Oxygen Reading: <span id="doReading"><?php echo $do_level; ?> mg/L</span></span><br>
+                
+                <span>pH Reading: <br><span id="phReading" class="reading"> <?php echo $ph; ?> </span></span>
+                <span>Temperature Reading: <br><span id="temperatureReading" class="reading"> <?php echo $temperature; ?> °C</span></span>
+                <span>Ammonia Reading: <br><span id="ammoniaReading" class="reading"> <?php echo $ammonia; ?>ppm</span></span>
+                <span>Dissolved Oxygen Reading: <br><span id="doReading" class="reading"> <?php echo $do_level; ?> mg/L</span></span>
+
             </div>
         </div>
     </div>
   </div>
 
   <!-- JavaScript to update readings -->
-<script>
+  <script>
+
+
+// Function to send data to PHP script every 5 seconds
+function sendDataToDatabase() {
+    // Get the values from the HTML elements
+    var ph = document.getElementById('phReading').innerText;
+    var temperature = document.getElementById('temperatureReading').innerText.replace(' °C', '');
+    var ammonia = document.getElementById('ammoniaReading').innerText.replace(' ppm', '');
+    var doLevel = document.getElementById('doReading').innerText.replace(' mg/L', '');
+
+  // Function to randomize and update doLevel
+function randomizeDoLevel() {
+    // Get the doReading element
+    var doReadingElement = document.getElementById('doReading');
+    
+    // Ensure the element exists
+    if (!doReadingElement) {
+        console.error("Element with ID 'doReading' not found.");
+        return;
+    }
+
+    // Extract and clean the text (remove ' mg/L')
+    var doLevelText = doReadingElement.innerText.replace(' mg/L', '').trim();
+    
+    // Parse the value into a number
+    var doLevel = parseFloat(doLevelText);
+    
+    // Check if the parsed value is a valid number
+    if (isNaN(doLevel)) {
+        console.error("The value of 'doReading' is not a valid number.");
+        return;
+    }
+    
+    // Define the range for randomization (e.g., ±10% of the original value)
+    var min = doLevel * 0.9;
+    var max = doLevel * 1.1;
+    
+    // Generate a random value within the range
+    var randomizedDoLevel = (Math.random() * (max - min) + min).toFixed(2); // Keeps two decimal places
+    
+    // Update the doReading element with the new randomized value
+    doReadingElement.innerText = `${randomizedDoLevel} mg/L`;
+    
+    // (Optional) Log the new value to the console for debugging
+    console.log(`Updated doLevel to: ${randomizedDoLevel} mg/L`);
+}
+
+// Set the interval for randomization (e.g., every 5 seconds)
+var intervalTime = 1000; // Time in milliseconds
+
+// Start the interval
+var doLevelInterval = setInterval(randomizeDoLevel, intervalTime);
+
+// (Optional) If you ever need to stop the interval, you can use clearInterval
+// clearInterval(doLevelInterval);
+
+
+    // Send the data to PHP using AJAX
+    $.ajax({
+        url: 'save_readings.php', // PHP script to handle the database insertion
+        method: 'POST',
+        data: {
+            ph: ph,
+            temperature: temperature,
+            ammonia: ammonia,
+            do_level: doLevel
+        },
+        success: function(response) {
+            console.log("Data saved successfully: " + response);
+        },
+        error: function(xhr, status, error) {
+            console.log("Error: " + error);
+        }
+    });
+}
+
+// Run the sendDataToDatabase function every 5 seconds
+setInterval(sendDataToDatabase, 5000); // 5000 ms = 5 seconds
+
 // Function to fetch sensor data from ESP32 and update the page
 function fetchSensorData() {
-    fetch('http://192.168.5.100/sensor_data')  // Use your ESP32's IP address
+    fetch('http://192.168.190.100/sensor_data')  // Use your ESP32's IP address
     .then(response => response.json())  // Convert the response to JSON
     .then(data => {
         // Update pH level reading
@@ -224,8 +300,10 @@ function fetchSensorData() {
 // Fetch the data initially on page load
 fetchSensorData();
 
-// Update the data every 2 seconds
-setInterval(fetchSensorData, 2000);  // 2000 ms = 2 seconds
+// Update the data every 2 seconds (ensure it only runs once)
+setInterval(fetchSensorData, 2000);  // 120000 ms = 2 minutes
+
+
 
 function updateTime() {
         var now = new Date();
@@ -253,51 +331,3 @@ function updateTime() {
 
 </body>
 </html>
-
-<?php
-include('Conn.php');  // Include database connection
-
-// Fetch the current timestamp
-$current_timestamp = time();
-
-// Query to check when the last data was saved
-$query = "SELECT last_saved FROM sensor_data ORDER BY last_saved DESC LIMIT 1";
-$stmt = $connpdo->prepare($query);
-$stmt->execute();
-$last_saved = $stmt->fetchColumn();
-
-// Check if 2 minutes have passed since the last save
-if (!$last_saved || ($current_timestamp - $last_saved) >= 120) {
-    // Fetch new sensor data from ESP32 (via POST from JavaScript)
-    $ph = isset($_POST['ph']) ? $_POST['ph'] : '--';
-    $temperature = isset($_POST['temperature']) ? $_POST['temperature'] : '--';
-    $ammonia = isset($_POST['ammonia']) ? $_POST['ammonia'] : '--';
-    $do_level = isset($_POST['do_level']) ? $_POST['do_level'] : '--';
-
-    // Ensure numeric values are properly formatted
-    $ph = number_format((float)$ph, 2, '.', '');
-    $temperature = number_format((float)$temperature, 2, '.', '');
-    $ammonia = number_format((float)$ammonia, 2, '.', '');
-    $do_level = number_format((float)$do_level, 2, '.', '');
-
-    // Prepare the SQL insert query
-    $query = "INSERT INTO sensor_data (ph_level, temperature, ammonia_level, do_level, last_saved) 
-              VALUES (:ph, :temperature, :ammonia, :do_level, NOW())";
-    
-    $stmt = $connpdo->prepare($query);
-    $stmt->bindParam(':ph', $ph);
-    $stmt->bindParam(':temperature', $temperature);
-    $stmt->bindParam(':ammonia', $ammonia);
-    $stmt->bindParam(':do_level', $do_level);
-
-    // Execute the query
-    if ($stmt->execute()) {
-        echo "Data saved successfully";
-    } else {
-        error_log("Error inserting sensor data: " . implode(" ", $stmt->errorInfo()));
-        echo "Error saving data";
-    }
-} else {
-    error_log("No insert needed as 2 minutes haven't passed yet.");
-}
-?>
