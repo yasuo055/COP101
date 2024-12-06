@@ -1,8 +1,11 @@
-<?php
+
+<?php 
+session_start();
 include('Conn.php');
+// Fetch sensor data from ESP32
+$esp32_url = 'http://192.168.5.100/sensor_data'; // Ensure this is the correct IP
 
-$esp32_url = 'http://192.168.190.100/sensor_data';
-
+// Initialize variables with default values
 $ph = '--';
 $temperature = '--';
 $ammonia = '--';
@@ -68,9 +71,6 @@ if (!$last_saved || (strtotime($current_timestamp) - strtotime($last_saved)) >= 
     // Optionally, you can display a message if the data was not saved
     echo "Data not saved as it was updated less than 2 minutes ago.";
 }
-
-// Session handling for user authentication
-session_start();
 
 if (!isset($_SESSION['USERID'])) {
     header("Location: Login.php");
@@ -196,8 +196,6 @@ if (!isset($_SESSION['USERID'])) {
 
   <!-- JavaScript to update readings -->
   <script>
-
-
 // Function to send data to PHP script every 5 seconds
 function sendDataToDatabase() {
     // Get the values from the HTML elements
@@ -278,6 +276,7 @@ setInterval(sendDataToDatabase, 5000); // 5000 ms = 5 seconds
 // Function to fetch sensor data from ESP32 and update the page
 function fetchSensorData() {
     fetch('http://192.168.190.100/sensor_data')  // Use your ESP32's IP address
+
     .then(response => response.json())  // Convert the response to JSON
     .then(data => {
         // Update pH level reading
