@@ -15,30 +15,14 @@ if (!isset($_SESSION['USERID'])) {
     $user = $statement->fetch(PDO::FETCH_ASSOC);
 }
 
-// Handle AJAX requests for real-time data
-if (isset($_GET['fetch_data'])) {
-    $stmt = $connpdo->prepare("SELECT ph_level, last_saved FROM sensor_data ORDER BY last_saved DESC LIMIT 1");
-    $stmt->execute();
-    $sensorData = $stmt->fetch(PDO::FETCH_ASSOC);
+// Fetch the latest pH level and timestamp
+$stmt = $connpdo->prepare("SELECT ph_level, last_saved FROM sensor_data ORDER BY last_saved DESC LIMIT 1");
+$stmt->execute();
+$sensorData = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($sensorData) {
-        $currentPH = $sensorData['ph_level'];
-        $phState = ($currentPH >= 6.5 && $currentPH <= 8.5) ? 'Healthy' : 'Unhealthy';
-
-        echo json_encode([
-            'ph_level' => number_format($currentPH, 2),
-            'ph_state' => $phState,
-            'last_saved' => date("M d, h:i A", strtotime($sensorData['last_saved']))
-        ]);
-    } else {
-        echo json_encode([
-            'ph_level' => 'N/A',
-            'ph_state' => 'No Data',
-            'last_saved' => 'No Data'
-        ]);
-    }
-    exit();
-}
+// Assign pH level and determine health status
+$currentPH = $sensorData ? $sensorData['ph_level'] : 'N/A';
+$phState = ($sensorData && $currentPH >= 6.5 && $currentPH <= 8.5) ? 'Healthy' : 'Unhealthy';
 ?>
 
 <!DOCTYPE html>
@@ -49,33 +33,15 @@ if (isset($_GET['fetch_data'])) {
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <link rel="icon" href="/icon/PONDTECH__2_-removebg-preview 2.png">
-  <title>Aqua Sense - PH Level</title>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script>
-    function fetchRealTimeData() {
-      $.ajax({
-        url: 'ph.php', // Current file
-        method: 'GET',
-        data: { fetch_data: true },
-        dataType: 'json',
-        success: function(data) {
-          // Update the pH level, status, and timestamp
-          $('.ph-count').text(data.ph_level + ' PH');
-          $('.ph-state').text(data.ph_state);
-          $('.tme').text(data.last_saved);
-        },
-        error: function() {
-          console.error('Error fetching real-time data');
-        }
-      });
-    }
-
-    // Fetch data every 5 seconds
-    setInterval(fetchRealTimeData, 5000);
-    $(document).ready(fetchRealTimeData); // Fetch data on page load
-  </script>
+  <title>Aqua Sense</title>
 </head>
 <body>
   <div class="header">
@@ -83,15 +49,13 @@ if (isset($_GET['fetch_data'])) {
       <img src="/icon/PONDTECH__2_-removebg-preview 2.png" class="head-right">
     </div>
     <div class="left-portion">
-      <p class="tme">
-        <!-- Initial timestamp placeholder -->
-        Loading...
-      </p>
+    <p class="tme" id="currentTime">
+      <?php echo date("F j, Y - h:i:s A"); ?>
+    </p>
       <img src="/icon/image.png" class="head-left">
       <div class="user-name">
         <p class="user-full-name">
-          <?php echo $user['LNAME'] . ', ' . $user['FNAME']; ?>
-        </p>
+          <?php echo $user['LNAME'] . ', ' . $user['FNAME']; ?>        </p>
         <p class="user-type">
           User
         </p>
@@ -102,7 +66,9 @@ if (isset($_GET['fetch_data'])) {
     <div class="upper-portion">
       <a href="User_Homepg.php">
       <img src="/icon/Vector.png" class="side-wat">
-      <p class="drp">Water Parameters</p>
+      <p class="drp">
+        Water Parameters
+      </p>
       </a>
     </div>
     <div class="middle-portion">
@@ -137,61 +103,119 @@ if (isset($_GET['fetch_data'])) {
       <button class="log-out">
         <img src="/icon/solar_logout-2-broken.png" class="side-log">
         <a href="../backend/unset_session.php">
-        <p class="log">Log Out</p>
+        <p class="log">
+          Log Out
+        </p>
         </a>
       </button>
     </div>
   </div>
   <div class="content">
     <div class="head-content">
-      <p class="heading-cont">PH Level</p>
+      <p class="heading-cont">
+        PH Level
+      </p>
       <div class="heading-level">
-        <p class="ph-lvl-txt">Current Fish Pond pH Level</p>
-        <p class="ph-count">
-          <!-- Initial pH level placeholder -->
-          Loading...
-        </p>
-        <p class="ph-state">
-          <!-- Initial pH state placeholder -->
-          Loading...
-        </p>
+        <p class="ph-lvl-txt">
+            Current Fish Pond pH Level
+          </p>
+          <p class="ph-count">
+            <?php echo $currentPH !== 'N/A' ? number_format($currentPH, 2) . ' PH' : 'No Data'; ?>
+          </p>
+          <p class="ph-state">
+            <?php echo $phState; ?>
+          </p>
       </div>
       <div class="analytics">
-        <!-- Placeholder image for future dynamic chart -->
         <img src="/mockup-pic/Group 1673.png" class="analytics">
       </div>
+
       <div class="breakdown">
         <div class="first-row-break">
           <p>
-            Breakdown Data As of <span class="first-head">Real-time</span>
+            Breakdown Data As of <span class="first-head">October 28, 12:00 PM</span>
           </p>
           <button class="ph-report">
             See All Reports
           </button>
         </div>
         <div class="second-row-break">
-          <p>Date/Time</p>
-          <p>Level</p>
-          <p>AI Simulation</p>
-          <p>Added Elements</p>
-          <p>Measurement</p>
+          <p>
+            Date/Time
+          </p>
+          <p>
+            Level
+          </p>
+          <p>
+            AI Simulation
+          </p>
+          <p>
+            Added Elements
+          </p>
+          <p>
+            Measurement
+          </p>
         </div>
         <div class="third-row-break">
-          <p class="third-lvl-head">Oct 26, 12:00 PM</p>
-          <p class="third-lvl">6.5 PH</p>
-          <p class="third-hel">Healthy</p>
-          <p class="third-elem">None</p>
-          <p class="third-stab">Stable</p>
+          <p class="third-lvl-head">
+            October 26,2024, 12:00 PM
+          </p>
+          <p class="third-lvl">
+            6.5PH
+          </p>
+          <p class="third-hel">
+            Healthy
+          </p>
+          <p class="third-elem">
+            None
+          </p>
+          <p class="third-stab">
+            Stable
+          </p>
         </div>
         <div class="third-row-break">
-          <p class="third-lvl-head">Oct 28, 14:00 PM</p>
-          <p class="third-lvl">6.5 PH</p>
-          <p class="third-hel">Healthy</p>
-          <p class="third-elem">None</p>
-          <p class="third-stab">Stable</p>
+          <p class="third-lvl-head">
+            October 28,2024, 14:00 PM
+          </p>
+          <p class="third-lvl">
+            6.5PH
+          </p>
+          <p class="third-hel">
+            Healthy
+          </p>
+          <p class="third-elem">
+            None
+          </p>
+          <p class="third-stab">
+            Stable
+          </p>
         </div>
       </div>
     </div>
   </div>
+
+  <script>
+    function updateTime() {
+        var now = new Date();
+        var hours = now.getHours();
+        var minutes = now.getMinutes();
+        var seconds = now.getSeconds();
+        var ampm = hours >= 12 ? 'PM' : 'AM';
+        
+        // Format time in 12-hour format
+        hours = hours % 12;
+        hours = hours ? hours : 12; // 0 should be 12
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+        seconds = seconds < 10 ? '0' + seconds : seconds;
+
+        var strTime = now.toLocaleString('en-us', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) + ' - ' + hours + ':' + minutes + ':' + seconds + ' ' + ampm;
+
+        // Set the time in the element with id "currentTime"
+        document.getElementById('currentTime').textContent = strTime;
+    }
+
+    // Update the time every second
+    setInterval(updateTime, 1000);
+  </script>
 </body>
 </html>

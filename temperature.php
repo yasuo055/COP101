@@ -3,6 +3,7 @@ include('Conn.php');
 
 session_start();
 
+// Check if the user is logged in
 if (!isset($_SESSION['USERID'])) {
     header("Location: Login.php");
     exit();
@@ -13,6 +14,36 @@ if (!isset($_SESSION['USERID'])) {
     $statement->execute();
     $user = $statement->fetch(PDO::FETCH_ASSOC);
 }
+
+// Ensure $conn is a PDO object
+if (!($conn instanceof PDO)) {
+    die("Database connection is not properly set up.");
+}
+
+try {
+    // Fetch the latest temperature data
+    $sql = "SELECT * FROM sensor_data ORDER BY `temperature` DESC LIMIT 5";
+    $stmt = $conn->query($sql);
+    if ($stmt) {
+        $temperatureData = $stmt->fetch(PDO::FETCH_ASSOC);
+    } else {
+        throw new Exception("Failed to fetch the latest temperature data.");
+    }
+
+    // Fetch the last 5 temperature readings (based on insertion order)
+    $sql = "SELECT * FROM sensor_data ORDER BY `id` DESC LIMIT 5";
+    $stmt = $conn->query($sql);
+    if (!$stmt) {
+        throw new Exception("Failed to fetch the breakdown data.");
+    }
+    $breakdownData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+} catch (PDOException $e) {
+    die("Database error: " . $e->getMessage());
+} catch (Exception $e) {
+    die("Error: " . $e->getMessage());
+}
+
 ?>
 
 <!DOCTYPE html>

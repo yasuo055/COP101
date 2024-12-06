@@ -15,7 +15,7 @@ $stmt = $connpdo->prepare($last_saved_query);
 $stmt->execute();
 $last_saved = $stmt->fetchColumn();
 
-if (!$last_saved || (strtotime($current_timestamp) - strtotime($last_saved)) >= 120) {  // 120 seconds = 2 minutes
+if (!$last_saved || (strtotime($current_timestamp) - strtotime($last_saved)) >= 5) {  // 120 seconds = 2 minutes
   try {
       $ch = curl_init();
       curl_setopt($ch, CURLOPT_URL, $esp32_url);
@@ -64,11 +64,7 @@ if (!$last_saved || (strtotime($current_timestamp) - strtotime($last_saved)) >= 
         // Log the error (optional)
         error_log($e->getMessage());
     }
-} else {
-    // Optionally, you can display a message if the data was not saved
-    echo "Data not saved as it was updated less than 2 minutes ago.";
 }
-
 // Session handling for user authentication
 session_start();
 
