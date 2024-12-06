@@ -1,18 +1,5 @@
 <?php 
 include('Conn.php');
-
-session_start();
-
-if (!isset($_SESSION['USERID'])) {
-    header("Location: Login.php");
-    exit();
-} else {
-    $user_id = $_SESSION['USERID'];
-    $statement = $connpdo->prepare("SELECT * FROM USERS WHERE USERID = :userid");
-    $statement->bindParam(':userid', $user_id);
-    $statement->execute();
-    $user = $statement->fetch(PDO::FETCH_ASSOC);
-}
 ?>
 
 <!DOCTYPE html>
@@ -45,7 +32,7 @@ if (!isset($_SESSION['USERID'])) {
       <img src="/icon/image.png" class="head-left">
       <div class="user-name">
         <p class="user-full-name">
-          <?php echo $user['LNAME'] . ', ' . $user['FNAME']; ?>
+          Imee Nold G. Villarde
         </p>
         <p class="user-type">
           User
@@ -55,7 +42,7 @@ if (!isset($_SESSION['USERID'])) {
   </div>
   <div class="sidebar">
     <div class="upper-portion">
-      <a href="User_Homepg.php">
+      <a href="user.html">
       <img src="/icon/Vector.png" class="side-wat">
       <p class="drp">
         Water Parameters
@@ -63,128 +50,103 @@ if (!isset($_SESSION['USERID'])) {
       </a>
     </div>
     <div class="middle-portion">
-      <a href="ph.php">
+      <a href="ph.html">
       <button class="ph">
         <img src="/icon/Group.png" class="ph-icon">
-        pH Level
+        PH Level
       </button>
       </a>
       <button class="temp">
         <img src="/icon/Vector (1).png" class="temp-icon">
         Temperature
       </button>
-      <a href="ammonia.php">
+      <a href="amonia.html">
       <button class="amn">
         <img src="/icon/Vector (2).png" class="amn-icon">
-        Ammonia
+        Amonia
       </button>
       </a>
-      <a href="oxygen.php">
-        <button class="oxy" style="background-color: #BFEDFE;">
+      <a href="oxygen.html">
+        <button class="oxy">
           <img src="/icon/Vector (3).png" class="oxy-icon">
           Oxygen
         </button>
       </a>
-      <a href="notification.php">
-        <button class="not">
-          <img src="/icon/notifications.png" class="not-icon">
-          Notification
-        </button>
-      </a>
+      <div class="end-portion-user" style="background-color: #BFEDFE;">
+        <img src="/icon/notifications.png" class="notification-user-user">
+          <p class="notif-sidebar-new">
+              Notification
+          </p>
+      </div>
     </div>
     <div class="bottom-portion">
+      <a href="login.html">
       <button class="log-out">
         <img src="/icon/solar_logout-2-broken.png" class="side-log">
-        <a href="../backend/unset_session.php">
         <p class="log">
           Log Out
         </p>
-        </a>
       </button>
+    </a>
     </div>
   </div>
-  <div class="content">
-    <div class="head-content">
-      <p class="heading-cont">
-        Oxygen Level
-      </p>
-      <div class="heading-level">
-        <p class="ph-lvl-txt">
-          Current Fish Pond Oxygen
-        </p>
-        <p class="ph-count">
-          0.30mg/L
-        </p>
-        <p class="ph-state">
-          Healthy
-        </p>
-      </div>
-      <div class="analytics">
-        <img src="/mockup-pic/Group 1673.png" class="analytics">
-      </div>
 
-      <div class="breakdown">
-        <div class="first-row-break">
-          <p>
-            Breakdown Data As of <span class="first-head">October 28, 12:00 PM</span>
-          </p>
-          <button class="ph-report">
-            See All Reports
-          </button>
-        </div>
-        <div class="second-row-break">
-          <p>
-            Date/Time
-          </p>
-          <p>
-            Level
-          </p>
-          <p>
-            AI Simulation
-          </p>
-          <p>
-            Added Elements
-          </p>
-          <p>
-            Measurement
-          </p>
-        </div>
-        <div class="third-row-break">
-          <p class="third-lvl-head">
-            October 26,2024, 12:00 PM
-          </p>
-          <p class="third-lvl">
-            6.5PH
-          </p>
-          <p class="third-hel">
-            Healthy
-          </p>
-          <p class="third-elem">
-            None
-          </p>
-          <p class="third-stab">
-            Stable
-          </p>
-        </div>
-        <div class="third-row-break">
-          <p class="third-lvl-head">
-            October 28,2024, 14:00 PM
-          </p>
-          <p class="third-lvl">
-            6.5PH
-          </p>
-          <p class="third-hel">
-            Healthy
-          </p>
-          <p class="third-elem">
-            None
-          </p>
-          <p class="third-stab">
-            Stable
-          </p>
-        </div>
+  <div class="notification">
+    <div class="head-notif">
+      <img src="/icon/Group (2).png" class="notif-head">
+      <p class="list-notif-head">
+        List of Notifications
+      </p>
+    </div>
+
+    <div class="mid-list-of-notif">
+      <div class="icon-heading-list-of-notif">
+        <img src="/icon/Vector (7).png" class="icon-list-of-notif">
       </div>
-      
+      <div class="txt-heading-list-of-notif">
+        <p class="danger-list-of-notif">
+          Danger Water Amonia Too High
+        </p>
+        <p class="time-list-of-notif">
+          October 20, 2024, 1:08 PM
+        </p>
+      </div>
+    </div>
+
+    <div class="middle-sub-txt-list-of-notif">
+      <div class="middle-sub-list-of-notif-a">
+        <p>
+          <strong>Water Ammonia:</strong> <span></span>0.30mg/L(Too HIGH)
+        </p>
+        <p class="font-status-list-of-notif">
+          <strong>Status: </strong> <span class="font-weight-list-of-notif">Danger</span>
+        </p>
+      </div>
+      <div class="middle-sub-list-of-notif-b">
+        <p>
+          <strong>Date:</strong>  October 26, 2024
+        </p>
+        <p class="font-status-list-of-notif-1">
+          <strong>Status:</strong>  0.30mg/L(Too HIGH)
+        </p>
+      </div>
+      <div class="middle-sub-list-of-notif-c">
+        <p>
+          <strong>Time:</strong> 2:20 PM
+        </p>
+      </div>
+    </div>
+  
+    
+    <div class="gen-ai-con">
+      <h4>Generated AI Simulation</h4>
+
+      <h5>Water Temperature Needed: 6-14°C</h5>
+      <p>Step by step Process</p>
+
+      <p>1. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>78
+        
+      <p>2. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
     </div>
   </div>
 </body>
