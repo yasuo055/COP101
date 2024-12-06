@@ -7,28 +7,23 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   $password = htmlspecialchars($_POST['password'] ?? '', ENT_QUOTES, 'UTF-8');
 
   try {
-      // Query the database for the user
       $stmt = $connpdo->prepare("SELECT USERID, PASSWORD FROM USERS WHERE USERNAME = :username");
       $stmt->bindParam(':username', $username);
       $stmt->execute();
 
-      // Check if user exists
       if ($stmt->rowCount() > 0) {
           $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-          // Verify password
           if (password_verify($password, $user['PASSWORD'])) {
-              // Set session variables
               $_SESSION['USERID'] = $user['USERID'];
 
-              // Redirect to homepage
               header("Location: User_Homepg.php");
               exit;
           } else {
-              $error = "Invalid password.";
+            echo "<script>alert('Invalid Password');</script>";
           }
       } else {
-          $error = "No user found with this username.";
+        echo "<script>alert('No user found with this username.');</script>";
       }
   } catch (PDOException $e) {
       error_log("Login error: " . $e->getMessage());

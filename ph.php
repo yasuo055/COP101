@@ -1,5 +1,18 @@
 <?php 
 include('Conn.php');
+
+session_start();
+
+if (!isset($_SESSION['USERID'])) {
+    header("Location: Login.php");
+    exit();
+} else {
+    $user_id = $_SESSION['USERID'];
+    $statement = $connpdo->prepare("SELECT * FROM USERS WHERE USERID = :userid");
+    $statement->bindParam(':userid', $user_id);
+    $statement->execute();
+    $user = $statement->fetch(PDO::FETCH_ASSOC);
+}
 ?>
 
 <!DOCTYPE html>
@@ -32,8 +45,7 @@ include('Conn.php');
       <img src="/icon/image.png" class="head-left">
       <div class="user-name">
         <p class="user-full-name">
-          Imee Nold G. Villarde
-        </p>
+          <?php echo $user['LNAME'] . ', ' . $user['FNAME']; ?>        </p>
         <p class="user-type">
           User
         </p>
@@ -80,9 +92,11 @@ include('Conn.php');
     <div class="bottom-portion">
       <button class="log-out">
         <img src="/icon/solar_logout-2-broken.png" class="side-log">
+        <a href="../backend/unset_session.php">
         <p class="log">
           Log Out
         </p>
+        </a>
       </button>
     </div>
   </div>

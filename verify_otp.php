@@ -13,63 +13,64 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['verify'])) {
     $otp_code = filter_input(INPUT_POST, 'otp_code', FILTER_SANITIZE_STRING);
     
     if (!$otp_code) {
-        die("Invalid OTP input.");
-    }
-
-    // Step 1: Verify OTP
-    if (!isset($_SESSION['otp']) || !isset($_SESSION['email'])) {
-        die("Session expired. Please request a new OTP.");
-    }
-
-    $expected_otp = $_SESSION['otp'];
-    $email = $_SESSION['email'];
-
-    if ($otp_code == $expected_otp) {
-        // OTP matches
-        $_SESSION['email'] = $email;
-        unset($_SESSION['otp']); // Clear OTP after successful verification
-        header('Location: reset_password.php'); // Redirect to reset password page
-        exit();
+        echo "<script>alert('Invalid OTP input. Please enter a valid OTP.');</script>";
     } else {
-        // OTP does not match
-        echo "Invalid OTP. Please try again.";
+        // Step 1: Verify OTP
+        if (!isset($_SESSION['otp']) || !isset($_SESSION['email'])) {
+            echo "<script>alert('Session expired. Please request a new OTP.');</script>";
+        } else {
+            $expected_otp = $_SESSION['otp'];
+            $email = $_SESSION['email'];
+
+            if ($otp_code == $expected_otp) {
+                // OTP matches
+                $_SESSION['email'] = $email;
+                unset($_SESSION['otp']); // Clear OTP after successful verification
+                echo "<script>alert('OTP verified successfully! Redirecting to reset password page.'); window.location.href = 'reset_password.php';</script>";
+                exit();
+            } else {
+                // OTP does not match
+                echo "<script>alert('Invalid OTP. Please try again.');</script>";
+            }
+        }
     }
 }
 
 // Resend OTP
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['resend'])) {
     if (!isset($_SESSION['email'])) {
-        die("Session expired. Please go back and enter your email again.");
-    }
+        echo "<script>alert('Session expired. Please go back and enter your email again.');</script>";
+    } else {
+        $email = $_SESSION['email'];
+        $otp = random_int(100000, 999999);
+        $_SESSION['otp'] = $otp; // Generate and save a new OTP in the session
 
-    $email = $_SESSION['email'];
-    $otp = random_int(100000, 999999);
-    $_SESSION['otp'] = $otp; // Generate and save a new OTP in the session
+        $mail = new PHPMailer(true); // PHPMailer instance
+        try {
+            // SMTP Configuration
+            $mail->isSMTP();
+            $mail->Host = 'smtp.gmail.com';
+            $mail->SMTPAuth = true;
+            $mail->Username = '4quas3nse@gmail.com'; 
+            $mail->Password = 'ontariqamuplakdu'; // ontariqamuplakdu
+            $mail->SMTPSecure = 'tls';
+            $mail->Port = 587;
 
-    $mail = new PHPMailer(true); // PHPMailer instance
-    try {
-        // SMTP Configuration
-        $mail->isSMTP();
-        $mail->Host = 'smtp.gmail.com';
-        $mail->SMTPAuth = true;
-        $mail->Username = '4quas3nse@gmail.com'; 
-        $mail->Password = ''; //ontariqamuplakdu
-        $mail->SMTPSecure = 'tls';
-        $mail->Port = 587;
+            $mail->setFrom('4quas3nse@gmail.com', 'AquaSense');
+            $mail->addAddress($email);
+            $mail->isHTML(true);
+            $mail->Subject = 'Resend OTP - AquaSense';
+            $mail->Body    = "<p>Your new OTP code is: <strong>$otp</strong></p>";
 
-        $mail->setFrom('', 'AquaSense');
-        $mail->addAddress($email);
-        $mail->isHTML(true);
-        $mail->Subject = 'Resend OTP - AquaSense';
-        $mail->Body    = "<p>Your new OTP code is: <strong>$otp</strong></p>";
-
-        $mail->send();
-        echo "A new OTP has been sent to your email address.";
-    } catch (Exception $e) {
-        die("Error: Could not resend OTP. {$mail->ErrorInfo}");
+            $mail->send();
+            echo "<script>alert('A new OTP has been sent to your email address.');</script>";
+        } catch (Exception $e) {
+            echo "<script>alert('Error: Could not resend OTP. {$mail->ErrorInfo}');</script>";
+        }
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
