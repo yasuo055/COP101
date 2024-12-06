@@ -1,7 +1,7 @@
 <?php
 include('Conn.php');
 
-$esp32_url = 'http://192.168.190.100/sensor_data';
+$esp32_url = 'http://192.168.5.143/sensor_data';
 
 $ph = '--';
 $temperature = '--';
@@ -277,7 +277,7 @@ setInterval(sendDataToDatabase, 5000); // 5000 ms = 5 seconds
 
 // Function to fetch sensor data from ESP32 and update the page
 function fetchSensorData() {
-    fetch('http://192.168.190.100/sensor_data')  // Use your ESP32's IP address
+    fetch('http://192.168.5.143/sensor_data')  // Use your ESP32's IP address
     .then(response => response.json())  // Convert the response to JSON
     .then(data => {
         // Update pH level reading
