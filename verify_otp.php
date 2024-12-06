@@ -52,11 +52,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['resend'])) {
             $mail->Host = 'smtp.gmail.com';
             $mail->SMTPAuth = true;
             $mail->Username = '4quas3nse@gmail.com'; 
-            $mail->Password = ''; // ontariqamuplakdu
+            $mail->Password = 'ontariqamuplakdu'; // ontariqamuplakdu
             $mail->SMTPSecure = 'tls';
             $mail->Port = 587;
 
-            $mail->setFrom('', 'AquaSense');
+            $mail->setFrom('4quas3nse@gmail.com', 'AquaSense');
             $mail->addAddress($email);
             $mail->isHTML(true);
             $mail->Subject = 'Resend OTP - AquaSense';
