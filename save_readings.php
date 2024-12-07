@@ -4,7 +4,7 @@ include('Conn.php');
 // Set the ESP32 URL
 $esp32_url = 'http://192.168.5.143/sensor_data'; // Ensure this is the correct IP
 
-// Initialize variables with default values
+// Initialize variables with default values 
 $ph = '--';
 $temperature = '--';
 $ammonia = '--';

@@ -1,13 +1,15 @@
-<?php 
+<?php
 include('Conn.php');
-
 session_start();
+date_default_timezone_set('Asia/Manila');
 
-// Check if the user is logged in
+
+// Check if user is logged in
 if (!isset($_SESSION['USERID'])) {
     header("Location: Login.php");
     exit();
 } else {
+    // Fetch user details
     $user_id = $_SESSION['USERID'];
     $statement = $connpdo->prepare("SELECT * FROM USERS WHERE USERID = :userid");
     $statement->bindParam(':userid', $user_id);
@@ -15,36 +17,26 @@ if (!isset($_SESSION['USERID'])) {
     $user = $statement->fetch(PDO::FETCH_ASSOC);
 }
 
-// Ensure $conn is a PDO object
-if (!($conn instanceof PDO)) {
-    die("Database connection is not properly set up.");
-}
-
 try {
-    // Fetch the latest temperature data
-    $sql = "SELECT * FROM sensor_data ORDER BY `temperature` DESC LIMIT 5";
-    $stmt = $conn->query($sql);
-    if ($stmt) {
-        $temperatureData = $stmt->fetch(PDO::FETCH_ASSOC);
-    } else {
-        throw new Exception("Failed to fetch the latest temperature data.");
-    }
+  // Fetch the last 5 temperature readings for the breakdown
+  $sql = "SELECT last_saved, temperature FROM sensor_data ORDER BY last_saved DESC LIMIT 3";
+  $stmt = $connpdo->query($sql);
+  if (!$stmt) {
+      throw new Exception("Failed to fetch the breakdown data.");
+  }
+  $breakdownData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Fetch the last 5 temperature readings (based on insertion order)
-    $sql = "SELECT * FROM sensor_data ORDER BY `id` DESC LIMIT 5";
-    $stmt = $conn->query($sql);
-    if (!$stmt) {
-        throw new Exception("Failed to fetch the breakdown data.");
-    }
-    $breakdownData = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-} catch (PDOException $e) {
-    die("Database error: " . $e->getMessage());
+}  catch (PDOException $e) {
+  // Log and handle database errors
+  error_log("Database error: " . $e->getMessage());
+  $error_message = "An error occurred while accessing the database. Please try again later.";
 } catch (Exception $e) {
-    die("Error: " . $e->getMessage());
+  // Log and handle general errors
+  error_log("Error: " . $e->getMessage());
+  $error_message = $e->getMessage();
 }
-
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -70,13 +62,13 @@ try {
       <img src="/icon/PONDTECH__2_-removebg-preview 2.png" class="head-right">
     </div>
     <div class="left-portion">
-      <p class="tme">
-        October 26, 2024 - 12:00:06PM
+      <p class="tme" id="currentTime">
+        <?php echo date("F j, Y - h:i:s A"); ?>
       </p>
       <img src="/icon/image.png" class="head-left">
       <div class="user-name">
         <p class="user-full-name">
-          <?php echo $user['LNAME'] . ', ' . $user['FNAME']; ?>
+          <?php echo $user['LNAME'] . ', ' . $user['FNAME']; ?>        </p>
         </p>
         <p class="user-type">
           User
@@ -124,11 +116,9 @@ try {
     <div class="bottom-portion">
       <button class="log-out">
         <img src="/icon/solar_logout-2-broken.png" class="side-log">
-        <a href="../backend/unset_session.php">
         <p class="log">
           Log Out
         </p>
-        </a>
       </button>
     </div>
   </div>
@@ -152,68 +142,72 @@ try {
         <img src="/mockup-pic/Group 1673.png" class="analytics">
       </div>
 
-      <div class="breakdown">
-        <div class="first-row-break">
-          <p>
-            Breakdown Data As of <span class="first-head">October 28, 12:00 PM</span>
-          </p>
-          <button class="ph-report">
+      <<div class="breakdown">
+    <div class="first-row-break">
+        <p>
+            Breakdown Data As of <span class="first-head">
+                <?php echo date('F j, Y, g:i A'); ?>
+            </span>
+        </p>
+        <button class="ph-report">
             See All Reports
-          </button>
-        </div>
-        <div class="second-row-break">
-          <p>
-            Date/Time
-          </p>
-          <p>
-            Level
-          </p>
-          <p>
-            AI Simulation
-          </p>
-          <p>
-            Added Elements
-          </p>
-          <p>
-            Measurement
-          </p>
-        </div>
+        </button>
+    </div>
+    <div class="second-row-break">
+        <p>Date/Time</p>
+        <p>Level</p>
+        <p>AI Simulation</p>
+        <p>Added Elements</p>
+        <p>Measurement</p>
+    </div>
+    <?php foreach ($breakdownData as $data): ?>
         <div class="third-row-break">
-          <p class="third-lvl-head">
-            October 26,2024, 12:00 PM
-          </p>
-          <p class="third-lvl">
-            6.5PH
-          </p>
-          <p class="third-hel">
-            Healthy
-          </p>
-          <p class="third-elem">
-            None
-          </p>
-          <p class="third-stab">
-            Stable
-          </p>
+            <p class="third-lvl-head">
+                <?php echo date('F j, Y, g:i A', strtotime($data['last_saved'])); ?>
+            </p>
+            <p class="third-lvl">
+                <?php echo number_format($data['temperature'], 1) . '°C'; ?>
+            </p>
+            <p class="third-hel">
+                Healthy
+            </p>
+            <p class="third-elem">
+                None
+            </p>
+            <p class="third-stab">
+                Stable
+            </p>
         </div>
-        <div class="third-row-break">
-          <p class="third-lvl-head">
-            October 28,2024, 14:00 PM
-          </p>
-          <p class="third-lvl">
-            6.5PH
-          </p>
-          <p class="third-hel">
-            Healthy
-          </p>
-          <p class="third-elem">
-            None
-          </p>
-          <p class="third-stab">
-            Stable
-          </p>
-        </div>
+             <?php endforeach; ?>
+          </div>
+
       </div>
     </div>
   </div>
+
+      <script>
+        function updateTime() {
+        var now = new Date();
+        var hours = now.getHours();
+        var minutes = now.getMinutes();
+        var seconds = now.getSeconds();
+        var ampm = hours >= 12 ? 'PM' : 'AM';
+        
+        // Format time in 12-hour format
+        hours = hours % 12;
+        hours = hours ? hours : 12; // 0 should be 12
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+        seconds = seconds < 10 ? '0' + seconds : seconds;
+
+        var strTime = now.toLocaleString('en-us', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) + ' - ' + hours + ':' + minutes + ':' + seconds + ' ' + ampm;
+
+        // Set the time in the element with id "currentTime"
+        document.getElementById('currentTime').textContent = strTime;
+    }
+
+    // Update the time every second
+    setInterval(updateTime, 1000);
+      </script>
+
 </body>
 </html>

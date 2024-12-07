@@ -117,12 +117,9 @@ $phState = ($sensorData && $currentPH >= 6.5 && $currentPH <= 8.5) ? 'Healthy' :
       </p>
       <div class="heading-level">
         <p class="ph-lvl-txt">
-            Current Fish Pond pH Level
+            Current Fish Pond pH Status
           </p>
           <p class="ph-count">
-            <?php echo $currentPH !== 'N/A' ? number_format($currentPH, 2) . ' PH' : 'No Data'; ?>
-          </p>
-          <p class="ph-state">
             <?php echo $phState; ?>
           </p>
       </div>

@@ -1,5 +1,7 @@
 <?php
 include('Conn.php');
+date_default_timezone_set('Asia/Manila');
+
 
 $esp32_url = 'http://192.168.5.143/sensor_data';
 
@@ -193,7 +195,7 @@ if (!isset($_SESSION['USERID'])) {
   <!-- JavaScript to update readings -->
   <script>
 
-
+/*
 // Function to send data to PHP script every 5 seconds
 function sendDataToDatabase() {
     // Get the values from the HTML elements
@@ -248,9 +250,9 @@ var doLevelInterval = setInterval(randomizeDoLevel, intervalTime);
 // (Optional) If you ever need to stop the interval, you can use clearInterval
 // clearInterval(doLevelInterval);
 
-
+/*
     // Send the data to PHP using AJAX
-    $.ajax({
+  $.ajax({
         url: 'save_readings.php', // PHP script to handle the database insertion
         method: 'POST',
         data: {
@@ -266,11 +268,13 @@ var doLevelInterval = setInterval(randomizeDoLevel, intervalTime);
             console.log("Error: " + error);
         }
     });
-}
+} 
+
 
 // Run the sendDataToDatabase function every 5 seconds
 setInterval(sendDataToDatabase, 5000); // 5000 ms = 5 seconds
 
+*/
 // Function to fetch sensor data from ESP32 and update the page
 function fetchSensorData() {
     fetch('http://192.168.5.143/sensor_data')  // Use your ESP32's IP address
@@ -297,9 +301,7 @@ function fetchSensorData() {
 fetchSensorData();
 
 // Update the data every 2 seconds (ensure it only runs once)
-setInterval(fetchSensorData, 2000);  // 120000 ms = 2 minutes
-
-
+setInterval(fetchSensorData, 2000);  // 2000 ms = 2 secs || 120000 ms = 2 minutes
 
 function updateTime() {
         var now = new Date();

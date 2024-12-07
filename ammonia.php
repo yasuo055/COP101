@@ -39,8 +39,8 @@ if (!isset($_SESSION['USERID'])) {
       <img src="/icon/PONDTECH__2_-removebg-preview 2.png" class="head-right">
     </div>
     <div class="left-portion">
-      <p class="tme">
-        October 26, 2024 - 12:00:06PM
+      <p class="tme" id="currentTime">
+        <?php echo date("F j, Y - h:i:s A"); ?>
       </p>
       <img src="/icon/image.png" class="head-left">
       <div class="user-name">
@@ -188,5 +188,30 @@ if (!isset($_SESSION['USERID'])) {
       </div>
     </div>
   </div>
+
+  <script>
+    function updateTime() {
+        var now = new Date();
+        var hours = now.getHours();
+        var minutes = now.getMinutes();
+        var seconds = now.getSeconds();
+        var ampm = hours >= 12 ? 'PM' : 'AM';
+        
+        // Format time in 12-hour format
+        hours = hours % 12;
+        hours = hours ? hours : 12; // 0 should be 12
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+        seconds = seconds < 10 ? '0' + seconds : seconds;
+
+        var strTime = now.toLocaleString('en-us', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) + ' - ' + hours + ':' + minutes + ':' + seconds + ' ' + ampm;
+
+        // Set the time in the element with id "currentTime"
+        document.getElementById('currentTime').textContent = strTime;
+    }
+
+    // Update the time every second
+    setInterval(updateTime, 1000);
+  </script>
+
 </body>
 </html>
