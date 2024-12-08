@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aqua Sense</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@100..900&family=Montserrat:wght@100..900&family=Roboto:wght@100..900&family=Source+Code+Pro:wght@200..900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" href="/icon/PONDTECH__2_-removebg-preview 2.png" />
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="header-right">
+        <img
+          src="/icon/PONDTECH__2_-removebg-preview 2.png"
+          alt="Logo"
+          class="header-logo"
+        />
+      </div>
+      <div class="header-left">
+        <p class="current-time">October 26, 2024 - 12:00:06PM</p>
+        <div class="user-info">
+          <img
+            src="/icon/Ellipse 2 (1).png"
+            alt="User Avatar"
+            class="user-avatar"
+          />
+          <div>
+            <p class="user-full-name">Angel Sofia Balatucan</p>
+            <p class="user-role">User</p>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <nav class="sidebar-menu">
+        <a href="dashboard.html" class="menu-item">
+          <img src="/icon/Vector (17).png" alt="Dashboard Icon" />
+          <span>Dashboard</span>
+        </a>
+        <div class="menu-item">
+          <img src="/icon/Vector.png" alt="Water Parameters Icon" />
+          <span>Water Parameters</span>
+        </div>
+        <div class="submenu">
+          <a href="ph-lvl-admin.html" class="submenu-item">PH Level</a>
+          <a href="temp-lvl-admin.html" class="submenu-item">Temperature</a>
+          <a href="amn-lvl-admin.html" class="submenu-item">Ammonia</a>
+          <a href="oxy-lvl-admin.html" class="submenu-item">Oxygen</a>
+        </div>
+        <a
+          href="/administrator/report-administrator.html"
+          class="menu-item active"
+        >
+          <img src="/icon/Group (4).png" alt="Reports Icon" />
+          <span>Reports</span>
+        </a>
+        <a href="notification-admin.html" class="menu-item">
+          <img src="/icon/Vector (20).png" alt="Notifications Icon" />
+          <span>Notifications</span>
+        </a>
+        <a href="attendance-logs-administrator.html" class="menu-item">
+          <img src="/icon/Vector (21).png" alt="Attendance Logs Icon" />
+          <span>Attendance Logs</span>
+        </a>
+        <a href="user-management-dashboard.html" class="menu-item">
+          <img
+            src="/icon/carbon_id-management.png"
+            alt="User Management Icon"
+          />
+          <span>User Management</span>
+        </a>
+        <button class="menu-item logout-btn">
+          <img src="/icon/solar_logout-2-broken.png" alt="Logout Icon" />
+          <span>Log Out</span>
+        </button>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="content">
+      <section class="report-section">
+        <h1>Report</h1>
+        <div class="filters">
+          <!-- Search Input -->
+          <input type="text" placeholder="Search" class="filter-input" />
+
+          <!-- Dropdown for All -->
+          <div class="dropdown">
+            <button class="dropdown-btn">
+              All
+              <img
+                src="/icon/gridicons_dropdown.png"
+                alt="Dropdown Icon"
+                class="dropdown-icon"
+              />
+            </button>
+            <ul class="dropdown-menu">
+              <li><a href="#">Option 1</a></li>
+              <li><a href="#">Option 2</a></li>
+              <li><a href="#">Option 3</a></li>
+            </ul>
+          </div>
+
+          <!-- Dropdown for Today -->
+          <div class="dropdown">
+            <button class="dropdown-btn">
+              Today
+              <img
+                src="/icon/gridicons_dropdown.png"
+                alt="Dropdown Icon"
+                class="dropdown-icon"
+              />
+            </button>
+            <ul class="dropdown-menu">
+              <li><a href="#">Morning</a></li>
+              <li><a href="#">Afternoon</a></li>
+              <li><a href="#">Evening</a></li>
+            </ul>
+          </div>
+
+          <!-- Dropdown for Month -->
+          <div class="dropdown">
+            <button class="dropdown-btn">
+              Month
+              <img
+                src="/icon/gridicons_dropdown.png"
+                alt="Dropdown Icon"
+                class="dropdown-icon"
+              />
+            </button>
+            <ul class="dropdown-menu">
+              <li><a href="#">January</a></li>
+              <li><a href="#">February</a></li>
+              <li><a href="#">March</a></li>
+              <li><a href="#">April</a></li>
+              <li><a href="#">May</a></li>
+              <li><a href="#">June</a></li>
+              <li><a href="#">July</a></li>
+              <li><a href="#">August</a></li>
+              <li><a href="#">September</a></li>
+              <li><a href="#">October</a></li>
+              <li><a href="#">November</a></li>
+              <li><a href="#">December</a></li>
+            </ul>
+          </div>
+
+          <!-- Dropdown for Day -->
+          <div class="dropdown">
+            <button class="dropdown-btn">
+              Day
+              <img
+                src="/icon/gridicons_dropdown.png"
+                alt="Dropdown Icon"
+                class="dropdown-icon"
+              />
+            </button>
+            <ul class="dropdown-menu">
+              <li><a href="#">Monday</a></li>
+              <li><a href="#">Tuesday</a></li>
+              <li><a href="#">Wednesday</a></li>
+              <li><a href="#">Thursday</a></li>
+              <li><a href="#">Friday</a></li>
+              <li><a href="#">Saturday</a></li>
+              <li><a href="#">Sunday</a></li>
+            </ul>
+          </div>
+
+          <!-- Dropdown for Year -->
+          <div class="dropdown">
+            <button class="dropdown-btn">
+              Year
+              <img
+                src="/icon/gridicons_dropdown.png"
+                alt="Dropdown Icon"
+                class="dropdown-icon"
+              />
+            </button>
+            <ul class="dropdown-menu">
+              <li><a href="#">2023</a></li>
+              <li><a href="#">2024</a></li>
+              <li><a href="#">2025</a></li>
+              <li><a href="#">2026</a></li>
+            </ul>
+          </div>
+
+          <!-- Print Button -->
+          <button class="print-btn"  onclick="printReport()">
+            Print <img src="/icon/🦆 icon _print_.png" alt="Print Icon" />
+          </button>
+        </div>
+
+        <table class="report-table">
+            <thead>
+              <tr>
+                <th>No.</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Name</th>
+                <th>Level</th>
+                <th>Status</th>
+                <th>AI Simulation</th>
+                <th>Added Elements</th>
+                <th>Measurement</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>12-6-24</td>
+                <td>12:00 AM</td>
+                <td>PH Level</td>
+                <td>6.5 PH</td>
+                <td class="status status-low">Low</td> <!-- Different class for each status element -->
+                <td>Healthy</td>
+                <td>None</td>
+                <td>None</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>12-6-24</td>
+                <td>12:00 AM</td>
+                <td>PH Level</td>
+                <td>6.5 PH</td>
+                <td class="status status-moderate">Moderate</td>
+                <td>Healthy</td>
+                <td>None</td>
+                <td>None</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>12-6-24</td>
+                <td>12:00 AM</td>
+                <td>PH Level</td>
+                <td>6.5 PH</td>
+                <td class="status status-moderate">Moderate</td>
+                <td>Healthy</td>
+                <td>None</td>
+                <td>None</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>12-6-24</td>
+                <td>12:00 AM</td>
+                <td>PH Level</td>
+                <td>6.5 PH</td>
+                <td class="status status-critical">Critical</td>
+                <td>Healthy</td>
+                <td>None</td>
+                <td>None</td>
+              </tr>
+              <!-- Add more rows dynamically as needed -->
+            </tbody>
+          </table>
+          </section>
+          </main>
+          
+    <script src="script.js"></script>
+  </body>
+ 
+</html>
