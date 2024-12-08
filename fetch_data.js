@@ -21,6 +21,29 @@ connection.connect((err) => {
 // Set the ESP32 URL
 const esp32Url = 'http://192.168.5.143/sensor_data';
 
+// Function to get the current timestamp in Asia/Manila timezone
+function getManilaTimestamp() {
+    const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'Asia/Manila',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+    });
+    const parts = formatter.formatToParts(new Date());
+    const dateParts = {};
+    parts.forEach(part => {
+        if (part.type !== 'literal') {
+            dateParts[part.type] = part.value;
+        }
+    });
+
+    return `${dateParts.year}-${dateParts.month}-${dateParts.day} ${dateParts.hour}:${dateParts.minute}:${dateParts.second}`;
+}
+
 // Function to fetch sensor data from ESP32
 async function fetchSensorData() {
     try {
@@ -34,7 +57,7 @@ async function fetchSensorData() {
             const temperature = data.temperature || '--';
             const ammonia = data.ammonia_level || '--';
             const doLevel = data.do_level || '--';
-            const timestamp = new Date().toISOString();
+            const timestamp = getManilaTimestamp(); // Use Manila timezone timestamp
 
             // Insert data into the database
             const query = `
@@ -57,4 +80,4 @@ async function fetchSensorData() {
 }
 
 // Schedule the task to run every 5 minutes
-cron.schedule('*/5 * * * *', fetchSensorData);
+cron.schedule('*/5 * * * *', fetchSensorData); // ('*/5 * * * * *') 5 seconds (for testing) || ('*/5 * * * *') 5 minutes for actual representation

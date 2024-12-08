@@ -48,7 +48,7 @@ if (isset($error)) {
   <title>Aqua Sense</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body style="overflow: hidden"> 
   <div class="cont">
     <div class="left-por-log">
       <img src="/asset/image 15.png" class="img-left-log">
@@ -97,12 +97,11 @@ if (isset($error)) {
         <button type="submit" class="btn-log">Login</button>
        </a>
 </form>
-        <p class="bot-head-log-txt">
-          Don't you have an account yes? 
+        <p class="bot-head-log-txt">  
+          Don't you have an account? 
           <a href="Signup.php">
           <span class="sgn-up-log"> Sign Up </span>
           </a>
-          to start
         </p>
       </div>
     </div>

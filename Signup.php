@@ -26,12 +26,12 @@ if (isset($_SESSION['error_message'])) {
 
 <body>
 
-  <div class="cont">
+  <div class="cont-sgn-up">
 
     <div class="left-por-log">
       <img src="/asset/image 15.png" class="img-left-signup">
     </div>
-    <div class="right-por-log">
+    <div class="right-por-log-signup">
       <div class="head-log">
         <img src="/icon/PONDTECH__2_-removebg-preview 2.png" class="head-signup-sub">
         <p class="up-head-log-txt">

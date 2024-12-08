@@ -8,65 +8,10 @@ $temperature = '--';
 $ammonia = '--';
 $do_level = '--';
 
+date_default_timezone_set('Asia/Manila');
 $current_timestamp = date('Y-m-d H:i:s', time());
 
-$last_saved_query = "SELECT last_saved FROM sensor_data ORDER BY last_saved DESC LIMIT 1";
-$stmt = $connpdo->prepare($last_saved_query);
-$stmt->execute();
-$last_saved = $stmt->fetchColumn();
-
-if (!$last_saved || (strtotime($current_timestamp) - strtotime($last_saved)) >= 5) {  // 120 seconds = 2 minutes
-  try {
-      $ch = curl_init();
-      curl_setopt($ch, CURLOPT_URL, $esp32_url);
-      curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-      curl_setopt($ch, CURLOPT_TIMEOUT, 5); // Timeout after 5 seconds
-
-        $response = curl_exec($ch);
-
-        // Check for errors
-        if ($response === false) {
-            throw new Exception('Error fetching data from ESP32: ' . curl_error($ch));
-        }
-
-        // Get HTTP status code
-        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-        // Check if the request was successful (HTTP 200)
-        if ($http_code !== 200) {
-            throw new Exception("HTTP status code $http_code");
-        }
-
-        // Decode the JSON data from ESP32
-        $data = json_decode($response, true);
-
-        // Ensure we have valid data before assigning to variables
-        if ($data !== null) {
-          $ph = isset($data['ph_level']) ? $data['ph_level'] : '--';
-          $temperature = isset($data['temperature']) ? $data['temperature'] : '--';
-          $ammonia = isset($data['ammonia_level']) ? $data['ammonia_level'] : '--';
-          $do_level = isset($data['do_level']) ? $data['do_level'] : '--';
-      }
-
-        // Insert the data into the database with the current timestamp
-        $insert_query = "INSERT INTO sensor_data (ph_level, temperature, ammonia_level, do_level, last_saved) 
-                         VALUES (:ph, :temperature, :ammonia, :do_level, :last_saved)";
-        $stmt = $connpdo->prepare($insert_query);
-        $stmt->bindParam(':ph', $ph);
-        $stmt->bindParam(':temperature', $temperature);
-        $stmt->bindParam(':ammonia', $ammonia);
-        $stmt->bindParam(':do_level', $do_level);
-        $stmt->bindParam(':last_saved', $current_timestamp);
-        $stmt->execute();
-
-    } catch (Exception $e) {
-        // Log the error (optional)
-        error_log($e->getMessage());
-    }
-}
-// Session handling for user authentication
-session_start();
+ session_start();
 
 if (!isset($_SESSION['USERID'])) {
     header("Location: Login.php");
@@ -193,7 +138,6 @@ if (!isset($_SESSION['USERID'])) {
   <!-- JavaScript to update readings -->
   <script>
 
-
 // Function to send data to PHP script every 5 seconds
 function sendDataToDatabase() {
     // Get the values from the HTML elements
@@ -268,9 +212,6 @@ var doLevelInterval = setInterval(randomizeDoLevel, intervalTime);
     });
 }
 
-// Run the sendDataToDatabase function every 5 seconds
-setInterval(sendDataToDatabase, 5000); // 5000 ms = 5 seconds
-
 // Function to fetch sensor data from ESP32 and update the page
 function fetchSensorData() {
     fetch('http://192.168.5.143/sensor_data')  // Use your ESP32's IP address
@@ -300,25 +241,25 @@ fetchSensorData();
 setInterval(fetchSensorData, 2000);  // 120000 ms = 2 minutes
 
 
-
 function updateTime() {
-        var now = new Date();
-        var hours = now.getHours();
-        var minutes = now.getMinutes();
-        var seconds = now.getSeconds();
-        var ampm = hours >= 12 ? 'PM' : 'AM';
-        
-        // Format time in 12-hour format
-        hours = hours % 12;
-        hours = hours ? hours : 12; // 0 should be 12
-        minutes = minutes < 10 ? '0' + minutes : minutes;
-        seconds = seconds < 10 ? '0' + seconds : seconds;
+    var now = new Date();
+    var options = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true,
+        timeZone: 'Asia/Manila' // Ensure this is set to Philippines timezone
+    };
 
-        var strTime = now.toLocaleString('en-us', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) + ' - ' + hours + ':' + minutes + ':' + seconds + ' ' + ampm;
+    var strTime = now.toLocaleString('en-US', options);
 
-        // Set the time in the element with id "currentTime"
-        document.getElementById('currentTime').textContent = strTime;
-    }
+    // Set the time in the element with id "currentTime"
+    document.getElementById('currentTime').textContent = strTime;
+}
 
     // Update the time every second
     setInterval(updateTime, 1000);

@@ -10,8 +10,11 @@ $temperature = '--';
 $ammonia = '--';
 $do_level = '--';
 
+
+date_default_timezone_set('Asia/Manila'); 
 // Get current timestamp
 $current_timestamp = date('Y-m-d H:i:s', time());
+
 
 // Fetch data from ESP32 and insert into the database every time
 try {
@@ -43,19 +46,6 @@ try {
             $temperature = isset($data['temperature']) ? $data['temperature'] : '--';
             $ammonia = isset($data['ammonia_level']) ? $data['ammonia_level'] : '--';
             $do_level = isset($data['do_level']) ? $data['do_level'] : '--';
-
-            // Prepare the SQL query to insert the data into the database
-            $insert_query = "INSERT INTO sensor_data (ph_level, temperature, ammonia_level, do_level, last_saved) 
-                             VALUES (:ph, :temperature, :ammonia, :do_level, :last_saved)";
-
-            // Prepare and execute the SQL query
-            $stmt = $connpdo->prepare($insert_query);
-            $stmt->bindParam(':ph', $ph);
-            $stmt->bindParam(':temperature', $temperature);
-            $stmt->bindParam(':ammonia', $ammonia);
-            $stmt->bindParam(':do_level', $do_level);
-            $stmt->bindParam(':last_saved', $current_timestamp);
-            $stmt->execute();
         }
     } else {
         throw new Exception("HTTP status code $http_code");

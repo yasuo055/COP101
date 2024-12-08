@@ -701,6 +701,18 @@ p{
   display: inline-block;
 }
 
+.cont-sgn-up{
+  position: absolute;
+  background-color: white;
+  left: 350px;
+  top: 70px;
+  width: 1000px;
+  height: 700px;
+  border-radius: 30px;
+  display: flex;
+  display: inline-block;
+}
+
 .img-left-log{
   position: relative;
   width: 481px;
@@ -711,7 +723,8 @@ p{
 }
 
 .img-left-signup{
-  width: 481px;
+  width: 600px;
+  height: 700px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -735,6 +748,23 @@ p{
   flex-direction: column;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
 }
+
+.right-por-log-signup{
+  width: 450px;
+  display: inline-block;
+  position: relative;
+  height: 400px;
+  top: -500px;
+  left: 570px;
+  border-top-right-radius: 30px; 
+  border-bottom-right-radius: 30px; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-top: -45px;
+}
+
 
 .bottom-log{
   display: flex;
@@ -1052,3 +1082,126 @@ h2 {
 .set-params .min-max input {
   width: 45%;
 }
+
+#otp{
+  padding: 10px;
+  font-family: Montserrat;
+}
+
+.verify-sgn-up{
+  background-color: white;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+  padding: 10px;
+  font-family: Montserrat;
+  border: none;
+  border-radius: 4px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.verify-sgn-up::placeholder{
+  text-align: center;
+}
+
+.resend-sgn-up{
+  background-color: white;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+  padding: 10px;
+  font-family: Montserrat;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.sgn-up-verify-resend-section{
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.header-verification-sign-up{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.analytics-admin-portion-ph{
+  padding: 10px;
+  border-color: #02457A;
+  border-width: 1px;
+  border-style: solid;
+  width: 1225px;
+  border-radius: 4px;
+}
+
+.row-header-picker{
+  background-color: grey;
+  padding: 10px;
+  position: absolute;
+  top: -10px;
+  left: 600px;
+}
+
+.btn-24h-header{
+  font-family: Montserrat;
+  background-color: grey;
+  border: none;
+  border-radius: 2px;
+}
+
+.btn-24h-header:hover{
+  background-color: white;
+  color: black;
+}
+
+.btn-7D-header{
+  font-family: Montserrat;
+  background-color: grey;
+  border: none;
+  border-radius: 2px;
+}
+
+.btn-7D-header:hover{
+  background-color: white;
+  color: black;
+}
+
+.btn-1M-header{
+  font-family: Montserrat;
+  background-color: grey;
+  border: none;
+  border-radius: 2px;
+}
+
+.btn-1M-header:hover{
+  background-color: white;
+  color: black;
+}
+
+.btn-3M-header{
+  font-family: Montserrat;
+  background-color: grey;
+  border: none;
+  border-radius: 2px; 
+}
+
+.btn-3M-header:hover{
+  background-color: white;
+  color: black;
+}
+
+.btn-1Y-header{
+  font-family: Montserrat;
+  background-color: grey;
+  border: none;
+  border-radius: 2px; 
+}
+
+.btn-1Y-header:hover{
+  background-color: white;
+  color: black;
+}
+
