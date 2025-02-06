@@ -1,3 +1,7 @@
+<?php 
+include('Conn.php'); // Include database connection
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,6 +17,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/style-table.css">
   <link rel="icon" href="/icon/PONDTECH__2_-removebg-preview 2.png">
   <title>Aqua Sense</title>
 </head>
@@ -156,11 +161,62 @@
       </div>
 
       <div class="main-content-user-management-dashboard">
-        <div class="main-header-content-user-management-dashboard">
-          
-        
-    </div>
+      <div class="container-user-management-border-dashboard">
+
+            <div class="main-content-user-management-dashboard">
+                <table border="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th>Employee ID</th>
+                            <th>Full Name</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Contact Number</th>
+                            <th>Date Created</th>
+                            <th>Role</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <?php
+
+   include('Conn.php');
+
+    // Prepare and execute the SQL query using PDO
+    $sql = "SELECT USERID, FNAME, MNAME, LNAME, USERNAME, EMAIL, CONTACT, DATECREATED, ROLE FROM users";
+    $stmt = $connpdo->query($sql);
+
+    // Check if there are rows to display
+    if ($stmt->rowCount() > 0) {
+        // Fetch each row and display the data
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            echo "<tr>";
+            echo "<td>" . $row['USERID'] . "</td>";
+            echo "<td>" . $row['FNAME'] . " " . $row['MNAME'] . " " . $row['LNAME'] . "</td>";
+            echo "<td>" . $row['USERNAME'] . "</td>";
+            echo "<td>" . $row['EMAIL'] . "</td>";
+            echo "<td>" . ($row['CONTACT'] ? $row['CONTACT'] : 'N/A') . "</td>"; 
+            echo "<td>" . $row['DATECREATED'] . "</td>";
+            echo "<td>" . $row['ROLE'] . "</td>";
+            echo "<td>
+                <a href='edit-user.php?userid=" . $row['USERID'] . "'><button class='action-btn edit-btn' onclick='openModal(" . $row['USERID'] . ")'>Edit</button></a>
+                <a href='archive-user.php?userid=" . $row['USERID'] . "' onclick='return confirm(\"Are you sure you want to archive this user?\")'>
+                    <button class='action-btn archive-btn'>Archive</button>
+                </a>
+              </td>";
+            echo "</tr>";
+        }
+    } else {
+        echo "<tr><td colspan='8'>No users found</td></tr>";
+    }
+?>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
   </div>
+
 
 </body>
 </html>
