@@ -1,5 +1,5 @@
 <?php 
-include('Conn.php'); // Include database connection
+include('Conn.php'); 
 ?>
 
 <!DOCTYPE html>
@@ -125,7 +125,6 @@ include('Conn.php'); // Include database connection
       </button>
     </div>
   </div>
-
   <div class="report">
     <p style="font-size: 25px; margin-bottom: 10px;">
       User Management
@@ -199,7 +198,9 @@ include('Conn.php'); // Include database connection
             echo "<td>" . $row['DATECREATED'] . "</td>";
             echo "<td>" . $row['ROLE'] . "</td>";
             echo "<td>
-                <a href='edit-user.php?userid=" . $row['USERID'] . "'><button class='action-btn edit-btn' onclick='openModal(" . $row['USERID'] . ")'>Edit</button></a>
+               <a href='edit-user.php?userid=" . $row['USERID'] . "'>
+            <button class='action-btn edit-btn'>Edit</button>
+        </a>
                 <a href='archive-user.php?userid=" . $row['USERID'] . "' onclick='return confirm(\"Are you sure you want to archive this user?\")'>
                     <button class='action-btn archive-btn'>Archive</button>
                 </a>
@@ -211,11 +212,79 @@ include('Conn.php'); // Include database connection
     }
 ?>
 
+
+
                     </tbody>
                 </table>
             </div>
         </div>
   </div>
+
+ 
+
+<script>
+
+
+//   document.addEventListener("DOMContentLoaded", function () {
+//     const editButtons = document.querySelectorAll(".edit-btn");
+//     const modal = document.getElementById("editUserModal");
+//     const closeModal = document.querySelector(".close-btn");
+
+//     editButtons.forEach(button => {
+//         button.addEventListener("click", function () {
+//             const userId = this.dataset.userid;
+            
+//             // Fetch user data
+//             fetch("get-user.php?userid=" + userId)
+//                 .then(response => response.json())
+//                 .then(data => {
+//                     document.getElementById("userid").value = data.USERID;
+//                     document.getElementById("fname").value = data.FNAME;
+//                     document.getElementById("mname").value = data.MNAME;
+//                     document.getElementById("lname").value = data.LNAME;
+//                     document.getElementById("username").value = data.USERNAME;
+//                     document.getElementById("email").value = data.EMAIL;
+//                     document.getElementById("contact").value = data.CONTACT;
+//                     document.getElementById("role").value = data.ROLE;
+
+//                     // Show the modal
+//                     modal.style.display = "block";
+//                 });
+//         });
+//     });
+
+//     // Close the modal
+//     closeModal.addEventListener("click", function () {
+//         modal.style.display = "none";
+//     });
+
+//     window.addEventListener("click", function (event) {
+//         if (event.target === modal) {
+//             modal.style.display = "none";
+//         }
+//     });
+
+//     // Handle form submission
+//     document.getElementById("editUserForm").addEventListener("submit", function (e) {
+//         e.preventDefault();
+        
+//         const formData = new FormData(this);
+
+//         fetch("update-user.php", {
+//             method: "POST",
+//             body: formData
+//         })
+//         .then(response => response.text())
+//         .then(message => {
+//             alert(message); // Show update result
+//             modal.style.display = "none"; // Hide modal
+//             location.reload(); // Refresh table
+//         });
+//     });
+// });
+
+</script>
+
 
 
 </body>
