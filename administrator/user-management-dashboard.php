@@ -129,7 +129,9 @@ include('Conn.php');
     <p style="font-size: 25px; margin-bottom: 10px;">
       User Management
     </p>
+
     <div class="container-user-management-border-dashboard">
+      
       <div class="head-user-management-dashboard">
         <p style="margin-left: 10px;">
           All User
@@ -141,6 +143,7 @@ include('Conn.php');
           Archieve
         </p>
       </div>
+
       <div class="middle-sub-header-user-management-dashboard">
         <div class="left-portion-user-management-dashboard">
          
@@ -183,7 +186,10 @@ include('Conn.php');
 
     // Prepare and execute the SQL query using PDO
     $sql = "SELECT USERID, FNAME, MNAME, LNAME, USERNAME, EMAIL, CONTACT, DATECREATED, ROLE FROM users";
-    $stmt = $connpdo->query($sql);
+    $sql = "SELECT * FROM users WHERE archived = 0"; // Show only non-archived users
+    $stmt = $connpdo->prepare($sql);
+    $stmt->execute();
+    
 
     // Check if there are rows to display
     if ($stmt->rowCount() > 0) {
@@ -197,13 +203,17 @@ include('Conn.php');
             echo "<td>" . ($row['CONTACT'] ? $row['CONTACT'] : 'N/A') . "</td>"; 
             echo "<td>" . $row['DATECREATED'] . "</td>";
             echo "<td>" . $row['ROLE'] . "</td>";
-            echo "<td>
+          //   echo "<td> 
+          //   <button class='action-btn edit-btn' type='button' onclick='Edit(" . htmlspecialchars($row['USERID'], ENT_QUOTES, 'UTF-8') . ")'>
+          //       Edit
+          //   </button> 
+          // </td>";
+                echo "<td>
                <a href='edit-user.php?userid=" . $row['USERID'] . "'>
             <button class='action-btn edit-btn'>Edit</button>
         </a>
-                <a href='archive-user.php?userid=" . $row['USERID'] . "' onclick='return confirm(\"Are you sure you want to archive this user?\")'>
-                    <button class='action-btn archive-btn'>Archive</button>
-                </a>
+              <button class='action-btn archive-btn' data-id='" . $row['USERID'] . "'>Archive</button>
+
               </td>";
             echo "</tr>";
         }
@@ -220,68 +230,126 @@ include('Conn.php');
         </div>
   </div>
 
- 
+
+  <div id="editUserModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <h2>Edit User</h2>
+        <form id="editUserForm">
+            <input type="hidden" id="userid" name="userid">
+            <label>First Name:</label>
+            <input type="text" id="fname" name="fname" required><br>
+
+            <label>Middle Name:</label>
+            <input type="text" id="mname" name="mname"><br>
+
+            <label>Last Name:</label>
+            <input type="text" id="lname" name="lname" required><br>
+
+            <label>Username:</label>
+            <input type="text" id="username" name="username" required><br>
+
+            <label>Email:</label>
+            <input type="email" id="email" name="email" required><br>
+
+            <label>Contact Number:</label>
+            <input type="text" id="contact" name="contact"><br>
+
+            <label>Role:</label>
+            <select id="role" name="role" required>
+                <option value="Admin">Admin</option>
+                <option value="User">User</option>
+            </select><br>
+
+            <button type="submit">Update User</button>
+        </form>
+    </div>
+</div>
+
+ <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".archive-btn").forEach(button => {
+        button.addEventListener("click", function () {
+            let userID = this.getAttribute("data-id");
+
+            if (confirm("Are you sure you want to archive this user?")) {
+                fetch("archive-user.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: "userid=" + userID
+                })
+                .then(response => response.text())
+                .then(data => {
+                    alert(data); // Show success message
+                    location.reload(); // Refresh the table
+                });
+            }
+        });
+    });
+});
+
+ </script>
 
 <script>
 
 
-//   document.addEventListener("DOMContentLoaded", function () {
-//     const editButtons = document.querySelectorAll(".edit-btn");
-//     const modal = document.getElementById("editUserModal");
-//     const closeModal = document.querySelector(".close-btn");
+  document.addEventListener("DOMContentLoaded", function () {
+    const editButtons = document.querySelectorAll(".edit-btn");
+    const modal = document.getElementById("editUserModal");
+    const closeModal = document.querySelector(".close-btn");
 
-//     editButtons.forEach(button => {
-//         button.addEventListener("click", function () {
-//             const userId = this.dataset.userid;
+    editButtons.forEach(button => {
+        button.addEventListener("click", function () {
+            const userId = this.dataset.userid;
             
-//             // Fetch user data
-//             fetch("get-user.php?userid=" + userId)
-//                 .then(response => response.json())
-//                 .then(data => {
-//                     document.getElementById("userid").value = data.USERID;
-//                     document.getElementById("fname").value = data.FNAME;
-//                     document.getElementById("mname").value = data.MNAME;
-//                     document.getElementById("lname").value = data.LNAME;
-//                     document.getElementById("username").value = data.USERNAME;
-//                     document.getElementById("email").value = data.EMAIL;
-//                     document.getElementById("contact").value = data.CONTACT;
-//                     document.getElementById("role").value = data.ROLE;
+            // Fetch user data
+            fetch("get-user.php?userid=" + userId)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("userid").value = data.USERID;
+                    document.getElementById("fname").value = data.FNAME;
+                    document.getElementById("mname").value = data.MNAME;
+                    document.getElementById("lname").value = data.LNAME;
+                    document.getElementById("username").value = data.USERNAME;
+                    document.getElementById("email").value = data.EMAIL;
+                    document.getElementById("contact").value = data.CONTACT;
+                    document.getElementById("role").value = data.ROLE;
 
-//                     // Show the modal
-//                     modal.style.display = "block";
-//                 });
-//         });
-//     });
+                    // Show the modal
+                    modal.style.display = "block";
+                });
+        });
+    });
 
-//     // Close the modal
-//     closeModal.addEventListener("click", function () {
-//         modal.style.display = "none";
-//     });
+    // Close the modal
+    closeModal.addEventListener("click", function () {
+        modal.style.display = "none";
+    });
 
-//     window.addEventListener("click", function (event) {
-//         if (event.target === modal) {
-//             modal.style.display = "none";
-//         }
-//     });
+    window.addEventListener("click", function (event) {
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+    });
 
-//     // Handle form submission
-//     document.getElementById("editUserForm").addEventListener("submit", function (e) {
-//         e.preventDefault();
+    // Handle form submission
+    document.getElementById("editUserForm").addEventListener("submit", function (e) {
+        e.preventDefault();
         
-//         const formData = new FormData(this);
+        const formData = new FormData(this);
 
-//         fetch("update-user.php", {
-//             method: "POST",
-//             body: formData
-//         })
-//         .then(response => response.text())
-//         .then(message => {
-//             alert(message); // Show update result
-//             modal.style.display = "none"; // Hide modal
-//             location.reload(); // Refresh table
-//         });
-//     });
-// });
+        fetch("update-user.php", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.text())
+        .then(message => {
+            alert(message); // Show update result
+            modal.style.display = "none"; // Hide modal
+            location.reload(); // Refresh table
+        });
+    });
+});
 
 </script>
 
