@@ -18,6 +18,7 @@ include('Conn.php');
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="/style-table.css">
+  <link rel="stylesheet" href="/style-tab.css">
   <link rel="icon" href="/icon/PONDTECH__2_-removebg-preview 2.png">
   <title>Aqua Sense</title>
 </head>
@@ -132,17 +133,12 @@ include('Conn.php');
 
     <div class="container-user-management-border-dashboard">
       
-      <div class="head-user-management-dashboard">
-        <p style="margin-left: 10px;">
-          All User
-        </p>
-        <p>
-          Request
-        </p>
-        <p style="margin-right: 10px;">
-          Archieve
-        </p>
-      </div>
+    <div class="head-user-management-dashboard">
+    <button class="tab-item" id="all-user">All User</button>
+    <button class="tab-item" id="request">Request</button>
+    <button class="tab-item" id="archive">Archive</button>
+</div>
+
 
       <div class="middle-sub-header-user-management-dashboard">
         <div class="left-portion-user-management-dashboard">
@@ -162,7 +158,9 @@ include('Conn.php');
         </div>
       </div>
 
-      <div class="main-content-user-management-dashboard">
+      <div class="tab-content">
+    <div class="content" id="content-all-user">
+    <div class="main-content-user-management-dashboard">
       <div class="container-user-management-border-dashboard">
 
             <div class="main-content-user-management-dashboard">
@@ -229,6 +227,17 @@ include('Conn.php');
             </div>
         </div>
   </div>
+    </div>
+    <div class="content" id="content-request">
+        <p>Request content here...</p>
+    </div>
+    <div class="content" id="content-archive">
+        <p>Archive content here...</p>
+    </div>
+</div>
+   
+
+    
 
 
   <div id="editUserModal" class="modal">
@@ -266,6 +275,32 @@ include('Conn.php');
     </div>
 </div>
 
+<!-- FOR TAB -->
+<script>
+document.querySelectorAll('.tab-item').forEach(tab => {
+    tab.addEventListener('click', () => {
+        // Remove active class from all tabs and content
+        document.querySelectorAll('.tab-item').forEach(item => item.classList.remove('active'));
+        document.querySelectorAll('.content').forEach(content => content.classList.remove('active'));
+
+        // Add active class to clicked tab
+        tab.classList.add('active');
+
+        // Show the corresponding content
+        const contentId = `content-${tab.id}`;
+        document.getElementById(contentId).classList.add('active');
+    });
+});
+
+// Ensure 'All User' tab is active by default on page load
+window.onload = () => {
+    // Simulate a click on the 'All User' tab
+    document.getElementById('all-user').click();
+};
+</script>
+
+
+<!-- FOR ARCHIVE FUNCTION -->
  <script>
   document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll(".archive-btn").forEach(button => {

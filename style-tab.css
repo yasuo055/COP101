@@ -1,0 +1,43 @@
+.head-user-management-dashboard {
+    display: flex;
+    justify-content: flex-start; /* Align to the left */
+    align-items: center;
+    background-color: #f0f0f0; /* Light gray background */
+    padding: 10px 20px;
+    border-radius: 5px;
+    gap: 20px; /* 20px space between each item */
+}
+
+.tab-item {
+    background-color: transparent;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.tab-item:hover {
+    background-color: #f0f0f0;
+}
+
+.tab-item:focus {
+    outline: none;
+    background-color: #dcdcdc;
+    color: #333;
+}
+
+.tab-item.active {
+    
+    color: #007bff;  /* Optional: highlight active tab text with a color */
+}
+
+.tab-content .content {
+    background-color: #f0f0f0;
+    display: none;
+}
+
+.tab-content .content.active {
+    display: block;
+}
