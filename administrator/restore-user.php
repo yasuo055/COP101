@@ -1,5 +1,5 @@
 <?php
-require 'db_connection.php';
+require 'Conn.php';
 
 if (isset($_GET['userid'])) {
     $userid = $_GET['userid'];
@@ -10,8 +10,13 @@ if (isset($_GET['userid'])) {
 
     if ($stmt->execute()) {
         echo "<script>alert('User restored successfully!'); window.location.href='archived-users.php';</script>";
+        header("Location: archive-users.php"); // Redirect back to the user management page
+        exit();
     } else {
         echo "<script>alert('Error restoring user!'); window.history.back();</script>";
     }
 }
+
+
+
 ?>
