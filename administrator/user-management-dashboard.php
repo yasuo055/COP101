@@ -1,5 +1,8 @@
 <?php 
 include('Conn.php'); 
+
+
+
 ?>
 
 <!DOCTYPE html>
@@ -231,8 +234,50 @@ include('Conn.php');
     <div class="content" id="content-request">
         <p>Request content here...</p>
     </div>
+
     <div class="content" id="content-archive">
-        <p>Archive content here...</p>
+    <table border="0">
+        <tr>
+            <th>User ID</th>
+            <th>Name</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Contact</th>
+            <th>Date Created</th>
+            <th>Role</th>
+            <th>Actions</th>
+        </tr>
+        
+        <?php
+        include('Conn.php');
+
+        $sql = "SELECT * FROM users WHERE archived = 1"; // Get only archived users
+        $stmt = $connpdo->prepare($sql);
+        $stmt->execute();
+        
+        if ($stmt->rowCount() > 0): ?>
+            <?php while ($row = $stmt->fetch(PDO::FETCH_ASSOC)): ?>
+                <tr>
+                    <td><?= $row['USERID'] ?></td>
+                    <td><?= $row['FNAME'] . " " . $row['MNAME'] . " " . $row['LNAME'] ?></td>
+                    <td><?= $row['USERNAME'] ?></td>
+                    <td><?= $row['EMAIL'] ?></td>
+                    <td><?= $row['CONTACT'] ?: 'N/A' ?></td>
+                    <td><?= $row['DATECREATED'] ?></td>
+                    <td><?= $row['ROLE'] ?></td>
+                    <td>
+                        <a href='restore-user.php?userid=<?= $row['USERID'] ?>' 
+                           onclick='return confirm("Restore this user?")'>
+                            <button class='action-btn restore-btn'>Restore</button>
+                        </a>
+                        <!-- <button class='action-btn restore-btn' data-id='" . $row['USERID'] . "'>Restore</button> -->
+                    </td>
+                </tr>
+            <?php endwhile; ?>
+        <?php else: ?>
+            <tr><td colspan="8">No archived users found</td></tr>
+        <?php endif; ?>
+    </table>
     </div>
 </div>
    
@@ -297,11 +342,13 @@ window.onload = () => {
     // Simulate a click on the 'All User' tab
     document.getElementById('all-user').click();
 };
+
 </script>
 
 
 <!-- FOR ARCHIVE FUNCTION -->
  <script>
+  
   document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll(".archive-btn").forEach(button => {
         button.addEventListener("click", function () {
@@ -322,6 +369,33 @@ window.onload = () => {
         });
     });
 });
+
+
+ </script>
+<!-- FOR RESTORE FUNCTION -->
+ <script>
+
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".archive-btn").forEach(button => {
+        button.addEventListener("click", function () {
+            let userID = this.getAttribute("data-id");
+
+            if (confirm("Are you sure you want to archive this user?")) {
+                fetch("archive-user.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: "userid=" + userID
+                })
+                .then(response => response.text())
+                .then(data => {
+                    alert(data); // Show success message
+                    location.reload(); // Refresh the table
+                });
+            }
+        });
+    });
+});
+
 
  </script>
 

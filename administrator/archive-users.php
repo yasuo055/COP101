@@ -12,7 +12,7 @@ $stmt->execute();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Archived Users</title>
-    <link rel="stylesheet" href="styles.css"> <!-- Include your styles -->
+    <link rel="stylesheet" href="/style-table.css"> <!-- Include your styles -->
 </head>
 <body>
     <h2>Archived Users</h2>
