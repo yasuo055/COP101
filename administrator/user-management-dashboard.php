@@ -267,10 +267,14 @@ include('Conn.php');
                     <td><?= $row['ROLE'] ?></td>
                     <td>
                         <a href='restore-user.php?userid=<?= $row['USERID'] ?>' 
-                           onclick='return confirm("Restore this user?")'>
+                           onclick='return'>
                             <button class='action-btn restore-btn'>Restore</button>
                         </a>
-                        <!-- <button class='action-btn restore-btn' data-id='" . $row['USERID'] . "'>Restore</button> -->
+                        <a href='delete-user.php?userid=<?= $row['USERID'] ?>' 
+                        onclick='return '>
+                          <button class='action-btn delete-btn'>Delete</button>
+                      </a>
+                       
                     </td>
                 </tr>
             <?php endwhile; ?>
@@ -372,16 +376,44 @@ window.onload = () => {
 
 
  </script>
+
 <!-- FOR RESTORE FUNCTION -->
  <script>
 
   document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll(".archive-btn").forEach(button => {
+    document.querySelectorAll(".restore-btn").forEach(button => {
         button.addEventListener("click", function () {
             let userID = this.getAttribute("data-id");
 
-            if (confirm("Are you sure you want to archive this user?")) {
-                fetch("archive-user.php", {
+            if (confirm("Are you sure you want to restore this user?")) {
+                fetch("restore-user.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: "userid=" + userID
+                })
+                .then(response => response.text())
+                .then(data => {
+                    alert(data); // Show success message
+                    location.reload(); // Refresh the table
+                });
+            }
+        });
+    });
+});
+
+
+ </script>
+
+<!-- FOR Delete FUNCTION -->
+ <script>
+
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".delete-btn").forEach(button => {
+        button.addEventListener("click", function () {
+            let userID = this.getAttribute("data-id");
+
+            if (confirm("Are you sure you want to delete this user?")) {
+                fetch("delete-user.php", {
                     method: "POST",
                     headers: { "Content-Type": "application/x-www-form-urlencoded" },
                     body: "userid=" + userID

@@ -23,7 +23,7 @@ table {
 }
 th, td {
     padding: 10px;
-    text-align: left;
+    text-align: center;
     border-bottom: 1px solid #ddd;
 }
 th {
@@ -134,6 +134,15 @@ margin: 10px;
     margin-right: 5px;
 }
 
+.delete-btn {
+    background-color: #ea0b0b;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+   
+}
 .archive-btn {
     background-color: #ea730b;
     color: white;
