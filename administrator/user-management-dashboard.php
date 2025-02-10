@@ -143,7 +143,7 @@ include('Conn.php');
 </div>
 
 
-      <div class="middle-sub-header-user-management-dashboard">
+      <!-- <div class="middle-sub-header-user-management-dashboard">
         <div class="left-portion-user-management-dashboard">
          
         </div>
@@ -159,15 +159,34 @@ include('Conn.php');
           </button>
           <input type="text" placeholder="Search" class="search-user-management-database">
         </div>
-      </div>
+      </div> -->
 
       <div class="tab-content">
     <div class="content" id="content-all-user">
+    
+    <div class="middle-sub-header-user-management-dashboard">
+          <div class="left-portion-user-management-dashboard">
+          
+          </div>
+          <div class="right-portion-user-management-dashboard">
+            <p style="font-size: 13px; margin-right: 10px;">
+              Filter By:
+            </p>
+            <button class="status-user-management-dashboard">
+              Status <img src="/icon/gridicons_dropdown.png" style="width: 18px; ">
+            </button>
+            <button class="status-user-management-dashboard">
+              Role <img src="/icon/gridicons_dropdown.png" style="width: 18px;">
+            </button>
+            <input type="text" id="searchInput" placeholder="Search" class="search-user-management-database">
+          </div>
+        </div>
+
     <div class="main-content-user-management-dashboard">
       <div class="container-user-management-border-dashboard">
 
             <div class="main-content-user-management-dashboard">
-                <table border="0" width="100%">
+                <table border="0" width="100%" id="userTable">
                     <thead>
                         <tr>
                             <th>Employee ID</th>
@@ -180,10 +199,11 @@ include('Conn.php');
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="userTableBody">
                     <?php
 
    include('Conn.php');
+   
 
     // Prepare and execute the SQL query using PDO
     $sql = "SELECT USERID, FNAME, MNAME, LNAME, USERNAME, EMAIL, CONTACT, DATECREATED, ROLE FROM users";
@@ -222,9 +242,6 @@ include('Conn.php');
         echo "<tr><td colspan='8'>No users found</td></tr>";
     }
 ?>
-
-
-
                     </tbody>
                 </table>
             </div>
@@ -232,13 +249,49 @@ include('Conn.php');
   </div>
     </div>
     <div class="content" id="content-request">
+    <div class="middle-sub-header-user-management-dashboard">
+          <div class="left-portion-user-management-dashboard">
+          
+          </div>
+          <div class="right-portion-user-management-dashboard">
+            <p style="font-size: 13px; margin-right: 10px;">
+              Filter By:
+            </p>
+            <button class="status-user-management-dashboard">
+              Status <img src="/icon/gridicons_dropdown.png" style="width: 18px; ">
+            </button>
+            <button class="status-user-management-dashboard">
+              Role <img src="/icon/gridicons_dropdown.png" style="width: 18px;">
+            </button>
+            <input type="text" id="searchInput" placeholder="Search" class="search-user-management-database">    
+                </div>
+        </div>
+      
         <p>Request content here...</p>
     </div>
+    
 
     <div class="content" id="content-archive">
-    <table border="0">
+    <div class="middle-sub-header-user-management-dashboard">
+          <div class="left-portion-user-management-dashboard">
+          
+          </div>
+          <div class="right-portion-user-management-dashboard">
+            <p style="font-size: 13px; margin-right: 10px;">
+              Filter By:
+            </p>
+            <button class="status-user-management-dashboard">
+              Status <img src="/icon/gridicons_dropdown.png" style="width: 18px; ">
+            </button>
+            <button class="status-user-management-dashboard">
+              Role <img src="/icon/gridicons_dropdown.png" style="width: 18px;">
+            </button>
+            <input type="text" id="search-Archive-Input" placeholder="Search" class="search-user-management-database">
+                    </div>
+        </div>
+    <table border="0" width="100%" id="userTable">
         <tr>
-            <th>User ID</th>
+            <th>Employee ID</th>
             <th>Name</th>
             <th>Username</th>
             <th>Email</th>
@@ -247,9 +300,11 @@ include('Conn.php');
             <th>Role</th>
             <th>Actions</th>
         </tr>
-        
+        <tbody id="user-search-Archive-Input-TableBody">
+          
         <?php
         include('Conn.php');
+        
 
         $sql = "SELECT * FROM users WHERE archived = 1"; // Get only archived users
         $stmt = $connpdo->prepare($sql);
@@ -274,13 +329,13 @@ include('Conn.php');
                         onclick='return '>
                           <button class='action-btn delete-btn'>Delete</button>
                       </a>
-                       
                     </td>
                 </tr>
             <?php endwhile; ?>
         <?php else: ?>
             <tr><td colspan="8">No archived users found</td></tr>
         <?php endif; ?>
+        </tbody>
     </table>
     </div>
 </div>
@@ -323,6 +378,41 @@ include('Conn.php');
         </form>
     </div>
 </div>
+
+
+<!-- SEARCH BOX -->
+
+<script>
+
+document.getElementById("searchInput").addEventListener("keyup", function() {
+    let searchQuery = this.value;
+
+    let xhr = new XMLHttpRequest();
+    xhr.open("GET", "search-all-users.php?search=" + encodeURIComponent(searchQuery), true);
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            document.getElementById("userTableBody").innerHTML = xhr.responseText;
+        }
+    };
+    xhr.send();
+});
+
+document.getElementById("search-Archive-Input").addEventListener("keyup", function() {
+    let searchQuery = this.value;
+
+    let xhr = new XMLHttpRequest();
+    xhr.open("GET", "search-archived-users.php?search=" + encodeURIComponent(searchQuery), true);
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            document.getElementById("user-search-Archive-Input-TableBody").innerHTML = xhr.responseText;
+        }
+    };
+    xhr.send();
+});
+
+
+</script>
+
 
 <!-- FOR TAB -->
 <script>
