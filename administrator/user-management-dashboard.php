@@ -23,6 +23,10 @@ include('Conn.php');
   <link rel="stylesheet" href="/style-table.css">
   <link rel="stylesheet" href="/style-tab.css">
   <link rel="icon" href="/icon/PONDTECH__2_-removebg-preview 2.png">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="js/jquery.min.js"></script>
+
+
   <title>Aqua Sense</title>
 </head>
 <body>
@@ -137,7 +141,7 @@ include('Conn.php');
     <div class="container-user-management-border-dashboard">
       
     <div class="head-user-management-dashboard">
-    <button class="tab-item" id="all-user">All User</button>
+    <button class="tab-item" id="all-user">Active User</button>
     <button class="tab-item" id="request">Request</button>
     <button class="tab-item" id="archive">Archive</button>
 </div>
@@ -172,24 +176,26 @@ include('Conn.php');
             <p style="font-size: 13px; margin-right: 10px;">
               Filter By:
             </p>
-            <select id="statusFilter">
+            <select id="statusFilterActive">
               <option value="">All Status</option>
               <option value="active">Active</option>
               <option value="archived">Archived</option>
               <option value="deleted">Deleted</option>
           </select>
-          <select id="roleFilter">
+          <select id="roleFilterActive">
               <option value="">All Roles</option>
               <option value="admin">Admin</option>
               <option value="user">User</option>
           </select>
-          <button id="resetFilter">Reset</button>
+          <button id="resetFilterActive">Reset</button>
+          
             <input type="text" id="searchInput" placeholder="Search by name, email, or ID" class="search-user-management-database">
           </div>
         </div>
 
     <div class="main-content-user-management-dashboard">
       <div class="container-user-management-border-dashboard">
+      
 
             <div class="main-content-user-management-dashboard">
                 <table border="0" width="100%" id="userTable">
@@ -205,7 +211,9 @@ include('Conn.php');
                             <th>Actions</th>
                         </tr>
                     </thead>
+                    <div id="loading" style="display:none;">Loading...</div>
                     <tbody id="userTableBody">
+                   
                     <?php
 
    include('Conn.php');
@@ -254,6 +262,7 @@ include('Conn.php');
         </div>
   </div>
     </div>
+
     <div class="content" id="content-request">
     <div class="middle-sub-header-user-management-dashboard">
           <div class="left-portion-user-management-dashboard">
@@ -263,19 +272,19 @@ include('Conn.php');
             <p style="font-size: 13px; margin-right: 10px;">
               Filter By:
             </p>
-            <select id="statusFilter">
+            <select id="statusFilterArchive">
               <option value="">All Status</option>
               <option value="active">Active</option>
               <option value="archived">Archived</option>
               <option value="deleted">Deleted</option>
           </select>
-          <select id="roleFilter">
+          <select id="roleFilterArchive">
               <option value="">All Roles</option>
               <option value="admin">Admin</option>
               <option value="user">User</option>
               <option value="guest">Guest</option>
           </select>
-          <button id="resetFilter">Reset</button>
+          <button id="resetFilterArchive">Reset</button>
             <input type="text" id="Request-Search-Input" placeholder="Search by name, email, or ID" class="search-user-management-database">    
                 </div>
         </div>
@@ -293,33 +302,35 @@ include('Conn.php');
             <p style="font-size: 13px; margin-right: 10px;">
               Filter By:
             </p>
-            <select id="statusFilter">
+            <select id="statusFilterArchive">
               <option value="">All Status</option>
               <option value="active">Active</option>
               <option value="archived">Archived</option>
               <option value="deleted">Deleted</option>
           </select>
-          <select id="roleFilter">
+          <select id="roleFilterArchive">
               <option value="">All Roles</option>
               <option value="admin">Admin</option>
               <option value="user">User</option>
           </select>
-          <button id="resetFilter">Reset</button>
+          <button id="resetFilterArchive" disabled>Reset</button>
             <input type="text" id="search-Archive-Input" placeholder="Search by name, email, or ID" class="search-user-management-database">
                     </div>
         </div>
-    <table border="0" width="100%" id="userTable">
-        <tr>
-            <th>Employee ID</th>
-            <th>Name</th>
-            <th>Username</th>
-            <th>Email</th>
-            <th>Contact</th>
-            <th>Date Created</th>
+        
+      <table border="0" width="100%" id="archiveTables">
+          <tr>
+              <th>Employee ID</th>
+              <th>Name</th>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Contact</th>
+              <th>Date Created</th>
             <th>Role</th>
             <th>Actions</th>
         </tr>
         <tbody id="user-search-Archive-Input-TableBody">
+        <div id="loading" style="display:none;">Loading...</div>
           
         <?php
         include('Conn.php');
@@ -345,7 +356,7 @@ include('Conn.php');
                             <button class='action-btn restore-btn'>Restore</button>
                         </a>
                         <a href='delete-user.php?userid=<?= $row['USERID'] ?>' 
-                        onclick='return '>
+                        onclick='return'>
                           <button class='action-btn delete-btn'>Delete</button>
                       </a>
                     </td>
@@ -534,50 +545,95 @@ document.addEventListener("click", function (event) {
 
  </script>
 
- <!-- FOR FILTER -->
+ <!-- FOR FILTER ACTIVE USER-->
 
  <script>
 
- document.addEventListener("DOMContentLoaded", function () {
-    const roleFilter = document.getElementById("roleFilter");
-    const resetFilter = document.getElementById("resetFilter");
-
-    function fetchFilteredData(role) {
-        fetch("filter.php?role=" + encodeURIComponent(role))
-            .then(response => response.json())
-            .then(data => {
-                const userList = document.getElementById("userList");
-                userList.innerHTML = "";
-
-                if (data.length > 0) {
-                    data.forEach(user => {
-                        const listItem = document.createElement("li");
-                        listItem.textContent = `${user.FNAME} ${user.LNAME} - ${user.ROLE}`;
-                        userList.appendChild(listItem);
-                    });
-                } else {
-                    userList.innerHTML = "<li>No users found</li>";
-                }
-            })
-            .catch(error => console.error("Error fetching data:", error));
+$(document).ready(function () {
+    // Function to fetch and update users based on selected role
+    function fetchUsers(role) {
+        $("#loading").show(); // Show loading indicator
+        $.ajax({
+            url: "fetch-users.php",
+            type: "POST",
+            data: { role: role },
+            success: function (response) {
+                $("#userTable tbody").html(response);
+                $("#loading").hide(); // Hide loading indicator
+            },
+            error: function () {
+                alert("Error fetching users.");
+                $("#loading").hide();
+            }
+        });
     }
 
-    roleFilter.addEventListener("change", function () {
-        fetchFilteredData(roleFilter.value);
+    // Trigger filter when dropdown changes
+    $("#roleFilterActive").change(function () {
+        var selectedRole = $(this).val();
+        fetchUsers(selectedRole);
+        $("#resetFilterActive").prop("disabled", selectedRole === ""); // Disable reset if no filter applied
     });
 
-    resetFilter.addEventListener("click", function () {
-        roleFilter.value = "";
-        fetchFilteredData("");
+    // Reset filter
+    $("#resetFilter").click(function () {
+        $("#roleFilterActive").val(""); // Reset dropdown
+        fetchUsers(""); // Fetch all users
+        $(this).prop("disabled", true); // Disable reset button
     });
 
-    // Initial load (optional: load all users)
-    fetchFilteredData("");
+    // Initial load (optional)
+    fetchUsers("");
 });
 
 
-
  </script>
+
+
+<!-- FOR FILTER ARCHIVE -->
+
+<script>
+ $(document).ready(function () {
+    // Function to fetch and update users based on selected role
+    function fetchUsers(role) {
+        $("#loading").show(); // Show loading indicator
+        $.ajax({
+            url: "fetch-archived-users.php",
+            type: "POST",
+            data: { role: role },
+            success: function (response) {
+                $("#archiveTables tbody").html(response);
+                $("#loading").hide(); // Hide loading indicator
+            },
+            error: function () {
+                alert("Error fetching users.");
+                $("#loading").hide();
+            }
+        });
+    }
+
+    // Trigger filter when dropdown changes
+    $("#roleFilterActive").change(function () {
+        var selectedRole = $(this).val();
+        fetchUsers(selectedRole);
+        $("#resetFilterArchive").prop("disabled", selectedRole === ""); // Disable reset if no filter applied
+    });
+
+    // Reset filter
+    $("#resetFilterArchive").click(function () {
+        $("#roleFilterActive").val(""); // Reset dropdown
+        fetchUsers(""); // Fetch all users
+        $(this).prop("disabled", true); // Disable reset button
+    });
+
+    // Initial load (optional)
+    fetchUsers("");
+});
+
+
+</script>
+
+
  
 
 
