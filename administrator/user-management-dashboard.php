@@ -157,7 +157,7 @@ include('Conn.php');
           <button class="status-user-management-dashboard">
             Role <img src="/icon/gridicons_dropdown.png" style="width: 18px;">
           </button>
-          <input type="text" placeholder="Search" class="search-user-management-database">
+          <input type="text" placeholder="Search by name, email, or ID" class="search-user-management-database">
         </div>
       </div> -->
 
@@ -172,13 +172,19 @@ include('Conn.php');
             <p style="font-size: 13px; margin-right: 10px;">
               Filter By:
             </p>
-            <button class="status-user-management-dashboard">
-              Status <img src="/icon/gridicons_dropdown.png" style="width: 18px; ">
-            </button>
-            <button class="status-user-management-dashboard">
-              Role <img src="/icon/gridicons_dropdown.png" style="width: 18px;">
-            </button>
-            <input type="text" id="searchInput" placeholder="Search" class="search-user-management-database">
+            <select id="statusFilter">
+              <option value="">All Status</option>
+              <option value="active">Active</option>
+              <option value="archived">Archived</option>
+              <option value="deleted">Deleted</option>
+          </select>
+          <select id="roleFilter">
+              <option value="">All Roles</option>
+              <option value="admin">Admin</option>
+              <option value="user">User</option>
+          </select>
+          <button id="resetFilter">Reset</button>
+            <input type="text" id="searchInput" placeholder="Search by name, email, or ID" class="search-user-management-database">
           </div>
         </div>
 
@@ -257,13 +263,20 @@ include('Conn.php');
             <p style="font-size: 13px; margin-right: 10px;">
               Filter By:
             </p>
-            <button class="status-user-management-dashboard">
-              Status <img src="/icon/gridicons_dropdown.png" style="width: 18px; ">
-            </button>
-            <button class="status-user-management-dashboard">
-              Role <img src="/icon/gridicons_dropdown.png" style="width: 18px;">
-            </button>
-            <input type="text" id="searchInput" placeholder="Search" class="search-user-management-database">    
+            <select id="statusFilter">
+              <option value="">All Status</option>
+              <option value="active">Active</option>
+              <option value="archived">Archived</option>
+              <option value="deleted">Deleted</option>
+          </select>
+          <select id="roleFilter">
+              <option value="">All Roles</option>
+              <option value="admin">Admin</option>
+              <option value="user">User</option>
+              <option value="guest">Guest</option>
+          </select>
+          <button id="resetFilter">Reset</button>
+            <input type="text" id="Request-Search-Input" placeholder="Search by name, email, or ID" class="search-user-management-database">    
                 </div>
         </div>
       
@@ -280,13 +293,19 @@ include('Conn.php');
             <p style="font-size: 13px; margin-right: 10px;">
               Filter By:
             </p>
-            <button class="status-user-management-dashboard">
-              Status <img src="/icon/gridicons_dropdown.png" style="width: 18px; ">
-            </button>
-            <button class="status-user-management-dashboard">
-              Role <img src="/icon/gridicons_dropdown.png" style="width: 18px;">
-            </button>
-            <input type="text" id="search-Archive-Input" placeholder="Search" class="search-user-management-database">
+            <select id="statusFilter">
+              <option value="">All Status</option>
+              <option value="active">Active</option>
+              <option value="archived">Archived</option>
+              <option value="deleted">Deleted</option>
+          </select>
+          <select id="roleFilter">
+              <option value="">All Roles</option>
+              <option value="admin">Admin</option>
+              <option value="user">User</option>
+          </select>
+          <button id="resetFilter">Reset</button>
+            <input type="text" id="search-Archive-Input" placeholder="Search by name, email, or ID" class="search-user-management-database">
                     </div>
         </div>
     <table border="0" width="100%" id="userTable">
@@ -515,6 +534,54 @@ document.addEventListener("click", function (event) {
 
  </script>
 
+ <!-- FOR FILTER -->
+
+ <script>
+
+ document.addEventListener("DOMContentLoaded", function () {
+    const roleFilter = document.getElementById("roleFilter");
+    const resetFilter = document.getElementById("resetFilter");
+
+    function fetchFilteredData(role) {
+        fetch("filter.php?role=" + encodeURIComponent(role))
+            .then(response => response.json())
+            .then(data => {
+                const userList = document.getElementById("userList");
+                userList.innerHTML = "";
+
+                if (data.length > 0) {
+                    data.forEach(user => {
+                        const listItem = document.createElement("li");
+                        listItem.textContent = `${user.FNAME} ${user.LNAME} - ${user.ROLE}`;
+                        userList.appendChild(listItem);
+                    });
+                } else {
+                    userList.innerHTML = "<li>No users found</li>";
+                }
+            })
+            .catch(error => console.error("Error fetching data:", error));
+    }
+
+    roleFilter.addEventListener("change", function () {
+        fetchFilteredData(roleFilter.value);
+    });
+
+    resetFilter.addEventListener("click", function () {
+        roleFilter.value = "";
+        fetchFilteredData("");
+    });
+
+    // Initial load (optional: load all users)
+    fetchFilteredData("");
+});
+
+
+
+ </script>
+ 
+
+
+<!-- FOR EDIT -->
 <script>
 
 
