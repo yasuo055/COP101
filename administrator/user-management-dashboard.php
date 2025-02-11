@@ -341,9 +341,6 @@ include('Conn.php');
 </div>
    
 
-    
-
-
   <div id="editUserModal" class="modal">
     <div class="modal-content">
         <span class="close-btn">&times;</span>
@@ -469,10 +466,10 @@ window.onload = () => {
 <!-- FOR RESTORE FUNCTION -->
  <script>
 
-  document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll(".restore-btn").forEach(button => {
-        button.addEventListener("click", function () {
-            let userID = this.getAttribute("data-id");
+document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("click", function (event) {
+        if (event.target.classList.contains("restore-btn")) {
+            let userID = event.target.getAttribute("data-id");
 
             if (confirm("Are you sure you want to restore this user?")) {
                 fetch("restore-user.php", {
@@ -486,7 +483,7 @@ window.onload = () => {
                     location.reload(); // Refresh the table
                 });
             }
-        });
+        }
     });
 });
 
@@ -496,12 +493,11 @@ window.onload = () => {
 <!-- FOR Delete FUNCTION -->
  <script>
 
-  document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll(".delete-btn").forEach(button => {
-        button.addEventListener("click", function () {
-            let userID = this.getAttribute("data-id");
+document.addEventListener("click", function (event) {
+        if (event.target.classList.contains("delete-btn")) {
+            let userID = event.target.getAttribute("data-id");
 
-            if (confirm("Are you sure you want to delete this user?")) {
+            if (confirm("Are you sure you want to delete this user? This action cannot be undone!")) {
                 fetch("delete-user.php", {
                     method: "POST",
                     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -513,9 +509,8 @@ window.onload = () => {
                     location.reload(); // Refresh the table
                 });
             }
-        });
+        }
     });
-});
 
 
  </script>
