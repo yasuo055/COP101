@@ -3,6 +3,67 @@ body {
     margin: 20px;
     background-color: #f4f4f4;
 }
+
+/* for filter by */
+
+
+#searchInput, #Request-Search-Input, #search-Archive-Input  {
+    width: 200px;
+  }
+  
+  /* General Styling */
+  #searchInput, select, button, #Request-Search-Input, #search-Archive-Input {
+      padding: 8px 12px;
+      margin: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+      cursor: pointer;
+  }
+  
+  /* Dropdown Styles */
+  select {
+      background-color: white;
+      appearance: none; /* Removes default browser styles */
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      padding-right: 30px;
+      position: relative;
+  }
+  
+  /* Custom Arrow for Dropdown */
+  select::-ms-expand {
+      display: none;
+  }
+  
+  select {
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="gray"><polygon points="0,0 20,0 10,10"/></svg>');
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 12px;
+  }
+  
+  /* Hover and Focus Effects */
+  select:hover, #searchInput:hover, button:hover {
+      border-color: #888;
+  }
+  
+  select:focus, #searchInput:focus, button:focus {
+      border-color: #555;
+      outline: none;
+  }
+  
+  /* Reset Button */
+  #resetFilter {
+      background-color: #ff4d4d;
+      color: white;
+      border: none;
+  }
+  
+  #resetFilter:hover {
+      background-color: #cc0000;
+  }
+
 .container {
     width: 80%;
     margin: auto;
