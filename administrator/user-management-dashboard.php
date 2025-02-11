@@ -444,9 +444,9 @@ window.onload = () => {
  <script>
   
   document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll(".archive-btn").forEach(button => {
-        button.addEventListener("click", function () {
-            let userID = this.getAttribute("data-id");
+    document.addEventListener("click", function (event) {
+        if (event.target.classList.contains("archive-btn")) {
+            let userID = event.target.getAttribute("data-id");
 
             if (confirm("Are you sure you want to archive this user?")) {
                 fetch("archive-user.php", {
@@ -460,10 +460,9 @@ window.onload = () => {
                     location.reload(); // Refresh the table
                 });
             }
-        });
+        }
     });
 });
-
 
  </script>
 
