@@ -27,8 +27,6 @@ include('Conn.php');
   <script src="js/jquery.min.js"></script>
 
 
-
-
   <title>Aqua Sense</title>
 </head>
 <body>
@@ -216,7 +214,57 @@ include('Conn.php');
                     <div id="loading" style="display:none;">Loading...</div>
                     <tbody id="userTableBody">
                    
-                   
+                    <?php
+
+   include('Conn.php');
+   
+
+    // Prepare and execute the SQL query using PDO
+    $sql = "SELECT USERID, FNAME, MNAME, LNAME, USERNAME, EMAIL, CONTACT, DATECREATED, ROLE FROM users";
+    $sql = "SELECT * FROM users WHERE archived = 0"; // Show only non-archived users
+    $stmt = $connpdo->prepare($sql);
+    $stmt->execute();
+    
+
+    // Check if there are rows to display
+    if ($stmt->rowCount() > 0) {
+        // Fetch each row and display the data
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            echo "<tr>";
+            echo "<td>" . $row['USERID'] . "</td>";
+            echo "<td>" . $row['FNAME'] . " " . $row['MNAME'] . " " . $row['LNAME'] . "</td>";
+            echo "<td>" . $row['USERNAME'] . "</td>";
+            echo "<td>" . $row['EMAIL'] . "</td>";
+            echo "<td>" . ($row['CONTACT'] ? $row['CONTACT'] : 'N/A') . "</td>"; 
+            echo "<td>" . $row['DATECREATED'] . "</td>";
+            echo "<td>" . $row['ROLE'] . "</td>";
+          //   echo "<td> 
+          //   <button class='action-btn edit-btn' type='button' onclick='Edit(" . htmlspecialchars($row['USERID'], ENT_QUOTES, 'UTF-8') . ")'>
+          //       Edit
+          //   </button> 
+          // </td>";
+          echo "<td>
+          <button class='action-btn edit-btn' 
+              data-id='" . $row['USERID'] . "' 
+              data-fname='" . htmlspecialchars($row['FNAME'], ENT_QUOTES, 'UTF-8') . "'
+              data-mname='" . htmlspecialchars($row['MNAME'], ENT_QUOTES, 'UTF-8') . "'
+              data-lname='" . htmlspecialchars($row['LNAME'], ENT_QUOTES, 'UTF-8') . "'
+              data-username='" . htmlspecialchars($row['USERNAME'], ENT_QUOTES, 'UTF-8') . "'
+              data-email='" . htmlspecialchars($row['EMAIL'], ENT_QUOTES, 'UTF-8') . "'
+              data-contact='" . htmlspecialchars($row['CONTACT'], ENT_QUOTES, 'UTF-8') . "'
+              data-role='" . htmlspecialchars($row['ROLE'], ENT_QUOTES, 'UTF-8') . "'
+              onclick='openEditModal(this)'>
+              Edit
+          </button>
+          <button class='action-btn archive-btn' data-id='" . $row['USERID'] . "'>Archive</button>
+      </td>";
+      
+            echo "</tr>";
+        }
+    } else {
+        echo "<tr><td colspan='8'>No users found</td></tr>";
+    }
+?>
                     </tbody>
                 </table>
             </div>
@@ -332,42 +380,40 @@ include('Conn.php');
 </div>
    
 
-  <!-- Edit User Modal -->
   <div id="editUserModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2>Edit User</h2>
-            <form id="editUserForm">
-                <input type="hidden" id="userid" name="userid">
-                
-                <label>First Name:</label>
-                <input type="text" id="fname" name="fname" required><br>
+    <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <h2>Edit User</h2>
+        <form id="editUserForm">
+            <input type="hidden" id="userid" name="userid">
+            <label>First Name:</label>
+            <input type="text" id="fname" name="fname" required><br>
 
-                <label>Middle Name:</label>
-                <input type="text" id="mname" name="mname"><br>
+            <label>Middle Name:</label>
+            <input type="text" id="mname" name="mname"><br>
 
-                <label>Last Name:</label>
-                <input type="text" id="lname" name="lname" required><br>
+            <label>Last Name:</label>
+            <input type="text" id="lname" name="lname" required><br>
 
-                <label>Username:</label>
-                <input type="text" id="username" name="username" required><br>
+            <label>Username:</label>
+            <input type="text" id="username" name="username" required><br>
 
-                <label>Email:</label>
-                <input type="email" id="email" name="email" required><br>
+            <label>Email:</label>
+            <input type="email" id="email" name="email" required><br>
 
-                <label>Contact Number:</label>
-                <input type="text" id="contact" name="contact"><br>
+            <label>Contact Number:</label>
+            <input type="text" id="contact" name="contact"><br>
 
-                <label>Role:</label>
-                <select id="role" name="role" required>
-                    <option value="Admin">Admin</option>
-                    <option value="User">User</option>
-                </select><br>
+            <label>Role:</label>
+            <select id="role" name="role" required>
+                <option value="Admin">Admin</option>
+                <option value="User">User</option>
+            </select><br>
 
-                <button type="submit">Update User</button>
-            </form>
-        </div>
+            <button type="submit">Update User</button>
+        </form>
     </div>
+</div>
 
 
 <!-- SEARCH BOX -->
@@ -555,97 +601,98 @@ $(document).ready(function () {
 <!-- FOR EDIT -->
 <script>
 
-document.addEventListener("DOMContentLoaded", loadUsers);
+function openEditModal(button) {
+    // Get modal and form fields
+    var modal = document.getElementById("editUserModal");
 
-// Function to load users via Fetch API
-async function loadUsers() {
-    try {
-        const response = await fetch("fetch-user.php");
-        const data = await response.json();
+    document.getElementById("userid").value = button.getAttribute("data-id");
+    document.getElementById("fname").value = button.getAttribute("data-fname");
+    document.getElementById("mname").value = button.getAttribute("data-mname");
+    document.getElementById("lname").value = button.getAttribute("data-lname");
+    document.getElementById("username").value = button.getAttribute("data-username");
+    document.getElementById("email").value = button.getAttribute("data-email");
+    document.getElementById("contact").value = button.getAttribute("data-contact");
+    document.getElementById("role").value = button.getAttribute("data-role");
 
-        const tableBody = document.getElementById("userTableBody");
-        tableBody.innerHTML = ""; // Clear table before appending new rows
-
-        const fragment = document.createDocumentFragment(); // Improve performance
-
-        data.forEach(user => {
-            const row = document.createElement("tr");
-            row.innerHTML = `
-                <td>${user.USERID}</td>
-                <td>${user.FNAME} ${user.MNAME} ${user.LNAME}</td>
-                <td>${user.USERNAME}</td>
-                <td>${user.EMAIL}</td>
-                <td>${user.CONTACT || "N/A"}</td>
-                <td>${user.DATECREATED}</td>
-                <td>${user.ROLE}</td>
-                <td>
-                    <button class='edit-btn' data-user='${JSON.stringify(user)}'>Edit</button>
-                    <button class='action-btn archive-btn' data-id='${user.USERID}'>Archive</button>
-                </td>
-            `;
-            fragment.appendChild(row);
-        });
-
-        tableBody.appendChild(fragment);
-    } catch (error) {
-        console.error("Error loading users:", error);
-    }
+    // Show modal
+    modal.style.display = "block";
 }
 
-// Event Delegation for Edit Button Click
-document.getElementById("userTableBody").addEventListener("click", function(event) {
-    if (event.target.classList.contains("edit-btn")) {
-        const user = JSON.parse(event.target.dataset.user);
-        openEditModal(user);
-    }
-});
-
-// Open Edit Modal Function
-function openEditModal(user) {
-    document.getElementById("userid").value = user.USERID;
-    document.getElementById("fname").value = user.FNAME;
-    document.getElementById("mname").value = user.MNAME;
-    document.getElementById("lname").value = user.LNAME;
-    document.getElementById("username").value = user.USERNAME;
-    document.getElementById("email").value = user.EMAIL;
-    document.getElementById("contact").value = user.CONTACT;
-    document.getElementById("role").value = user.ROLE;
-
-    document.getElementById("editUserModal").style.display = "block";
-}
-
-// Close Modal when clicking the Close Button
-document.querySelector(".close-btn").addEventListener("click", () => {
+// Close the modal when clicking the close button
+document.querySelector(".close-btn").addEventListener("click", function () {
     document.getElementById("editUserModal").style.display = "none";
 });
 
-// Handle form submission with Fetch API
-document.getElementById("editUserForm").addEventListener("submit", async function(event) {
-    event.preventDefault();
-
-    const formData = new FormData(this);
-    
-    try {
-        const response = await fetch("update-user.php", {
-            method: "POST",
-            body: formData
-        });
-
-        const result = await response.text();
-        alert(result);
-        document.getElementById("editUserModal").style.display = "none";
-        loadUsers(); // Refresh table after updating
-    } catch (error) {
-        console.error("Error updating user:", error);
+// Close the modal when clicking outside the modal
+window.onclick = function (event) {
+    var modal = document.getElementById("editUserModal");
+    if (event.target === modal) {
+        modal.style.display = "none";
     }
-});
+};
+
+
+//   document.addEventListener("DOMContentLoaded", function () {
+//     const editButtons = document.querySelectorAll(".edit-btn");
+//     const modal = document.getElementById("editUserModal");
+//     const closeModal = document.querySelector(".close-btn");
+
+//     editButtons.forEach(button => {
+//         button.addEventListener("click", function () {
+//             const userId = this.dataset.userid;
+            
+//             // Fetch user data
+//             fetch("get-user.php?userid=" + userId)
+//                 .then(response => response.json())
+//                 .then(data => {
+//                     document.getElementById("userid").value = data.USERID;
+//                     document.getElementById("fname").value = data.FNAME;
+//                     document.getElementById("mname").value = data.MNAME;
+//                     document.getElementById("lname").value = data.LNAME;
+//                     document.getElementById("username").value = data.USERNAME;
+//                     document.getElementById("email").value = data.EMAIL;
+//                     document.getElementById("contact").value = data.CONTACT;
+//                     document.getElementById("role").value = data.ROLE;
+
+//                     // Show the modal
+//                     modal.style.display = "block";
+//                 });
+//         });
+//     });
+
+//     // Close the modal
+//     closeModal.addEventListener("click", function () {
+//         modal.style.display = "none";
+//     });
+
+//     window.addEventListener("click", function (event) {
+//         if (event.target === modal) {
+//             modal.style.display = "none";
+//         }
+//     });
+
+//     // Handle form submission
+//     document.getElementById("editUserForm").addEventListener("submit", function (e) {
+//         e.preventDefault();
+        
+//         const formData = new FormData(this);
+
+//         fetch("update-user.php", {
+//             method: "POST",
+//             body: formData
+//         })
+//         .then(response => response.text())
+//         .then(message => {
+//             alert(message); // Show update result
+//             modal.style.display = "none"; // Hide modal
+//             location.reload(); // Refresh table
+//         });
+//     });
+// });
 
 </script>
 
 
 
-
-
-<script src="script.js"></script>
 </body>
 </html>
