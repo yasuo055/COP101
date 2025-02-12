@@ -54,14 +54,14 @@ body {
   }
   
   /* Reset Button */
-  #resetFilter {
-      background-color: #ff4d4d;
+  #resetFilterActive, #resetFilterArchive {
+      background-color: #377ef1;
       color: white;
       border: none;
   }
   
   #resetFilter:hover {
-      background-color: #cc0000;
+      background-color: #cfd2e9;
   }
 
 .container {
