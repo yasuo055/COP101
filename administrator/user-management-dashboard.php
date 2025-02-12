@@ -243,13 +243,22 @@ include('Conn.php');
           //       Edit
           //   </button> 
           // </td>";
-                echo "<td>
-               <a href='edit-user.php?userid=" . $row['USERID'] . "'>
-            <button class='action-btn edit-btn'>Edit</button>
-        </a>
-              <button class='action-btn archive-btn' data-id='" . $row['USERID'] . "'>Archive</button>
-
-              </td>";
+          echo "<td>
+          <button class='action-btn edit-btn' 
+              data-id='" . $row['USERID'] . "' 
+              data-fname='" . htmlspecialchars($row['FNAME'], ENT_QUOTES, 'UTF-8') . "'
+              data-mname='" . htmlspecialchars($row['MNAME'], ENT_QUOTES, 'UTF-8') . "'
+              data-lname='" . htmlspecialchars($row['LNAME'], ENT_QUOTES, 'UTF-8') . "'
+              data-username='" . htmlspecialchars($row['USERNAME'], ENT_QUOTES, 'UTF-8') . "'
+              data-email='" . htmlspecialchars($row['EMAIL'], ENT_QUOTES, 'UTF-8') . "'
+              data-contact='" . htmlspecialchars($row['CONTACT'], ENT_QUOTES, 'UTF-8') . "'
+              data-role='" . htmlspecialchars($row['ROLE'], ENT_QUOTES, 'UTF-8') . "'
+              onclick='openEditModal(this)'>
+              Edit
+          </button>
+          <button class='action-btn archive-btn' data-id='" . $row['USERID'] . "'>Archive</button>
+      </td>";
+      
             echo "</tr>";
         }
     } else {
@@ -576,7 +585,7 @@ $(document).ready(function () {
     });
 
     // Reset filter
-    $("#resetFilter").click(function () {
+    $("#resetFilterActive").click(function () {
         $("#roleFilterActive").val(""); // Reset dropdown
         fetchUsers(""); // Fetch all users
         $(this).prop("disabled", true); // Disable reset button
@@ -589,115 +598,97 @@ $(document).ready(function () {
 
  </script>
 
-
-<!-- FOR FILTER ARCHIVE -->
-
-<script>
- $(document).ready(function () {
-    // Function to fetch and update users based on selected role
-    function fetchUsers(role) {
-        $("#loading").show(); // Show loading indicator
-        $.ajax({
-            url: "fetch-archived-users.php",
-            type: "POST",
-            data: { role: role },
-            success: function (response) {
-                $("#archiveTables tbody").html(response);
-                $("#loading").hide(); // Hide loading indicator
-            },
-            error: function () {
-                alert("Error fetching users.");
-                $("#loading").hide();
-            }
-        });
-    }
-
-    // Trigger filter when dropdown changes
-    $("#roleFilterActive").change(function () {
-        var selectedRole = $(this).val();
-        fetchUsers(selectedRole);
-        $("#resetFilterArchive").prop("disabled", selectedRole === ""); // Disable reset if no filter applied
-    });
-
-    // Reset filter
-    $("#resetFilterArchive").click(function () {
-        $("#roleFilterActive").val(""); // Reset dropdown
-        fetchUsers(""); // Fetch all users
-        $(this).prop("disabled", true); // Disable reset button
-    });
-
-    // Initial load (optional)
-    fetchUsers("");
-});
-
-
-</script>
-
-
- 
-
-
 <!-- FOR EDIT -->
 <script>
 
+function openEditModal(button) {
+    // Get modal and form fields
+    var modal = document.getElementById("editUserModal");
 
-  document.addEventListener("DOMContentLoaded", function () {
-    const editButtons = document.querySelectorAll(".edit-btn");
-    const modal = document.getElementById("editUserModal");
-    const closeModal = document.querySelector(".close-btn");
+    document.getElementById("userid").value = button.getAttribute("data-id");
+    document.getElementById("fname").value = button.getAttribute("data-fname");
+    document.getElementById("mname").value = button.getAttribute("data-mname");
+    document.getElementById("lname").value = button.getAttribute("data-lname");
+    document.getElementById("username").value = button.getAttribute("data-username");
+    document.getElementById("email").value = button.getAttribute("data-email");
+    document.getElementById("contact").value = button.getAttribute("data-contact");
+    document.getElementById("role").value = button.getAttribute("data-role");
 
-    editButtons.forEach(button => {
-        button.addEventListener("click", function () {
-            const userId = this.dataset.userid;
-            
-            // Fetch user data
-            fetch("get-user.php?userid=" + userId)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById("userid").value = data.USERID;
-                    document.getElementById("fname").value = data.FNAME;
-                    document.getElementById("mname").value = data.MNAME;
-                    document.getElementById("lname").value = data.LNAME;
-                    document.getElementById("username").value = data.USERNAME;
-                    document.getElementById("email").value = data.EMAIL;
-                    document.getElementById("contact").value = data.CONTACT;
-                    document.getElementById("role").value = data.ROLE;
+    // Show modal
+    modal.style.display = "block";
+}
 
-                    // Show the modal
-                    modal.style.display = "block";
-                });
-        });
-    });
-
-    // Close the modal
-    closeModal.addEventListener("click", function () {
-        modal.style.display = "none";
-    });
-
-    window.addEventListener("click", function (event) {
-        if (event.target === modal) {
-            modal.style.display = "none";
-        }
-    });
-
-    // Handle form submission
-    document.getElementById("editUserForm").addEventListener("submit", function (e) {
-        e.preventDefault();
-        
-        const formData = new FormData(this);
-
-        fetch("update-user.php", {
-            method: "POST",
-            body: formData
-        })
-        .then(response => response.text())
-        .then(message => {
-            alert(message); // Show update result
-            modal.style.display = "none"; // Hide modal
-            location.reload(); // Refresh table
-        });
-    });
+// Close the modal when clicking the close button
+document.querySelector(".close-btn").addEventListener("click", function () {
+    document.getElementById("editUserModal").style.display = "none";
 });
+
+// Close the modal when clicking outside the modal
+window.onclick = function (event) {
+    var modal = document.getElementById("editUserModal");
+    if (event.target === modal) {
+        modal.style.display = "none";
+    }
+};
+
+
+//   document.addEventListener("DOMContentLoaded", function () {
+//     const editButtons = document.querySelectorAll(".edit-btn");
+//     const modal = document.getElementById("editUserModal");
+//     const closeModal = document.querySelector(".close-btn");
+
+//     editButtons.forEach(button => {
+//         button.addEventListener("click", function () {
+//             const userId = this.dataset.userid;
+            
+//             // Fetch user data
+//             fetch("get-user.php?userid=" + userId)
+//                 .then(response => response.json())
+//                 .then(data => {
+//                     document.getElementById("userid").value = data.USERID;
+//                     document.getElementById("fname").value = data.FNAME;
+//                     document.getElementById("mname").value = data.MNAME;
+//                     document.getElementById("lname").value = data.LNAME;
+//                     document.getElementById("username").value = data.USERNAME;
+//                     document.getElementById("email").value = data.EMAIL;
+//                     document.getElementById("contact").value = data.CONTACT;
+//                     document.getElementById("role").value = data.ROLE;
+
+//                     // Show the modal
+//                     modal.style.display = "block";
+//                 });
+//         });
+//     });
+
+//     // Close the modal
+//     closeModal.addEventListener("click", function () {
+//         modal.style.display = "none";
+//     });
+
+//     window.addEventListener("click", function (event) {
+//         if (event.target === modal) {
+//             modal.style.display = "none";
+//         }
+//     });
+
+//     // Handle form submission
+//     document.getElementById("editUserForm").addEventListener("submit", function (e) {
+//         e.preventDefault();
+        
+//         const formData = new FormData(this);
+
+//         fetch("update-user.php", {
+//             method: "POST",
+//             body: formData
+//         })
+//         .then(response => response.text())
+//         .then(message => {
+//             alert(message); // Show update result
+//             modal.style.display = "none"; // Hide modal
+//             location.reload(); // Refresh table
+//         });
+//     });
+// });
 
 </script>
 
