@@ -193,15 +193,15 @@ include('Conn.php');
         </div>
 
     <div class="main-content-user-management-dashboard">
-      <div class="container-user-management-border-dashboard">
+      <!-- <div class="container-user-management-border-dashboard"> -->
       
 
-            <div class="main-content-user-management-dashboard">
+            <!-- <div class="main-content-user-management-dashboard"> -->
                 <table border="0" width="100%" id="userTable">
                     <thead>
                         <tr>
                             <th>Employee ID</th>
-                            <th>Full Name</th>
+                            <th>Name</th>
                             <th>Username</th>
                             <th>Email</th>
                             <th>Contact Number</th>
@@ -216,8 +216,8 @@ include('Conn.php');
                    
                     </tbody>
                 </table>
-            </div>
-        </div>
+            <!-- </div> -->
+        <!-- </div> -->
   </div>
     </div>
 
@@ -282,7 +282,7 @@ include('Conn.php');
               <th>Name</th>
               <th>Username</th>
               <th>Email</th>
-              <th>Contact</th>
+              <th>Contact Number</th>
               <th>Date Created</th>
             <th>Role</th>
             <th>Actions</th>
