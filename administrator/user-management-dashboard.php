@@ -24,7 +24,7 @@ include('Conn.php');
   <link rel="stylesheet" href="/style-tab.css">
   <link rel="icon" href="/icon/PONDTECH__2_-removebg-preview 2.png">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="js/jquery.min.js"></script>   <!-- For edit btn test -->
+ 
 
   <title>Aqua Lense</title>
 </head>
@@ -212,7 +212,7 @@ include('Conn.php');
                     </thead>
                     <div id="loading" style="display:none;">Loading...</div>
                     <tbody id="userTableBody">
-                   
+                   <!-- load data -->
                    
                     </tbody>
                 </table>
@@ -236,13 +236,16 @@ include('Conn.php');
               <option value="archived">Archived</option>
               <option value="deleted">Deleted</option>
           </select>
+
           <select id="roleFilterArchive">
               <option value="">All Roles</option>
               <option value="admin">Admin</option>
               <option value="user">User</option>
               <option value="guest">Guest</option>
           </select>
-          <button id="resetFilterArchive">Reset</button>
+
+          <button id="resetFilterRequest">Reset</button>
+
             <input type="text" id="Request-Search-Input" placeholder="Search by name, email, or ID" class="search-user-management-database">    
                 </div>
         </div>
@@ -277,6 +280,7 @@ include('Conn.php');
         </div>
         
       <table border="0" width="100%" id="archiveTables">
+        <thead>
           <tr>
               <th>Employee ID</th>
               <th>Name</th>
@@ -287,42 +291,11 @@ include('Conn.php');
             <th>Role</th>
             <th>Actions</th>
         </tr>
+        </thead>
         <tbody id="user-search-Archive-Input-TableBody">
-    <?php include 'fetch_users.php'; ?>  <!-- Load initial user data -->
+    <?php include 'fetch-archived-users.php'; ?>  <!-- Load initial user data -->
           
-        <?php
-        include('Conn.php');
-        
-
-        $sql = "SELECT * FROM users WHERE archived = 1"; // Get only archived users
-        $stmt = $connpdo->prepare($sql);
-        $stmt->execute();
-        
-        if ($stmt->rowCount() > 0): ?>
-            <?php while ($row = $stmt->fetch(PDO::FETCH_ASSOC)): ?>
-                <tr>
-                    <td><?= $row['USERID'] ?></td>
-                    <td><?= $row['FNAME'] . " " . $row['MNAME'] . " " . $row['LNAME'] ?></td>
-                    <td><?= $row['USERNAME'] ?></td>
-                    <td><?= $row['EMAIL'] ?></td>
-                    <td><?= $row['CONTACT'] ?: 'N/A' ?></td>
-                    <td><?= $row['DATECREATED'] ?></td>
-                    <td><?= $row['ROLE'] ?></td>
-                    <td>
-                        <a href='restore-user.php?userid=<?= $row['USERID'] ?>' 
-                           onclick='return'>
-                            <button class='action-btn restore-btn'>Restore</button>
-                        </a>
-                        <a href='delete-user.php?userid=<?= $row['USERID'] ?>' 
-                        onclick='return'>
-                          <button class='action-btn delete-btn'>Delete</button>
-                      </a>
-                    </td>
-                </tr>
-            <?php endwhile; ?>
-        <?php else: ?>
-            <tr><td colspan="8">No archived users found</td></tr>
-        <?php endif; ?>
+      
         </tbody>
     </table>
     <div id="loading" style="display:none;">Loading...</div>
@@ -511,11 +484,11 @@ document.addEventListener("click", function (event) {
  <script>
 
 $(document).ready(function () {
-    // Function to fetch and update users based on selected role
-    function fetchUsers(role) {
+    // Function to fetch and update archived users based on selected role
+    function fetchArchivedUsers(role) {
         $("#loading").show(); // Show loading indicator
         $.ajax({
-            url: "fetch-users.php",
+            url: "fetch-users.php", // Make sure this file correctly handles role filtering
             type: "POST",
             data: { role: role },
             success: function (response) {
@@ -523,31 +496,74 @@ $(document).ready(function () {
                 $("#loading").hide(); // Hide loading indicator
             },
             error: function () {
-                alert("Error fetching users.");
+                alert("Error fetching archived users.");
                 $("#loading").hide();
             }
         });
     }
 
-    // Trigger filter when dropdown changes
+    // Trigger filter when role dropdown changes
     $("#roleFilterActive").change(function () {
         var selectedRole = $(this).val();
-        fetchUsers(selectedRole);
+        fetchArchivedUsers(selectedRole);
         $("#resetFilterActive").prop("disabled", selectedRole === ""); // Disable reset if no filter applied
     });
 
     // Reset filter
     $("#resetFilterActive").click(function () {
-        $("#roleFilterActive").val(""); // Reset dropdown
-        fetchUsers(""); // Fetch all users
+        $("#roleFilterActive").val(""); // Reset dropdown to default "All Roles"
+        fetchArchivedUsers(""); // Fetch all archived users
         $(this).prop("disabled", true); // Disable reset button
     });
 
     // Initial load (optional)
-    fetchUsers("");
+    fetchArchivedUsers(""); // Load all archived users on page load
 });
 
 
+ </script>
+
+ <!-- FOR ARCHIVE FILTER -->
+
+ <script>
+$(document).ready(function () {
+    function fetchUsersByRole(role) {
+        $.ajax({
+            url: "fetch-archived-users.php",
+            type: "GET",
+            data: { role: role },
+            success: function (response) {
+                $("#user-search-Archive-Input-TableBody").html(response);
+                
+                // Enable Reset Button only if a role is selected
+                if (role) {
+                    $("#resetFilterArchive").prop("disabled", false);
+                } else {
+                    $("#resetFilterArchive").prop("disabled", true);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX Error: " + status + " - " + error);
+            }
+        });
+    }
+
+    // Handle Role Dropdown Change
+    $("#roleFilterArchive").on("change", function () {
+        let selectedRole = $(this).val();
+        fetchUsersByRole(selectedRole);
+    });
+
+    // Handle Reset Button Click
+    $("#resetFilterArchive").on("click", function () {
+        $("#roleFilterArchive").val(""); // Reset dropdown to "All Roles"
+        fetchUsersByRole(""); // Fetch all users again
+    });
+
+    fetchUsersByRole("");
+});
+
+  
  </script>
  
 
