@@ -1,50 +1,46 @@
-
 <?php
-include 'Conn.php'; // Include your PDO database connection
+include('Conn.php');
 
-$role = isset($_POST['role']) ? trim($_POST['role']) : '';
+$role = isset($_GET['role']) ? $_GET['role'] : '';
 
-
-// Base SQL Query
+// Base query for archived users
 $sql = "SELECT * FROM users WHERE archived = 1";
-$params = [];
 
+// Apply role filter if selected
 if (!empty($role)) {
-    $sql .= " AND ROLE = :role";
-    $params[':role'] = $role;
+    $sql .= " AND ROLE = :role";  // Ensure role is filtered correctly
 }
 
 $stmt = $connpdo->prepare($sql);
 
-foreach ($params as $key => $value) {
-    $stmt->bindValue($key, $value, PDO::PARAM_STR);
+if (!empty($role)) {
+    $stmt->bindParam(':role', $role, PDO::PARAM_STR);
 }
 
-$stmt->execute();   
+$stmt->execute();
 
-
+// Check if data exists
 if ($stmt->rowCount() > 0) {
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-        echo "<tr>";
-        echo "<td>" . htmlspecialchars($row['USERID']) . "</td>";
-        echo "<td>" . htmlspecialchars($row['FNAME'] . " " . $row['MNAME'] . " " . $row['LNAME']) . "</td>";
-        echo "<td>" . htmlspecialchars($row['USERNAME']) . "</td>";
-        echo "<td>" . htmlspecialchars($row['EMAIL']) . "</td>";
-        echo "<td>" . ($row['CONTACT'] ? htmlspecialchars($row['CONTACT']) : 'N/A') . "</td>"; 
-        echo "<td>" . htmlspecialchars($row['DATECREATED']) . "</td>";
-        echo "<td>" . htmlspecialchars($row['ROLE']) . "</td>";
-        echo "<td>
-                <a href='restore-user.php?userid=" . $row['USERID'] . "'>
-                    <button class='action-btn restore-btn'>Restore</button>
-                </a>
-                <a href='delete-user.php?userid=" . $row['USERID'] . "' onclick='return'>
-                    <button class='action-btn delete-btn'>Delete</button>
-                </a>
-              </td>";
-        echo "</tr>";
+        echo "<tr>
+                <td>{$row['USERID']}</td>
+                <td>{$row['FNAME']} {$row['MNAME']} {$row['LNAME']}</td>
+                <td>{$row['USERNAME']}</td>
+                <td>{$row['EMAIL']}</td>
+                <td>" . (!empty($row['CONTACT']) ? $row['CONTACT'] : 'N/A') . "</td>
+                <td>{$row['DATECREATED']}</td>
+                <td>{$row['ROLE']}</td>
+                <td>
+                    <a href='restore-user.php?userid={$row['USERID']}'>
+                        <button class='action-btn restore-btn'>Restore</button>
+                    </a>
+                    <a href='delete-user.php?userid={$row['USERID']}'>
+                        <button class='action-btn delete-btn'>Delete</button>
+                    </a>
+                </td>
+              </tr>";
     }
 } else {
     echo "<tr><td colspan='8'>No archived users found</td></tr>";
 }
 ?>
-

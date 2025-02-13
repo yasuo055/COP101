@@ -230,14 +230,14 @@ include('Conn.php');
             <p style="font-size: 13px; margin-right: 10px;">
               Filter By:
             </p>
-            <select id="statusFilterArchive">
+            <select id="statusFilterRequest">
               <option value="">All Status</option>
               <option value="active">Active</option>
               <option value="archived">Archived</option>
               <option value="deleted">Deleted</option>
           </select>
 
-          <select id="roleFilterArchive">
+          <select id="roleFilteRequest">
               <option value="">All Roles</option>
               <option value="admin">Admin</option>
               <option value="user">User</option>
@@ -340,6 +340,90 @@ include('Conn.php');
         </div>
     </div>
 
+
+
+ <!-- FOR ARCHIVE FILTER -->
+
+ <script>
+document.addEventListener("DOMContentLoaded", function () {
+    const roleFilterArchive = document.getElementById("roleFilterArchive");
+    const resetFilterArchive = document.getElementById("resetFilterArchive");
+    const tableBody = document.getElementById("user-search-Archive-Input-TableBody");
+
+    // Function to fetch filtered users
+    function fetchFilteredUsers(role) {
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", "fetch-archived-users.php?role=" + encodeURIComponent(role), true);
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                tableBody.innerHTML = xhr.responseText;
+            }
+        };
+        xhr.send();
+    }
+
+    // Event Listener for Filter Change
+    roleFilterArchive.addEventListener("change", function () {
+        const selectedRole = roleFilterArchive.value;
+        fetchFilteredUsers(selectedRole);
+
+        // Enable reset button if a filter is applied
+        resetFilterArchive.disabled = selectedRole === "";
+    });
+
+    // Reset Filter
+    resetFilterArchive.addEventListener("click", function () {
+        roleFilterArchive.value = "";
+        fetchFilteredUsers(""); // Fetch all users again
+        resetFilterArchive.disabled = true;
+    });
+});
+</script>
+ 
+
+    <!-- FOR FILTER ACTIVE USER-->
+
+    <script>
+
+$(document).ready(function () {
+    // Function to fetch and update archived users based on selected role
+    function fetchActivedUsers(role) {
+        $("#loading").show(); // Show loading indicator
+        $.ajax({
+            url: "fetch-users.php", // Make sure this file correctly handles role filtering
+            type: "POST",
+            data: { role: role },
+            success: function (response) {
+                $("#userTable tbody").html(response);
+                $("#loading").hide(); // Hide loading indicator
+            },
+            error: function () {
+                alert("Error fetching Actived users.");
+                $("#loading").hide();
+            }
+        });
+    }
+
+    // Trigger filter when role dropdown changes
+    $("#roleFilterActive").change(function () {
+        var selectedRole = $(this).val();
+        fetchActivedUsers(selectedRole);
+        $("#resetFilterActive").prop("disabled", selectedRole === ""); // Disable reset if no filter applied
+    });
+
+    // Reset filter
+    $("#resetFilterActive").click(function () {
+        $("#roleFilterActive").val(""); // Reset dropdown to default "All Roles"
+        fetchActivedUsers(""); // Fetch all Actived users
+        $(this).prop("disabled", true); // Disable reset button
+    });
+
+    // Initial load (optional)
+    fetchActivedUsers(""); // Load all archived users on page load
+});
+
+
+ </script>
 
 <!-- SEARCH BOX -->
 
@@ -479,92 +563,6 @@ document.addEventListener("click", function (event) {
 
  </script>
 
- <!-- FOR FILTER ACTIVE USER-->
-
- <script>
-
-$(document).ready(function () {
-    // Function to fetch and update archived users based on selected role
-    function fetchArchivedUsers(role) {
-        $("#loading").show(); // Show loading indicator
-        $.ajax({
-            url: "fetch-users.php", // Make sure this file correctly handles role filtering
-            type: "POST",
-            data: { role: role },
-            success: function (response) {
-                $("#userTable tbody").html(response);
-                $("#loading").hide(); // Hide loading indicator
-            },
-            error: function () {
-                alert("Error fetching archived users.");
-                $("#loading").hide();
-            }
-        });
-    }
-
-    // Trigger filter when role dropdown changes
-    $("#roleFilterActive").change(function () {
-        var selectedRole = $(this).val();
-        fetchArchivedUsers(selectedRole);
-        $("#resetFilterActive").prop("disabled", selectedRole === ""); // Disable reset if no filter applied
-    });
-
-    // Reset filter
-    $("#resetFilterActive").click(function () {
-        $("#roleFilterActive").val(""); // Reset dropdown to default "All Roles"
-        fetchArchivedUsers(""); // Fetch all archived users
-        $(this).prop("disabled", true); // Disable reset button
-    });
-
-    // Initial load (optional)
-    fetchArchivedUsers(""); // Load all archived users on page load
-});
-
-
- </script>
-
- <!-- FOR ARCHIVE FILTER -->
-
- <script>
-$(document).ready(function () {
-    function fetchUsersByRole(role) {
-        $.ajax({
-            url: "fetch-archived-users.php",
-            type: "GET",
-            data: { role: role },
-            success: function (response) {
-                $("#user-search-Archive-Input-TableBody").html(response);
-                
-                // Enable Reset Button only if a role is selected
-                if (role) {
-                    $("#resetFilterArchive").prop("disabled", false);
-                } else {
-                    $("#resetFilterArchive").prop("disabled", true);
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error("AJAX Error: " + status + " - " + error);
-            }
-        });
-    }
-
-    // Handle Role Dropdown Change
-    $("#roleFilterArchive").on("change", function () {
-        let selectedRole = $(this).val();
-        fetchUsersByRole(selectedRole);
-    });
-
-    // Handle Reset Button Click
-    $("#resetFilterArchive").on("click", function () {
-        $("#roleFilterArchive").val(""); // Reset dropdown to "All Roles"
-        fetchUsersByRole(""); // Fetch all users again
-    });
-
-    fetchUsersByRole("");
-});
-
-  
- </script>
  
 
 <!-- FOR EDIT -->
