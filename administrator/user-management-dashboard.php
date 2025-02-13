@@ -288,7 +288,7 @@ include('Conn.php');
             <th>Actions</th>
         </tr>
         <tbody id="user-search-Archive-Input-TableBody">
-        <div id="loading" style="display:none;">Loading...</div>
+    <?php include 'fetch_users.php'; ?>  <!-- Load initial user data -->
           
         <?php
         include('Conn.php');
@@ -325,6 +325,7 @@ include('Conn.php');
         <?php endif; ?>
         </tbody>
     </table>
+    <div id="loading" style="display:none;">Loading...</div>
     </div>
 </div>
    
@@ -548,6 +549,7 @@ $(document).ready(function () {
 
 
  </script>
+ 
 
 <!-- FOR EDIT -->
 <script>
