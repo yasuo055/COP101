@@ -2,23 +2,30 @@
 include('Conn.php'); // Your database connection file
 
 try {
-    // Define default passwords
-    $defaultAdminPassword = password_hash("Admin123", PASSWORD_DEFAULT);
-    $defaultUserPassword = password_hash("User123", PASSWORD_DEFAULT);
+    // Fetch all users with plain text passwords
+    $stmt = $connpdo->query("SELECT USERID, PASSWORD FROM USERS");
+    $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Update admin passwords
-    $updateAdmin = $connpdo->prepare("UPDATE USERS SET PASSWORD = :hashedPassword WHERE ROLE = 'Admin'");
-    $updateAdmin->bindParam(':hashedPassword', $defaultAdminPassword);
-    $updateAdmin->execute();
+    foreach ($users as $user) {
+        $userId = $user['USERID'];
+        $plainPassword = $user['PASSWORD'];
 
-    // Update user passwords
-    $updateUser = $connpdo->prepare("UPDATE USERS SET PASSWORD = :hashedPassword WHERE ROLE = 'User'");
-    $updateUser->bindParam(':hashedPassword', $defaultUserPassword);
-    $updateUser->execute();
+        // Check if already hashed (bcrypt starts with '$2y$')
+        if (!password_get_info($plainPassword)['algo']) {
+            // Hash the password using bcrypt
+            $hashedPassword = password_hash($plainPassword, PASSWORD_DEFAULT);
 
-    echo "✅ Default passwords set successfully!<br>";
-    echo "🔹 Admin Password: Admin123<br>";
-    echo "🔹 User Password: User123<br>";
+            // Update the database with the hashed password
+            $updateStmt = $connpdo->prepare("UPDATE USERS SET PASSWORD = :hashedPassword WHERE USERID = :userId");
+            $updateStmt->bindParam(':hashedPassword', $hashedPassword);
+            $updateStmt->bindParam(':userId', $userId);
+            $updateStmt->execute();
+
+            echo "✅ Updated USERID $userId password successfully!<br>";
+        }
+    }
+
+    echo "✅ All passwords are now hashed using bcrypt!";
 } catch (PDOException $e) {
     echo "❌ Error: " . $e->getMessage();
 }

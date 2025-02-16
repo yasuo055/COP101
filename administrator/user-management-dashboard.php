@@ -107,11 +107,11 @@ include('Conn.php');
       </button>
     </div>
   </a>
-  <a href="attendance-logs-administrator.html">
+  <a href="user-logs.php">
     <div class="end-portion-sidebar-admin-3">
       <button class="att-log-admin-btn">
         <img src="/icon/Vector (21).png" class="report-icon-sidebar">
-        Attendance Logs
+        User Logs
       </button>
     </div>
   </a>

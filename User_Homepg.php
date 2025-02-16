@@ -6,71 +6,71 @@ include('Conn.php');
 $esp32_url = 'http://192.168.5.100/sensor_data'; // Ensure this is the correct IP
 
 // Initialize variables with default values
-$ph = '--';
-$temperature = '--';
-$ammonia = '--';
-$do_level = '--';
+// $ph = '--';
+// $temperature = '--';
+// $ammonia = '--';
+// $do_level = '--';
 
-$current_timestamp = date('Y-m-d H:i:s', time());
+// $current_timestamp = date('Y-m-d H:i:s', time());
 
-$last_saved_query = "SELECT last_saved FROM sensor_data ORDER BY last_saved DESC LIMIT 1";
-$stmt = $connpdo->prepare($last_saved_query);
-$stmt->execute();
-$last_saved = $stmt->fetchColumn();
+// $last_saved_query = "SELECT last_saved FROM sensor_data ORDER BY last_saved DESC LIMIT 1";
+// $stmt = $connpdo->prepare($last_saved_query);
+// $stmt->execute();
+// $last_saved = $stmt->fetchColumn();
 
-if (!$last_saved || (strtotime($current_timestamp) - strtotime($last_saved)) >= 120) {  // 120 seconds = 2 minutes
-  try {
-      $ch = curl_init();
-      curl_setopt($ch, CURLOPT_URL, $esp32_url);
-      curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-      curl_setopt($ch, CURLOPT_TIMEOUT, 5); // Timeout after 5 seconds
+// if (!$last_saved || (strtotime($current_timestamp) - strtotime($last_saved)) >= 120) {  // 120 seconds = 2 minutes
+//   try {
+//       $ch = curl_init();
+//       curl_setopt($ch, CURLOPT_URL, $esp32_url);
+//       curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+//       curl_setopt($ch, CURLOPT_TIMEOUT, 5); // Timeout after 5 seconds
 
-        $response = curl_exec($ch);
+//         $response = curl_exec($ch);
 
-        // Check for errors
-        if ($response === false) {
-            throw new Exception('Error fetching data from ESP32: ' . curl_error($ch));
-        }
+//         // Check for errors
+//         if ($response === false) {
+//             throw new Exception('Error fetching data from ESP32: ' . curl_error($ch));
+//         }
 
-        // Get HTTP status code
-        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
+//         // Get HTTP status code
+//         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+//         curl_close($ch);
 
-        // Check if the request was successful (HTTP 200)
-        if ($http_code !== 200) {
-            throw new Exception("HTTP status code $http_code");
-        }
+//         // Check if the request was successful (HTTP 200)
+//         if ($http_code !== 200) {
+//             throw new Exception("HTTP status code $http_code");
+//         }
 
-        // Decode the JSON data from ESP32
-        $data = json_decode($response, true);
+//         // Decode the JSON data from ESP32
+//         $data = json_decode($response, true);
 
-        // Ensure we have valid data before assigning to variables
-        if ($data !== null) {
-          $ph = isset($data['ph_level']) ? $data['ph_level'] : '--';
-          $temperature = isset($data['temperature']) ? $data['temperature'] : '--';
-          $ammonia = isset($data['ammonia_level']) ? $data['ammonia_level'] : '--';
-          $do_level = isset($data['do_level']) ? $data['do_level'] : '--';
-      }
+//         // Ensure we have valid data before assigning to variables
+//         if ($data !== null) {
+//           $ph = isset($data['ph_level']) ? $data['ph_level'] : '--';
+//           $temperature = isset($data['temperature']) ? $data['temperature'] : '--';
+//           $ammonia = isset($data['ammonia_level']) ? $data['ammonia_level'] : '--';
+//           $do_level = isset($data['do_level']) ? $data['do_level'] : '--';
+//       }
 
-        // Insert the data into the database with the current timestamp
-        $insert_query = "INSERT INTO sensor_data (ph_level, temperature, ammonia_level, do_level, last_saved) 
-                         VALUES (:ph, :temperature, :ammonia, :do_level, :last_saved)";
-        $stmt = $connpdo->prepare($insert_query);
-        $stmt->bindParam(':ph', $ph);
-        $stmt->bindParam(':temperature', $temperature);
-        $stmt->bindParam(':ammonia', $ammonia);
-        $stmt->bindParam(':do_level', $do_level);
-        $stmt->bindParam(':last_saved', $current_timestamp);
-        $stmt->execute();
+//         // Insert the data into the database with the current timestamp
+//         $insert_query = "INSERT INTO sensor_data (ph_level, temperature, ammonia_level, do_level, last_saved) 
+//                          VALUES (:ph, :temperature, :ammonia, :do_level, :last_saved)";
+//         $stmt = $connpdo->prepare($insert_query);
+//         $stmt->bindParam(':ph', $ph);
+//         $stmt->bindParam(':temperature', $temperature);
+//         $stmt->bindParam(':ammonia', $ammonia);
+//         $stmt->bindParam(':do_level', $do_level);
+//         $stmt->bindParam(':last_saved', $current_timestamp);
+//         $stmt->execute();
 
-    } catch (Exception $e) {
-        // Log the error (optional)
-        error_log($e->getMessage());
-    }
-} else {
-    // Optionally, you can display a message if the data was not saved
-    echo "Data not saved as it was updated less than 2 minutes ago.";
-}
+//     } catch (Exception $e) {
+//         // Log the error (optional)
+//         error_log($e->getMessage());
+//     }
+// } else {
+//     // Optionally, you can display a message if the data was not saved
+//     echo "Data not saved as it was updated less than 2 minutes ago.";
+// }
 
 if (!isset($_SESSION['USERID'])) {
     header("Location: Login.php");

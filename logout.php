@@ -1,9 +1,14 @@
 <?php
 session_start();
-session_unset(); // Unset all session variables
-session_destroy(); // Destroy the session
+include('Conn.php');
 
-// Redirect to login page
-header("Location: Login.php");
+if (isset($_SESSION['USERID'])) {
+    $stmt = $connpdo->prepare("UPDATE user_logs SET logout_time = NOW() WHERE USERID = :userid ORDER BY login_time DESC LIMIT 1");
+    $stmt->execute([':userid' => $_SESSION['USERID']]);
+}
+
+// Destroy session and redirect to login page
+session_destroy();
+header("Location: login.php");
 exit;
 ?>
