@@ -7,7 +7,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $password = $_POST['password'] ?? '';
 
     try {
-        $stmt = $connpdo->prepare("SELECT USERID, PASSWORD, ROLE FROM USERS WHERE USERNAME = :username");
+        // ✅ Corrected SQL Query
+        $stmt = $connpdo->prepare("
+            SELECT USERID, CONCAT(FNAME, ' ', MNAME, ' ', LNAME) AS NAME, PASSWORD, ROLE, EMAIL 
+            FROM USERS WHERE USERNAME = :username
+        ");
+
         $stmt->bindParam(':username', $username);
         $stmt->execute();
 
@@ -22,7 +27,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $_SESSION['USERID'] = $user['USERID'];
                 $_SESSION['ROLE'] = $user['ROLE']; // Store role in session
 
-                // Redirect based on role
+                // ✅ Insert Login Activity into `user_logs`
+                $log_stmt = $connpdo->prepare("
+                    INSERT INTO user_logs (USERID, name, role, email, login_time) 
+                    VALUES (:userid, :name, :role, :email, NOW())
+                ");
+                $log_stmt->execute([
+                    ':userid' => $user['USERID'],
+                    ':name'   => $user['NAME'] ?? 'Unknown',
+                    ':role'   => $user['ROLE'] ?? 'Unknown',
+                    ':email'  => $user['EMAIL'] ?? 'Unknown'
+                ]);
+
+                // ✅ Redirect based on role
                 if ($user['ROLE'] === 'Admin') {
                     header("Location: /administrator/user-management-dashboard.php");
                 } else {
@@ -37,14 +54,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
     } catch (PDOException $e) {
         error_log("Login error: " . $e->getMessage());
-        $error = "An error occurred. Please try again.";
+        echo "<p style='color: red;'>An error occurred. Please try again.</p>";
     }
 }
-
-if (isset($error)) {
-    echo "<p style='color: red;'>$error</p>";
-}
 ?>
+
 
 
 

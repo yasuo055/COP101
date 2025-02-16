@@ -3,7 +3,21 @@ session_start();
 include('Conn.php');
 
 // Fetch logs from database
-$stmt = $connpdo->query("SELECT * FROM user_logs ORDER BY login_time DESC");
+$stmt = $connpdo->query("
+    SELECT 
+    ul.log_id, 
+    ul.USERID, 
+    CONCAT(u.FNAME, ' ', u.MNAME, ' ', u.LNAME) AS NAME, 
+    u.ROLE, 
+    u.EMAIL, 
+    DATE_FORMAT(ul.login_time, '%Y-%m-%d %h:%i:%s %p') AS login_time, 
+    DATE_FORMAT(ul.logout_time, '%Y-%m-%d %h:%i:%s %p') AS logout_time
+FROM user_logs ul
+JOIN USERS u ON ul.USERID = u.USERID
+ORDER BY ul.login_time DESC;
+
+");
+
 $logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
