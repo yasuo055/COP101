@@ -118,7 +118,7 @@ $logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
       </button>
     </div>
   </a>
-  <a href="attendance-logs-administrator.html">
+  <a href="user-logs.php">
     <div class="end-portion-sidebar-admin-3">
       <button class="att-log-admin-btn" style="background-color: #BFEDFE;">
         <img src="/icon/Vector (21).png" class="report-icon-sidebar">

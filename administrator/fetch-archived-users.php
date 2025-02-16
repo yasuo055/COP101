@@ -4,7 +4,19 @@ include('Conn.php');
 $role = isset($_GET['role']) ? $_GET['role'] : '';
 
 // Base query for archived users
-$sql = "SELECT * FROM users WHERE archived = 1";
+$sql = "SELECT 
+    USERID, 
+    FNAME, 
+    MNAME, 
+    LNAME, 
+    USERNAME, 
+    EMAIL, 
+    CONTACT, 
+    DATE_FORMAT(DATECREATED, '%Y-%m-%d %r') AS DATECREATED, 
+    ROLE 
+FROM users 
+WHERE archived = 1;
+";
 
 // Apply role filter if selected
 if (!empty($role)) {
