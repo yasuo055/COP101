@@ -1,40 +1,51 @@
 <?php
-include('Conn.php');
 session_start();
+include('Conn.php');
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-  $username = htmlspecialchars($_POST['username'] ?? '', ENT_QUOTES, 'UTF-8');
-  $password = htmlspecialchars($_POST['password'] ?? '', ENT_QUOTES, 'UTF-8');
+    $username = htmlspecialchars($_POST['username'] ?? '', ENT_QUOTES, 'UTF-8');
+    $password = $_POST['password'] ?? '';
 
-  try {
-      $stmt = $connpdo->prepare("SELECT USERID, PASSWORD FROM USERS WHERE USERNAME = :username");
-      $stmt->bindParam(':username', $username);
-      $stmt->execute();
+    try {
+        $stmt = $connpdo->prepare("SELECT USERID, PASSWORD, ROLE FROM USERS WHERE USERNAME = :username");
+        $stmt->bindParam(':username', $username);
+        $stmt->execute();
 
-      if ($stmt->rowCount() > 0) {
-          $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($stmt->rowCount() > 0) {
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-          if (password_verify($password, $user['PASSWORD'])) {
-              $_SESSION['USERID'] = $user['USERID'];
+            // Debugging: Check password values
+            error_log("Entered password: " . $password);
+            error_log("Stored hash: " . $user['PASSWORD']);
 
-              header("Location: User_Homepg.php");
-              exit;
-          } else {
-            echo "<script>alert('Invalid Password');</script>";
-          }
-      } else {
-        echo "<script>alert('No user found with this username.');</script>";
-      }
-  } catch (PDOException $e) {
-      error_log("Login error: " . $e->getMessage());
-      $error = "An error occurred. Please try again.";
-  }
+            if (password_verify($password, $user['PASSWORD'])) {
+                $_SESSION['USERID'] = $user['USERID'];
+                $_SESSION['ROLE'] = $user['ROLE']; // Store role in session
+
+                // Redirect based on role
+                if ($user['ROLE'] === 'Admin') {
+                    header("Location: /administrator/user-management-dashboard.php");
+                } else {
+                    header("Location: User_Homepg.php");
+                }
+                exit;
+            } else {
+                echo "<script>alert('Incorrect Password');</script>";
+            }
+        } else {
+            echo "<script>alert('No user found with this username.');</script>";
+        }
+    } catch (PDOException $e) {
+        error_log("Login error: " . $e->getMessage());
+        $error = "An error occurred. Please try again.";
+    }
 }
 
 if (isset($error)) {
-  echo "<p style='color: red;'>$error</p>";
+    echo "<p style='color: red;'>$error</p>";
 }
 ?>
+
 
 
 <!DOCTYPE html>

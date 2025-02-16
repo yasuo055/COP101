@@ -124,7 +124,7 @@ include('Conn.php');
     </div>
   </a>
     <div class="bottom-portion">
-      <button class="log-out">
+      <button class="log-out" onclick="logout()">
         <img src="/icon/solar_logout-2-broken.png" class="side-log">
         <p class="log">
           Log Out
@@ -340,6 +340,12 @@ include('Conn.php');
         </div>
     </div>
 
+<!-- LOGOUT -->
+    <script>
+function logout() {
+    window.location.href = "/logout.php"; // Redirect to logout script
+}
+</script>
 
 
  <!-- FOR ARCHIVE FILTER -->
