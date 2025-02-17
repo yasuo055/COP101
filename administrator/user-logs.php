@@ -3,22 +3,22 @@ session_start();
 include('Conn.php');
 
 // Fetch logs from database
-$stmt = $connpdo->query("
-    SELECT 
-    ul.log_id, 
-    ul.USERID, 
-    CONCAT(u.FNAME, ' ', u.MNAME, ' ', u.LNAME) AS NAME, 
-    u.ROLE, 
-    u.EMAIL, 
-    DATE_FORMAT(ul.login_time, '%Y-%m-%d %h:%i:%s %p') AS login_time, 
-    DATE_FORMAT(ul.logout_time, '%Y-%m-%d %h:%i:%s %p') AS logout_time
-FROM user_logs ul
-JOIN USERS u ON ul.USERID = u.USERID
-ORDER BY ul.login_time DESC;
+// $stmt = $connpdo->query("
+//     SELECT 
+//     ul.log_id, 
+//     ul.USERID, 
+//     CONCAT(u.FNAME, ' ', u.MNAME, ' ', u.LNAME) AS NAME, 
+//     u.ROLE, 
+//     u.EMAIL, 
+//     DATE_FORMAT(ul.login_time, '%Y-%m-%d %h:%i:%s %p') AS login_time, 
+//     DATE_FORMAT(ul.logout_time, '%Y-%m-%d %h:%i:%s %p') AS logout_time
+// FROM user_logs ul
+// JOIN USERS u ON ul.USERID = u.USERID
+// ORDER BY ul.login_time DESC;
 
-");
+// ");
 
-$logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+// $logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -38,6 +38,8 @@ $logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="/style-table.css">
   <link rel="icon" href="/icon/PONDTECH__2_-removebg-preview 2.png">
+  <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
+
   <title>Aqua Sense</title>
 </head>
 
@@ -150,60 +152,159 @@ $logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </p>
     <div class="sub-header-report-dashboard">
       <div class="left-portion-sub-header-dashboard">
-        <input type="text" placeholder="Search" class="search-notification-dashboard" style="margin-right: 10px;">
-        <button class="all-btn-report" style="margin-right: 10px;">
-          All <img src="/icon/gridicons_dropdown.png" style="width: 25px;">
-        </button>
-        <button class="today-btn-report" style="margin-right: 10px;">
-          Role <img src="/icon/gridicons_dropdown.png" style="width: 25px;">
-        </button>
-        <button class="today-btn-report" style="margin-right: 10px;">
-          Today <img src="/icon/gridicons_dropdown.png" style="width: 25px;">
-        </button>
-        <button class="month-btn-report" style="margin-right: 10px;">
-          Month <img src="/icon/gridicons_dropdown.png" style="width: 25px;">
-        </button>
-        <button class="day-btn-report" style="margin-right: 10px;">
-          Day <img src="/icon/gridicons_dropdown.png" style="width: 25px;">
-        </button>
-        <button class="year-btn-report" style="margin-right: 200px;">
-          Year <img src="/icon/gridicons_dropdown.png" style="width: 25px;">
-        </button>
-        <button class="print-btn-report-dashboard">
-          Print <img src="/icon/🦆 icon _print_.png" style="width: 20px;">
-        </button>
+      <input type="text" id="searchInput" placeholder="Search..." class="search-notification-dashboard">
+
+<!-- Role Filter -->
+<select id="User-Logs-roleFilter">
+    <option value="">All Roles</option>
+    <option value="admin">Admin</option>
+    <option value="user">User</option>
+</select>
+
+ <!-- Filter Dropdowns -->
+ <select id="todayFilter" onchange="applyFilter()">
+    <option value="">Today</option>
+    <option value="1hour">Last 1 Hour</option>
+    <option value="4hours">Last 4 Hours</option>
+    <option value="8hours">Last 8 Hours</option>
+</select>
+
+<select id="dayFilter" onchange="applyFilter()">
+    <option value="">All Day</option>
+    <option value="1day">1 Day Ago</option>
+    <option value="2days">2 Days Ago</option>
+    <option value="3days">3 Days Ago</option>
+    <option value="4days">4 Days Ago</option>
+    <option value="5days">5 Days Ago</option>
+    <option value="6days">6 Days Ago</option>
+    <option value="7days">7 Days Ago</option>
+</select>
+
+<!-- Month Filter -->
+<select id="monthFilter">
+    <option value="">Month</option>
+    <option value="1">January</option>
+    <option value="2">February</option>
+    <option value="3">March</option>
+    <option value="4">April</option>
+    <option value="5">May</option>
+    <option value="6">June</option>
+    <option value="7">July</option>
+    <option value="8">August</option>
+    <option value="9">September</option>
+    <option value="10">October</option>
+    <option value="11">November</option>
+    <option value="12">December</option>
+</select>
+
+<!-- Year Filter -->
+<select id="yearFilter">
+    <option value="">Year</option>
+    <option value="1year">1 Year Ago</option>
+    <option value="2years">2 Years Ago</option>
+    <option value="3years">3 Years Ago</option>
+</select>
+
+<!-- Reset Button -->
+<button id="resetBtn">Reset Filters</button>
+
+<!-- Print Button -->
+<button class="print-btn" onclick="window.print()">Print</button>
       </div>
     </div>
 
     <div class="contents-attendance-logs-administrator">
       <div class="head-content-attendance-logs-administrator">
         
-     
+    <!-- Logs Table -->
 <table>
-    <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Role</th>
-        <th>Email</th>
-        <th>Login Time</th>
-        <th>Logout Time</th>
-    </tr>
-    <?php foreach ($logs as $log): ?>
-    <tr>
-        <td><?= htmlspecialchars($log['USERID']) ?></td>
-        <td><?= htmlspecialchars($log['NAME']) ?></td>
-        <td><?= htmlspecialchars($log['ROLE']) ?></td>
-        <td><?= htmlspecialchars($log['EMAIL']) ?></td>
-        <td><?= htmlspecialchars($log['login_time']) ?></td>
-        <td><?= $log['logout_time'] ? htmlspecialchars($log['logout_time']) : 'Still logged in' ?></td>
-    </tr>
-    <?php endforeach; ?>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Role</th>
+            <th>Email</th>
+            <th>Login Time</th>
+            <th>Logout Time</th>
+        </tr>
+    </thead>
+    <tbody id="logData">
+        <!-- Filtered results will be loaded here -->
+    </tbody>
 </table>
+
       
       
+
       
       
     </div>
   </div>
+
+  <script>
+function applyFilter() {
+    let todayFilter = document.getElementById("todayFilter").value;
+    let dayFilter = document.getElementById("dayFilter").value;
+
+    // Send AJAX request to PHP
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", "fetch_logs.php", true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            document.getElementById("logData").innerHTML = xhr.responseText;
+        }
+    };
+    xhr.send("todayFilter=" + todayFilter + "&dayFilter=" + dayFilter);
+}
+
+// Call applyFilter initially to populate logs
+window.onload = applyFilter;
+
+// Reset Button functionality
+document.getElementById('resetBtn').addEventListener('click', function() {
+    // Reset the dropdown values to their default state
+    document.getElementById('todayFilter').value = ''; // Reset the "Today" dropdown
+    document.getElementById('dayFilter').value = '';   // Reset the "Day" dropdown
+
+    // Optionally, reload the page to reset the table data from the server
+    window.location.reload(); // This will reload the page and reset everything (filters and table)
+
+    // Alternatively, if you have dynamic filtering using AJAX, you can reset the table with an empty query:
+    // resetTable(); // Uncomment and implement this if needed for dynamic table updates without page reload
+});
+
+// If you're dynamically filtering the table with JS, you could define resetTable like this:
+
+function resetTable() {
+    const tableBody = document.querySelector('tbody');
+    // Remove all rows from the table (except the headers)
+    tableBody.innerHTML = '';
+    
+    // Optionally, you could send an AJAX request to fetch all logs without filters
+    // For example, using the current PHP backend (example pseudocode):
+    /*
+    fetch('your_php_backend_url.php')
+        .then(response => response.json())
+        .then(data => {
+            // Update the table with the data from the server
+            data.forEach(log => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${log.USERID}</td>
+                    <td>${log.NAME}</td>
+                    <td>${log.ROLE}</td>
+                    <td>${log.EMAIL}</td>
+                    <td>${log.login_time}</td>
+                    <td>${log.logout_time || 'Still logged in'}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        })
+        .catch(error => console.error('Error fetching data:', error));
+    */
+}
+
+</script>
 </body>
 </html>
