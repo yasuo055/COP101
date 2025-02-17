@@ -5,7 +5,18 @@ include 'Conn.php'; // Include your PDO database connection
 $role = isset($_POST['role']) ? trim($_POST['role']) : '';
 
 // Base SQL Query
-$sql = "SELECT * FROM users WHERE archived != 1";
+$sql = "SELECT 
+    USERID, 
+    FNAME, 
+    MNAME, 
+    LNAME, 
+    USERNAME, 
+    EMAIL, 
+    CONTACT, 
+    DATE_FORMAT(DATECREATED, '%Y-%m-%d %r') AS DATECREATED, 
+    ROLE 
+FROM users 
+WHERE archived != 1";
 $params = [];
 
 if (!empty($role)) {
