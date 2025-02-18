@@ -7,10 +7,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $password = $_POST['password'] ?? '';
 
     try {
-        // ✅ Corrected SQL Query
+        // ✅ Fetch only users who are not archived (ARCHIVED = 0)
         $stmt = $connpdo->prepare("
-            SELECT USERID, CONCAT(FNAME, ' ', MNAME, ' ', LNAME) AS NAME, PASSWORD, ROLE, EMAIL 
-            FROM USERS WHERE USERNAME = :username
+            SELECT USERID, CONCAT(FNAME, ' ', MNAME, ' ', LNAME) AS NAME, PASSWORD, ROLE, EMAIL, ARCHIVED 
+            FROM USERS 
+            WHERE USERNAME = :username AND ARCHIVED = 0
         ");
 
         $stmt->bindParam(':username', $username);
@@ -19,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         if ($stmt->rowCount() > 0) {
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            // Debugging: Check password values
+            // Debugging: Check password values (Remove in production)
             error_log("Entered password: " . $password);
             error_log("Stored hash: " . $user['PASSWORD']);
 
@@ -50,7 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 echo "<script>alert('Incorrect Password');</script>";
             }
         } else {
-            echo "<script>alert('No user found with this username.');</script>";
+            echo "<script>alert('No active user found with this username. If you were archived, contact an administrator.');</script>";
         }
     } catch (PDOException $e) {
         error_log("Login error: " . $e->getMessage());
