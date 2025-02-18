@@ -175,15 +175,18 @@ include('Conn.php');
     </button>
           </div>
           <div class="right-portion-user-management-dashboard">
-            <p style="font-size: 13px; margin-right: 10px;">
-              Filter By:
-            </p>
-            <select id="statusFilterActive">
-              <option value="">All Status</option>
-              <option value="active">Active</option>
-              <option value="archived">Archived</option>
-              <option value="deleted">Deleted</option>
+          <p style="font-size: 13px; margin-right: 10px;">
+            Filter By:
+          </p>
+
+          <select id="statusFilterActive">
+            <option value="">Select Time Period</option>
+            <option value="today">Today</option>
+            <option value="day">Day</option>
+            <option value="week">Week</option>
+            <option value="month">Month</option>
           </select>
+
           <select id="roleFilterActive">
               <option value="">All Roles</option>
               <option value="admin">Admin</option>
@@ -471,6 +474,48 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 </script>
+
+<!-- FOR FILTER TIME PERIOD -->
+
+<script>
+$(document).ready(function () {
+    // Function to fetch and update users based on selected time period
+    function fetchUsersByTimePeriod(timePeriod) {
+        $("#loading").show(); // Show loading indicator
+        $.ajax({
+            url: "fetch-users.php", // Make sure this file correctly handles time period filtering
+            type: "POST",
+            data: { timePeriod: timePeriod },
+            success: function (response) {
+                $("#userTable tbody").html(response);
+                $("#loading").hide(); // Hide loading indicator
+            },
+            error: function () {
+                alert("Error fetching users based on time period.");
+                $("#loading").hide();
+            }
+        });
+    }
+
+    // Trigger filter when time period dropdown changes
+    $("#statusFilterActive").change(function () {
+        var selectedTimePeriod = $(this).val();
+        fetchUsersByTimePeriod(selectedTimePeriod);
+        $("#resetFilterActive").prop("disabled", selectedTimePeriod === ""); // Disable reset if no filter applied
+    });
+
+    // Reset filter
+    $("#resetFilterActive").click(function () {
+        $("#statusFilterActive").val(""); // Reset dropdown to default "Select Time Period"
+        fetchUsersByTimePeriod(""); // Fetch all users
+        $(this).prop("disabled", true); // Disable reset button
+    });
+
+    // Initial load (optional)
+    fetchUsersByTimePeriod(""); // Load all users on page load
+});
+</script>
+
  
 
     <!-- FOR FILTER ACTIVE USER-->
