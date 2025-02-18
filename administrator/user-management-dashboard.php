@@ -141,7 +141,7 @@ include('Conn.php');
       
     <div class="head-user-management-dashboard">
     <button class="tab-item" id="all-user">All User</button>
-    <button class="tab-item" id="request">Request</button>
+    <!-- <button class="tab-item" id="request">Request</button> -->
     <button class="tab-item" id="archive">Archive</button>
 </div>
 
@@ -169,7 +169,10 @@ include('Conn.php');
     
     <div class="middle-sub-header-user-management-dashboard">
           <div class="left-portion-user-management-dashboard">
+          <button class="btn-user-management-add-user" onclick="openModal()">
           
+        <img src="/icon/Vector (25).png" style="width: 15px; margin-right: 5px;">Add User
+    </button>
           </div>
           <div class="right-portion-user-management-dashboard">
             <p style="font-size: 13px; margin-right: 10px;">
@@ -301,7 +304,8 @@ include('Conn.php');
     <div id="loading" style="display:none;">Loading...</div>
     </div>
 </div>
-   
+
+
 
   <!-- Edit User Modal -->
   <div id="editUserModal" class="modal">
@@ -312,33 +316,115 @@ include('Conn.php');
                 <input type="hidden" id="userid" name="userid">
                 
                 <label>First Name:</label>
-                <input type="text" id="fname" name="fname" required><br>
+                <input type="text" id="fname" name="fname" pattern="[A-Za-z]+" title="Letters only" placeholder="e.g., John" required><br>
 
                 <label>Middle Name:</label>
-                <input type="text" id="mname" name="mname"><br>
+                <input type="text" id="mname" name="mname" pattern="[A-Za-z]+" title="Letters only" placeholder="e.g., Michael"><br>
 
                 <label>Last Name:</label>
-                <input type="text" id="lname" name="lname" required><br>
+                <input type="text" id="lname" name="lname" pattern="[A-Za-z]+" title="Letters only" placeholder="e.g., Doe" required><br>
 
                 <label>Username:</label>
-                <input type="text" id="username" name="username" required><br>
+                <input type="text" id="username" name="username" pattern="[A-Za-z]+" title="Letters only" placeholder="e.g., johndoe" required><br>
 
                 <label>Email:</label>
-                <input type="email" id="email" name="email" required><br>
+                <input type="email" id="email" name="email" placeholder="e.g., johndoe@example.com" required><br>
 
                 <label>Contact Number:</label>
-                <input type="text" id="contact" name="contact"><br>
+                <input type="text" id="contact" name="contact" pattern="[0-9]+" title="Numbers only" placeholder="e.g., 09123456789" required><br>
 
                 <label>Role:</label>
                 <select id="role" name="role" required>
+                    <option value="" disabled selected>Select a role</option>
                     <option value="Admin">Admin</option>
                     <option value="User">User</option>
                 </select><br>
+
+
 
                 <button type="submit">Update User</button>
             </form>
         </div>
     </div>
+
+    <!-- ADD USER MODAL -->
+    <div id="addUserModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <h2>Add User</h2>
+        <form id="addUserForm">
+
+        <label>First Name:</label>
+        <input type="text" id="fname" name="fname" pattern="[A-Za-z]+" title="Letters only" placeholder="e.g., John" required><br>
+
+        <label>Middle Name:</label>
+        <input type="text" id="mname" name="mname" pattern="[A-Za-z]+" title="Letters only" placeholder="e.g., Michael"><br>
+
+        <label>Last Name:</label>
+        <input type="text" id="lname" name="lname" pattern="[A-Za-z]+" title="Letters only" placeholder="e.g., Doe" required><br>
+
+        <label>Username:</label>
+        <input type="text" id="username" name="username" pattern="[A-Za-z]+" title="Letters only" placeholder="e.g., johndoe" required><br>
+
+        <label>Email:</label>
+        <input type="email" id="email" name="email" placeholder="e.g., johndoe@example.com" required><br>
+
+        <label>Contact Number:</label>
+        <input type="text" id="contact" name="contact" pattern="[0-9]+" title="Numbers only" placeholder="e.g., 09123456789" required><br>
+
+        <label>Role:</label>
+        <select id="role" name="role" required>
+            <option value="" disabled selected>Select a role</option>
+            <option value="Admin">Admin</option>
+            <option value="User">User</option>
+        </select><br>
+
+
+
+            <button type="submit">Add User</button>
+        </form>
+    </div>
+</div>
+
+
+    <!-- ADD USER  -->
+    <script>
+        function openModal() {
+            document.getElementById("addUserModal").style.display = "block";
+        }
+        function closeModal() {
+            document.getElementById("addUserModal").style.display = "none";
+        }
+
+        // Handle form submission with Fetch API
+document.getElementById("addUserForm").addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const formData = new FormData(this);
+    const submitButton = this.querySelector("button[type='submit']");
+    submitButton.disabled = true; // Prevent double submission
+
+    try {
+        const response = await fetch("add-user.php", {
+            method: "POST",
+            body: formData
+        });
+
+        const result = await response.text();
+        alert(result);
+        document.getElementById("addUserModal").style.display = "none";
+        loadUsers(); // Refresh table after adding a new user
+    } catch (error) {
+        console.error("Error adding user:", error);
+        alert("Failed to add user. Please try again.");
+    } finally {
+        submitButton.disabled = false;
+    }
+});
+
+    </script>
+
+   
 
 <!-- LOGOUT -->
     <script>
