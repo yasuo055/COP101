@@ -152,10 +152,10 @@ include('Conn.php');
     </p>
     <div class="sub-header-report-dashboard">
       <div class="left-portion-sub-header-dashboard">
-      <input type="text" id="searchInput" placeholder="Search..." class="search-notification-dashboard">
+      <input type="text" id="searchInput" placeholder="Search by name or ID" class="search-notification-dashboard">
 
 <!-- Role Filter -->
-<select id="User-Logs-roleFilter">
+<select id="User-Logs-roleFilter"  onchange="applyFilter()">
     <option value="">All Roles</option>
     <option value="admin">Admin</option>
     <option value="user">User</option>
@@ -241,13 +241,33 @@ include('Conn.php');
       
     </div>
   </div>
+  
+  <script>
+   document.getElementById("searchInput").addEventListener("input", function() {
+    var searchQuery = this.value;
+
+    // Make an AJAX request to fetch_logs.php with the search query
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "fetch_logs.php", true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            // Update the table body with the fetched data
+            document.querySelector("tbody").innerHTML = xhr.responseText;
+        }
+    };
+    xhr.send("searchQuery=" + encodeURIComponent(searchQuery));
+});
+
+  </script>
 
   <script>
 function applyFilter() {
     let todayFilter = document.getElementById("todayFilter").value;
     let dayFilter = document.getElementById("dayFilter").value;
     let monthFilter = document.getElementById("monthFilter").value;
-    let yearFilter = document.getElementById("yearFilter").value; // New Year Filter
+    let yearFilter = document.getElementById("yearFilter").value;
+    let roleFilter = document.getElementById("User-Logs-roleFilter").value; // Added Role Filter
 
     // Send AJAX request to PHP
     let xhr = new XMLHttpRequest();
@@ -258,23 +278,33 @@ function applyFilter() {
             document.getElementById("logData").innerHTML = xhr.responseText;
         }
     };
-    xhr.send("todayFilter=" + todayFilter + "&dayFilter=" + dayFilter + "&monthFilter=" + monthFilter + "&yearFilter=" + yearFilter);
+    xhr.send(
+        "todayFilter=" + todayFilter +
+        "&dayFilter=" + dayFilter +
+        "&monthFilter=" + monthFilter +
+        "&yearFilter=" + yearFilter +
+        "&roleFilter=" + roleFilter // Include Role Filter
+    );
 }
 
 // Call applyFilter initially to populate logs
-window.onload = applyFilter;
+window.onload = function() {
+    populateYearFilter();
+    applyFilter(); // Load logs initially
+};
 
 // Listen for changes on the filters
 document.getElementById("monthFilter").addEventListener("change", applyFilter);
-document.getElementById("yearFilter").addEventListener("change", applyFilter); // Added Year Filter
+document.getElementById("yearFilter").addEventListener("change", applyFilter);
+document.getElementById("User-Logs-roleFilter").addEventListener("change", applyFilter); // Added Role Filter Event
 
 // Reset Button functionality
 document.getElementById('resetBtn').addEventListener('click', function() {
-    // Reset the dropdown values to their default state
     document.getElementById('todayFilter').value = ''; 
     document.getElementById('dayFilter').value = '';   
     document.getElementById('monthFilter').value = ''; 
-    document.getElementById('yearFilter').value = ''; // Reset the Year Filter
+    document.getElementById('yearFilter').value = ''; 
+    document.getElementById('User-Logs-roleFilter').value = ''; // Reset the Role Filter
 
     // Optionally, reload the page to reset the table data from the server
     window.location.reload();
@@ -284,13 +314,13 @@ document.getElementById('resetBtn').addEventListener('click', function() {
 function populateYearFilter() {
     let yearFilter = document.getElementById("yearFilter");
     let currentYear = new Date().getFullYear();
-    let startYear = 2020; // Change this to your desired base year
+    let startYear = 2024; // Change this to your desired base year
 
     // Clear existing options
     yearFilter.innerHTML = '<option value="">Year</option>';
 
-    // Generate options from startYear to currentYear + 5
-    for (let year = startYear; year <= currentYear + 5; year++) {
+    // Generate options from startYear to currentYear + 3
+    for (let year = startYear; year <= currentYear + 3; year++) {
         let option = document.createElement("option");
         option.value = year;
         option.textContent = year;
@@ -298,11 +328,6 @@ function populateYearFilter() {
     }
 }
 
-// Call the function to populate the Year Filter
-window.onload = function() {
-    populateYearFilter();
-    applyFilter(); // Load logs initially
-};
 
 </script>
 </body>

@@ -4,8 +4,10 @@ include('Conn.php');
 // Get filters from POST request
 $todayFilter = $_POST['todayFilter'] ?? '';
 $dayFilter = $_POST['dayFilter'] ?? '';
-$monthFilter = isset($_POST['monthFilter']) ? $_POST['monthFilter'] : ''; // New Month Filter
-$yearFilter = isset($_POST['yearFilter']) ? $_POST['yearFilter'] : ''; // New Year Filter
+$monthFilter = isset($_POST['monthFilter']) ? $_POST['monthFilter'] : ''; // Month Filter
+$yearFilter = isset($_POST['yearFilter']) ? $_POST['yearFilter'] : ''; // Year Filter
+$roleFilter = isset($_POST['roleFilter']) ? $_POST['roleFilter'] : ''; // Role Filter
+$searchQuery = isset($_POST['searchQuery']) ? trim($_POST['searchQuery']) : ''; // New Search Query
 
 
 // Set the base query to select log details
@@ -20,6 +22,17 @@ $query = "SELECT ul.log_id, ul.USERID,
 
 // Prepare an array to bind parameters
 $bindParams = [];
+
+// Apply the Search Filter for ID and Name
+if (!empty($searchQuery)) {
+    $query .= " AND (ul.USERID LIKE ? OR 
+                     u.FNAME LIKE ? OR 
+                     u.MNAME LIKE ? OR 
+                     u.LNAME LIKE ? OR 
+                     CONCAT(u.FNAME, ' ', u.MNAME, ' ', u.LNAME) LIKE ?)";
+    $searchParam = '%' . $searchQuery . '%';
+    array_push($bindParams, $searchParam, $searchParam, $searchParam, $searchParam, $searchParam);
+}
 
 // Apply the "Today" filter based on the dropdown value
 if (!empty($todayFilter)) {
@@ -37,12 +50,11 @@ if (!empty($todayFilter)) {
             $query .= " AND MONTH(ul.login_time) = MONTH(CURDATE())";
             break;
         default:
-            // No specific time period filter
             break;
     }
 }
 
-// Apply the "Day" filter based on the dropdown value
+// Apply the "Day" filter
 if ($dayFilter) {
     if ($dayFilter === "1day") {
         $query .= " AND ul.login_time >= NOW() - INTERVAL 1 DAY";
@@ -67,9 +79,16 @@ if (!empty($monthFilter)) {
     $bindParams[] = $monthFilter;
 }
 
-// Apply the "Year" filter
+// Apply the Year Filter
 if (!empty($yearFilter)) {
-    $query .= " AND YEAR(ul.login_time) = " . intval($yearFilter);
+    $query .= " AND YEAR(ul.login_time) = ?";
+    $bindParams[] = $yearFilter;
+}
+
+// Apply the Role Filter
+if (!empty($roleFilter)) {
+    $query .= " AND u.ROLE = ?";
+    $bindParams[] = $roleFilter;
 }
 
 // Finalize the query with ORDER BY clause
@@ -93,6 +112,4 @@ if ($stmt->rowCount() > 0) {
 } else {
     echo "<tr><td colspan='6'>No logs found</td></tr>";
 }
-
-
 ?>
