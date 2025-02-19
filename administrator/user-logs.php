@@ -161,13 +161,14 @@ include('Conn.php');
     <option value="user">User</option>
 </select>
 
- <!-- Filter Dropdowns -->
- <select id="todayFilter" onchange="applyFilter()">
-    <option value="">Today</option>
-    <option value="1hour">Last 1 Hour</option>
-    <option value="4hours">Last 4 Hours</option>
-    <option value="8hours">Last 8 Hours</option>
+
+<select id="todayFilter" onchange="applyFilter()">
+            <option value="">Select Time Period</option>
+            <option value="today">Today</option>
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
 </select>
+
 
 <select id="dayFilter" onchange="applyFilter()">
     <option value="">All Day</option>
@@ -181,7 +182,7 @@ include('Conn.php');
 </select>
 
 <!-- Month Filter -->
-<select id="monthFilter">
+<select id="monthFilter" onchange="applyFilter()">
     <option value="">Month</option>
     <option value="1">January</option>
     <option value="2">February</option>
@@ -198,11 +199,11 @@ include('Conn.php');
 </select>
 
 <!-- Year Filter -->
-<select id="yearFilter">
+<select id="yearFilter" onchange="applyFilter()">
     <option value="">Year</option>
-    <option value="1year">1 Year Ago</option>
-    <option value="2years">2 Years Ago</option>
-    <option value="3years">3 Years Ago</option>
+    <option value="2025">2025</option>
+    <option value="2026">2026</option>
+    <option value="2027">2027</option>
 </select>
 
 <!-- Reset Button -->
@@ -245,6 +246,8 @@ include('Conn.php');
 function applyFilter() {
     let todayFilter = document.getElementById("todayFilter").value;
     let dayFilter = document.getElementById("dayFilter").value;
+    let monthFilter = document.getElementById("monthFilter").value;
+    let yearFilter = document.getElementById("yearFilter").value; // New Year Filter
 
     // Send AJAX request to PHP
     let xhr = new XMLHttpRequest();
@@ -255,55 +258,51 @@ function applyFilter() {
             document.getElementById("logData").innerHTML = xhr.responseText;
         }
     };
-    xhr.send("todayFilter=" + todayFilter + "&dayFilter=" + dayFilter);
+    xhr.send("todayFilter=" + todayFilter + "&dayFilter=" + dayFilter + "&monthFilter=" + monthFilter + "&yearFilter=" + yearFilter);
 }
 
 // Call applyFilter initially to populate logs
 window.onload = applyFilter;
 
+// Listen for changes on the filters
+document.getElementById("monthFilter").addEventListener("change", applyFilter);
+document.getElementById("yearFilter").addEventListener("change", applyFilter); // Added Year Filter
+
 // Reset Button functionality
 document.getElementById('resetBtn').addEventListener('click', function() {
     // Reset the dropdown values to their default state
-    document.getElementById('todayFilter').value = ''; // Reset the "Today" dropdown
-    document.getElementById('dayFilter').value = '';   // Reset the "Day" dropdown
+    document.getElementById('todayFilter').value = ''; 
+    document.getElementById('dayFilter').value = '';   
+    document.getElementById('monthFilter').value = ''; 
+    document.getElementById('yearFilter').value = ''; // Reset the Year Filter
 
     // Optionally, reload the page to reset the table data from the server
-    window.location.reload(); // This will reload the page and reset everything (filters and table)
-
-    // Alternatively, if you have dynamic filtering using AJAX, you can reset the table with an empty query:
-    // resetTable(); // Uncomment and implement this if needed for dynamic table updates without page reload
+    window.location.reload();
 });
 
-// If you're dynamically filtering the table with JS, you could define resetTable like this:
+// Function to dynamically populate the Year Filter
+function populateYearFilter() {
+    let yearFilter = document.getElementById("yearFilter");
+    let currentYear = new Date().getFullYear();
+    let startYear = 2020; // Change this to your desired base year
 
-function resetTable() {
-    const tableBody = document.querySelector('tbody');
-    // Remove all rows from the table (except the headers)
-    tableBody.innerHTML = '';
-    
-    // Optionally, you could send an AJAX request to fetch all logs without filters
-    // For example, using the current PHP backend (example pseudocode):
-    /*
-    fetch('your_php_backend_url.php')
-        .then(response => response.json())
-        .then(data => {
-            // Update the table with the data from the server
-            data.forEach(log => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${log.USERID}</td>
-                    <td>${log.NAME}</td>
-                    <td>${log.ROLE}</td>
-                    <td>${log.EMAIL}</td>
-                    <td>${log.login_time}</td>
-                    <td>${log.logout_time || 'Still logged in'}</td>
-                `;
-                tableBody.appendChild(row);
-            });
-        })
-        .catch(error => console.error('Error fetching data:', error));
-    */
+    // Clear existing options
+    yearFilter.innerHTML = '<option value="">Year</option>';
+
+    // Generate options from startYear to currentYear + 5
+    for (let year = startYear; year <= currentYear + 5; year++) {
+        let option = document.createElement("option");
+        option.value = year;
+        option.textContent = year;
+        yearFilter.appendChild(option);
+    }
 }
+
+// Call the function to populate the Year Filter
+window.onload = function() {
+    populateYearFilter();
+    applyFilter(); // Load logs initially
+};
 
 </script>
 </body>
