@@ -182,9 +182,9 @@ include('Conn.php');
           <select id="statusFilterActive">
             <option value="">Select Time Period</option>
             <option value="today">Today</option>
-            <option value="day">Day</option>
-            <option value="week">Week</option>
-            <option value="month">Month</option>
+            <!-- <option value="day">Day</option> -->
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
           </select>
 
           <select id="roleFilterActive">
@@ -556,7 +556,7 @@ $(document).ready(function () {
     });
 
     // Initial load (optional)
-    fetchUsersByTimePeriod(""); // Load all users on page load
+    fetchUsersByTimePeriod(""); // Load all users on page load  
 });
 </script>
 
