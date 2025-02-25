@@ -327,33 +327,33 @@ include('Conn.php');
     <div class="modal-content">
         <span class="close-btn" onclick="closeModal()">&times;</span>
         <h2>Add User</h2>
+
         <form id="addUserForm">
 
-        <label>First Name:</label>
-        <input type="text" id="fname" name="fname" pattern="[A-Za-z]+" title="Letters only" placeholder="e.g., John" required><br>
+          <label>First Name:</label>
+      <input type="text" id="fname" name="fname" pattern="[A-Za-z\s]+" title="Letters and spaces only" placeholder="e.g., John Michael" required><br>
 
-        <label>Middle Name:</label>
-        <input type="text" id="mname" name="mname" pattern="[A-Za-z]+" title="Letters only" placeholder="e.g., Michael"><br>
+      <label>Middle Name (Optional):</label>
+      <input type="text" id="mname" name="mname" pattern="[A-Za-z]+" title="Letters only" placeholder="e.g., Michael"><br>
 
-        <label>Last Name:</label>
-        <input type="text" id="lname" name="lname" pattern="[A-Za-z]+" title="Letters only" placeholder="e.g., Doe" required><br>
+      <label>Last Name:</label>
+      <input type="text" id="lname" name="lname" pattern="[A-Za-z]+" title="Letters only" placeholder="e.g., Doe" required><br>
 
-        <label>Username:</label>
-        <input type="text" id="username" name="username" pattern="[A-Za-z]+" title="Letters only" placeholder="e.g., johndoe" required><br>
+      <label>Username:</label>
+      <input type="text" id="username" name="username" pattern="[A-Za-z0-9_ ]+" title="Letters, numbers, underscores, and spaces only" placeholder="e.g., john_doe" required><br>
 
-        <label>Email:</label>
-        <input type="email" id="email" name="email" placeholder="e.g., johndoe@example.com" required><br>
+      <label>Email:</label>
+      <input type="email" id="email" name="email" placeholder="e.g., johndoe@example.com" required><br>
 
-        <label>Contact Number:</label>
-        <input type="text" id="contact" name="contact" pattern="[0-9]+" title="Numbers only" placeholder="e.g., 09123456789" required><br>
+      <label>Contact Number:</label>
+      <input type="text" id="contact" name="contact" pattern="09[0-9]{9}" title="Must start with '09' and contain exactly 11 digits" placeholder="e.g., 09123456789" required><br>
 
-        <label>Role:</label>
-        <select id="role" name="role" required>
-            <option value="" disabled selected>Select a role</option>
-            <option value="Admin">Admin</option>
-            <option value="User">User</option>
-        </select><br>
-
+      <label>Role:</label>
+      <select id="role" name="role" required>
+          <option value="" disabled selected>Select a role</option>
+          <option value="Admin">Admin</option>
+          <option value="User">User</option>
+      </select><br> 
 
 
             <button type="submit">Add User</button>
@@ -361,22 +361,67 @@ include('Conn.php');
     </div>
 </div>
 
+<!-- <script>
+      document.getElementById('addUserForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent actual form submission for testing
+
+        const form = document.getElementById('userForm');
+        const firstName = document.getElementById('fname').value.trim();
+        const lastName = document.getElementById('lname').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const contact = document.getElementById('contact').value.trim();
+        const role = document.getElementById('role').value;
+
+        let errors = [];
+
+        if (firstName === "" || lastName === "") {
+            errors.push("First and last name are required.");
+        }
+
+        if (!email.includes("@")) {
+            errors.push("Please enter a valid email address.");
+        }
+
+        if (contact.length !== 11 || !/^09\d{9}$/.test(contact)) {
+            errors.push("Contact number must start with '09' and have exactly 11 digits.");
+        }
+
+        if (!role) {
+            errors.push("Please select a role.");
+        }
+
+        if (errors.length > 0) {
+            alert(errors.join("\n"));
+        } else {
+            alert("Form submitted successfully!");
+            location.reload(); // Reload the page after successful submission
+        }
+    });
+</script> -->
+
 
     <!-- ADD USER  -->
     <script>
-        function openModal() {
-            document.getElementById("addUserModal").style.display = "block";
-        }
-        function closeModal() {
-            document.getElementById("addUserModal").style.display = "none";
-        }
+       function openModal() {
+    document.getElementById("addUserModal").style.display = "block";
+}
 
-        // Handle form submission with Fetch API
+function closeModal() {
+    document.getElementById("addUserModal").style.display = "none";
+}
+
+// Handle form submission with Fetch API
 document.getElementById("addUserForm").addEventListener("submit", async function(event) {
     event.preventDefault();
 
-    const formData = new FormData(this);
-    const submitButton = this.querySelector("button[type='submit']");
+    const form = this;
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+
+    const formData = new FormData(form);
+    const submitButton = form.querySelector("button[type='submit']");
     submitButton.disabled = true; // Prevent double submission
 
     try {
@@ -387,8 +432,14 @@ document.getElementById("addUserForm").addEventListener("submit", async function
 
         const result = await response.text();
         alert(result);
-        document.getElementById("addUserModal").style.display = "none";
-        loadUsers(); // Refresh table after adding a new user
+
+        if (response.ok) {
+            form.reset(); // Clear form fields
+            document.getElementById("addUserModal").style.display = "none";
+            loadUsers(); // Refresh table after adding a new user
+            // Optional: Reload the page
+            // location.reload();
+        }
     } catch (error) {
         console.error("Error adding user:", error);
         alert("Failed to add user. Please try again.");
