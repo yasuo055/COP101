@@ -227,38 +227,7 @@ include('Conn.php');
   </div>
     </div>
 
-    <div class="content" id="content-request">
-    <div class="middle-sub-header-user-management-dashboard">
-          <div class="left-portion-user-management-dashboard">
-          
-          </div>
-          <div class="right-portion-user-management-dashboard">
-            <p style="font-size: 13px; margin-right: 10px;">
-              Filter By:
-            </p>
-            <select id="statusFilterRequest">
-              <option value="">All Status</option>
-              <option value="active">Active</option>
-              <option value="archived">Archived</option>
-              <option value="deleted">Deleted</option>
-          </select>
 
-          <select id="roleFilteRequest">
-              <option value="">All Roles</option>
-              <option value="admin">Admin</option>
-              <option value="user">User</option>
-              <option value="guest">Guest</option>
-          </select>
-
-          <button id="resetFilterRequest">Reset</button>
-
-            <input type="text" id="Request-Search-Input" placeholder="Search by name, email, or ID" class="search-user-management-database">    
-                </div>
-        </div>
-      
-        <p>Request content here...</p>
-    </div>
-    
 
     <div class="content" id="content-archive">
     <div class="middle-sub-header-user-management-dashboard">
