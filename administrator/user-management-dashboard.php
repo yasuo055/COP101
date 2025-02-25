@@ -361,45 +361,6 @@ include('Conn.php');
     </div>
 </div>
 
-<!-- <script>
-      document.getElementById('addUserForm').addEventListener('submit', function(event) {
-        event.preventDefault(); // Prevent actual form submission for testing
-
-        const form = document.getElementById('userForm');
-        const firstName = document.getElementById('fname').value.trim();
-        const lastName = document.getElementById('lname').value.trim();
-        const email = document.getElementById('email').value.trim();
-        const contact = document.getElementById('contact').value.trim();
-        const role = document.getElementById('role').value;
-
-        let errors = [];
-
-        if (firstName === "" || lastName === "") {
-            errors.push("First and last name are required.");
-        }
-
-        if (!email.includes("@")) {
-            errors.push("Please enter a valid email address.");
-        }
-
-        if (contact.length !== 11 || !/^09\d{9}$/.test(contact)) {
-            errors.push("Contact number must start with '09' and have exactly 11 digits.");
-        }
-
-        if (!role) {
-            errors.push("Please select a role.");
-        }
-
-        if (errors.length > 0) {
-            alert(errors.join("\n"));
-        } else {
-            alert("Form submitted successfully!");
-            location.reload(); // Reload the page after successful submission
-        }
-    });
-</script> -->
-
-
     <!-- ADD USER  -->
     <script>
        function openModal() {
