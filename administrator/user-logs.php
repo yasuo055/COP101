@@ -232,15 +232,84 @@ include('Conn.php');
     <tbody id="logData">
         <!-- Filtered results will be loaded here -->
     </tbody>
+    
 </table>
 
       
-      
+
+<div id="paginationControls"></div>
 
       
       
     </div>
+    
   </div>
+  
+
+  <!-- pagination -->
+  <script>
+let currentPage = 1;
+const rowsPerPage = 10;
+
+function fetchLogs(page = 1) {
+    currentPage = page;
+    
+    const formData = new FormData();
+    formData.append('page', page);
+    formData.append('rowsPerPage', rowsPerPage);
+
+    fetch('fetch_logs.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        renderTable(data.logs);
+        renderPagination(data.totalPages, data.currentPage);
+    })
+    .catch(error => console.error('Error fetching logs:', error));
+}
+
+function renderTable(logs) {
+    const tbody = document.querySelector("#userLogsTable tbody");
+    tbody.innerHTML = "";
+
+    if (logs.length === 0) {
+        tbody.innerHTML = "<tr><td colspan='6'>No logs found</td></tr>";
+    } else {
+        logs.forEach(log => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${log.USERID}</td>
+                    <td>${log.NAME}</td>
+                    <td>${log.ROLE}</td>
+                    <td>${log.EMAIL}</td>
+                    <td>${log.login_time}</td>
+                    <td>${log.logout_time || 'Still logged in'}</td>
+                </tr>
+            `;
+        });
+    }
+}
+
+function renderPagination(totalPages, currentPage) {
+    const paginationControls = document.getElementById("paginationControls");
+    paginationControls.innerHTML = "";
+
+    if (totalPages > 1) {
+        for (let i = 1; i <= totalPages; i++) {
+            const btn = document.createElement("button");
+            btn.innerText = i;
+            btn.className = i === currentPage ? "active" : "";
+            btn.onclick = () => fetchLogs(i);
+            paginationControls.appendChild(btn);
+        }
+    }
+}
+
+fetchLogs();
+
+</script>
   
   <script>
    document.getElementById("searchInput").addEventListener("input", function() {
