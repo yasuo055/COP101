@@ -210,7 +210,7 @@ include('Conn.php');
 <button id="resetBtn">Reset Filters</button>
 
 <!-- Print Button -->
-<button class="print-btn" onclick="window.print()">Print</button>
+<!-- <button class="print-btn" onclick="window.print()">Print</button> -->
       </div>
     </div>
 

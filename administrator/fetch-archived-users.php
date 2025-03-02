@@ -14,6 +14,28 @@ if (!empty($role)) {
     $sql .= " AND ROLE = :role";  // Ensure role is filtered correctly
 }
 
+
+// Apply the "Today" filter based on the dropdown value
+if (!empty($todayFilter)) {
+    switch ($todayFilter) {
+        case 'today':
+            $sql .= " AND DATE(ul.login_time) = CURDATE()";
+            break;
+        case 'day':
+            $sql .= " AND DATEDIFF(CURDATE(), DATE(ul.login_time)) = 1";
+            break;
+        case 'week':
+            $sql .= " AND WEEK(ul.login_time) = WEEK(CURDATE())";
+            break;
+        case 'month':
+            $sql .= " AND MONTH(ul.login_time) = MONTH(CURDATE())";
+            break;
+        default:
+            break;
+    }
+}
+
+
 $stmt = $connpdo->prepare($sql);
 
 if (!empty($role)) {

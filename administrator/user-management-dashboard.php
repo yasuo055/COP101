@@ -239,13 +239,13 @@ include('Conn.php');
               Filter By:
             </p>
 
-            <select id="StatusFilterArchive">
+            <!-- <select id="StatusFilterArchive">
               <option value="">Select Time Period</option>
               <option value="today">Today</option>
               <option value="day">Day</option>
               <option value="week">Week</option>
               <option value="month">Month</option>
-            </select>
+            </select> -->
 
           <select id="roleFilterArchive">
               <option value="">All Roles</option>

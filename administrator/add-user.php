@@ -25,6 +25,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt = $connpdo->prepare($sql);
     $result = $stmt->execute([$fname, $mname, $lname, $username, $password, $email, $contact, $role, $archived, $dateCreated]);
 
-    echo $result ? "User added successfully with default password: $defaultPassword" : "Error adding user.";
+    echo $result ? "User added successfully with default password: $defaultPassword" : "Error adding user."; //comment his if issue arise
 }
 ?>
