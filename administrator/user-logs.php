@@ -2,23 +2,32 @@
 session_start();
 include('Conn.php');
 
-// Fetch logs from database
-// $stmt = $connpdo->query("
-//     SELECT 
-//     ul.log_id, 
-//     ul.USERID, 
-//     CONCAT(u.FNAME, ' ', u.MNAME, ' ', u.LNAME) AS NAME, 
-//     u.ROLE, 
-//     u.EMAIL, 
-//     DATE_FORMAT(ul.login_time, '%Y-%m-%d %h:%i:%s %p') AS login_time, 
-//     DATE_FORMAT(ul.logout_time, '%Y-%m-%d %h:%i:%s %p') AS logout_time
-// FROM user_logs ul
-// JOIN USERS u ON ul.USERID = u.USERID
-// ORDER BY ul.login_time DESC;
+// Pagination logic
+$records_per_page = 5;
+$page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
+$offset = ($page - 1) * $records_per_page;
 
-// ");
+// Fetch records with LIMIT and OFFSET
+$stmt = $connpdo->prepare(
+  "SELECT ul.log_id, ul.USERID, 
+          CONCAT(u.FNAME, ' ', u.MNAME, ' ', u.LNAME) AS NAME, 
+          u.ROLE, u.EMAIL, 
+          DATE_FORMAT(ul.login_time, '%Y-%m-%d %h:%i:%s %p') AS login_time, 
+          DATE_FORMAT(ul.logout_time, '%Y-%m-%d %h:%i:%s %p') AS logout_time
+   FROM user_logs ul
+   JOIN USERS u ON ul.USERID = u.USERID
+   LIMIT ?, ?"
+);
 
-// $logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$stmt->bindValue(1, $offset, PDO::PARAM_INT);
+$stmt->bindValue(2, $records_per_page, PDO::PARAM_INT);
+
+$stmt->execute();
+$records = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Count total records
+$total_records = $connpdo->query('SELECT COUNT(*) FROM user_logs')->fetchColumn();
+$total_pages = ceil($total_records / $records_per_page);
 ?>
 
 <!DOCTYPE html>
@@ -39,7 +48,55 @@ include('Conn.php');
   <link rel="stylesheet" href="/style-table.css">
   <link rel="icon" href="/icon/PONDTECH__2_-removebg-preview 2.png">
   <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
-
+  <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        
+        table {
+            /* width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px; */
+        }
+        
+        table, th, td {
+            /* border: 1px solid #ccc; */
+        }
+        
+        th, td {
+            /* padding: 10px;
+            text-align: left; */
+        }
+        
+        th {
+            /* background-color: #f2f2f2; */
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .pagination a {
+            padding: 10px 15px;
+            margin: 0 5px;
+            text-decoration: none;
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .pagination a:hover {
+            background-color: #0056b3;
+        }
+        
+        .pagination a.active {
+            background-color: #28a745;
+        }
+    </style>
   <title>Aqua Sense</title>
 </head>
 
@@ -120,7 +177,7 @@ include('Conn.php');
       </button>
     </div>
   </a>
-  <a href="user-logs.php">
+  <a href="user-logfetch_logs.php">
     <div class="end-portion-sidebar-admin-3">
       <button class="att-log-admin-btn" style="background-color: #BFEDFE;">
         <img src="/icon/Vector (21).png" class="report-icon-sidebar">
@@ -230,24 +287,42 @@ include('Conn.php');
         </tr>
     </thead>
     <tbody id="logData">
-        <!-- Filtered results will be loaded here -->
+    <?php if ($stmt->rowCount() > 0): ?>
+            <?php foreach ($records as $log): ?>
+                <tr>
+                    <td><?= htmlspecialchars($log['USERID']) ?></td>
+                    <td><?= htmlspecialchars($log['NAME']) ?></td>
+                    <td><?= htmlspecialchars($log['ROLE']) ?></td>
+                    <td><?= htmlspecialchars($log['EMAIL']) ?></td>
+                    <td><?= htmlspecialchars($log['login_time']) ?></td>
+                    <td><?= $log['logout_time'] ? htmlspecialchars($log['logout_time']) : 'Still logged in' ?></td>
+                    <!-- <td>
+                        none
+                       
+                    </td> -->
+                </tr>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <tr><td colspan="7">No logs found</td></tr>
+        <?php endif; ?>
     </tbody>
-    
+   
 </table>
 
-      
-
-<div id="paginationControls"></div>
-
-      
-      
     </div>
     
   </div>
-  
+  <!-- Pagination links -->
+<div class="pagination">
+    <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+        <a href="?page=<?= $i ?>" class="<?= $i === $page ? 'active' : '' ?>">
+            <?= $i ?>
+        </a>
+    <?php endfor; ?>
+</div>
 
   <!-- pagination -->
-  <script>
+  <!-- <script>
 let currentPage = 1;
 const rowsPerPage = 10;
 
@@ -309,7 +384,7 @@ function renderPagination(totalPages, currentPage) {
 
 fetchLogs();
 
-</script>
+</script> -->
   
   <script>
    document.getElementById("searchInput").addEventListener("input", function() {
