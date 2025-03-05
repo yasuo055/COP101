@@ -2,32 +2,33 @@
 session_start();
 include('Conn.php');
 
-// Pagination logic
-$records_per_page = 5;
+
+// Set the number of records per page and calculate offset
+$records_per_page = 8;
 $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $records_per_page;
 
-// Fetch records with LIMIT and OFFSET
-$stmt = $connpdo->prepare(
-  "SELECT ul.log_id, ul.USERID, 
+// Set the base query to select log details with pagination
+$query = "SELECT ul.log_id, ul.USERID, 
           CONCAT(u.FNAME, ' ', u.MNAME, ' ', u.LNAME) AS NAME, 
           u.ROLE, u.EMAIL, 
           DATE_FORMAT(ul.login_time, '%Y-%m-%d %h:%i:%s %p') AS login_time, 
           DATE_FORMAT(ul.logout_time, '%Y-%m-%d %h:%i:%s %p') AS logout_time
    FROM user_logs ul
    JOIN USERS u ON ul.USERID = u.USERID
-   LIMIT ?, ?"
-);
+   LIMIT ?, ?";
 
+// Prepare and execute the statement
+$stmt = $connpdo->prepare($query);
 $stmt->bindValue(1, $offset, PDO::PARAM_INT);
 $stmt->bindValue(2, $records_per_page, PDO::PARAM_INT);
-
 $stmt->execute();
 $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Count total records
+// Count total records for pagination
 $total_records = $connpdo->query('SELECT COUNT(*) FROM user_logs')->fetchColumn();
 $total_pages = ceil($total_records / $records_per_page);
+
 ?>
 
 <!DOCTYPE html>
@@ -288,24 +289,21 @@ $total_pages = ceil($total_records / $records_per_page);
     </thead>
     <tbody id="logData">
     <?php if ($stmt->rowCount() > 0): ?>
-            <?php foreach ($records as $log): ?>
-                <tr>
-                    <td><?= htmlspecialchars($log['USERID']) ?></td>
-                    <td><?= htmlspecialchars($log['NAME']) ?></td>
-                    <td><?= htmlspecialchars($log['ROLE']) ?></td>
-                    <td><?= htmlspecialchars($log['EMAIL']) ?></td>
-                    <td><?= htmlspecialchars($log['login_time']) ?></td>
-                    <td><?= $log['logout_time'] ? htmlspecialchars($log['logout_time']) : 'Still logged in' ?></td>
-                    <!-- <td>
-                        none
-                       
-                    </td> -->
-                </tr>
-            <?php endforeach; ?>
-        <?php else: ?>
-            <tr><td colspan="7">No logs found</td></tr>
-        <?php endif; ?>
-    </tbody>
+        <?php foreach ($records as $log): ?>
+            <tr>
+                <td><?= htmlspecialchars($log['USERID']) ?></td>
+                <td><?= htmlspecialchars($log['NAME']) ?></td>
+                <td><?= htmlspecialchars($log['ROLE']) ?></td>
+                <td><?= htmlspecialchars($log['EMAIL']) ?></td>
+                <td><?= htmlspecialchars($log['login_time']) ?></td>
+                <td><?= $log['logout_time'] ? htmlspecialchars($log['logout_time']) : 'Still logged in' ?></td>
+            </tr>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <tr><td colspan="6">No logs found</td></tr>
+    <?php endif; ?>
+</tbody>
+
    
 </table>
 
@@ -313,13 +311,22 @@ $total_pages = ceil($total_records / $records_per_page);
     
   </div>
   <!-- Pagination links -->
-<div class="pagination">
+  <div class="pagination">
+    <?php if ($page > 1): ?>
+        <a href="?page=<?= $page - 1 ?>">Previous</a>
+    <?php endif; ?>
+
     <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-        <a href="?page=<?= $i ?>" class="<?= $i === $page ? 'active' : '' ?>">
+        <a href="?page=<?= $i ?>" <?= ($i === $page) ? 'class="active"' : '' ?>>
             <?= $i ?>
         </a>
     <?php endfor; ?>
+
+    <?php if ($page < $total_pages): ?>
+        <a href="?page=<?= $page + 1 ?>">Next</a>
+    <?php endif; ?>
 </div>
+
 
   <!-- pagination -->
   <!-- <script>

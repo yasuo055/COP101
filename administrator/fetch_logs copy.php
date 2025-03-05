@@ -9,20 +9,18 @@ $yearFilter = $_REQUEST['yearFilter'] ?? '';
 $roleFilter = $_REQUEST['roleFilter'] ?? '';
 $searchQuery = trim($_REQUEST['searchQuery'] ?? '');
 
-// Pagination logic
-$records_per_page = 8;
-$page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
-$offset = ($page - 1) * $records_per_page;
+// Set limit (adjust as needed)
+$limit = 5;
 
 // Set the base query to select log details
 $query = "SELECT ul.log_id, ul.USERID, 
-          CONCAT(u.FNAME, ' ', u.MNAME, ' ', u.LNAME) AS NAME, 
-          u.ROLE, u.EMAIL, 
-          DATE_FORMAT(ul.login_time, '%Y-%m-%d %h:%i:%s %p') AS login_time, 
-          DATE_FORMAT(ul.logout_time, '%Y-%m-%d %h:%i:%s %p') AS logout_time
-   FROM user_logs ul
-   JOIN users u ON ul.USERID = u.USERID
-   WHERE 1";
+                 CONCAT(u.FNAME, ' ', u.MNAME, ' ', u.LNAME) AS NAME, 
+                 u.ROLE, u.EMAIL, 
+                 DATE_FORMAT(ul.login_time, '%Y-%m-%d %h:%i:%s %p') AS login_time, 
+                 DATE_FORMAT(ul.logout_time, '%Y-%m-%d %h:%i:%s %p') AS logout_time
+          FROM user_logs ul
+          JOIN users u ON ul.USERID = u.USERID
+          WHERE 1";
 
 // Prepare an array to bind parameters
 $bindParams = [];
@@ -38,7 +36,7 @@ if (!empty($searchQuery)) {
     array_push($bindParams, $searchParam, $searchParam, $searchParam, $searchParam, $searchParam);
 }
 
-// Apply filters
+// Apply filters (Today, Day, Month, Year, Role)
 if (!empty($todayFilter)) {
     switch ($todayFilter) {
         case 'today':
@@ -76,25 +74,23 @@ if (!empty($roleFilter)) {
     $bindParams[] = $roleFilter;
 }
 
-// Add pagination
-// Update the query with filters and pagination
-$query .= " ORDER BY ul.login_time DESC LIMIT $offset, $records_per_page";
+// Add ORDER BY and LIMIT
+$limit = isset($_REQUEST['limit']) ? (int)$_REQUEST['limit'] : 5;
+$query .= " ORDER BY ul.login_time DESC LIMIT " . $limit;
 
 
 // Prepare and execute the query
 $stmt = $connpdo->prepare($query);
+
+// Bind the limit as an integer
+$stmt->bindValue(':limit', 100, PDO::PARAM_INT);
+
 $stmt->execute($bindParams);
 
-// Fetch records
-$records = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-// Count total records for pagination
-$total_records = $connpdo->query('SELECT COUNT(*) FROM user_logs')->fetchColumn();
-$total_pages = ceil($total_records / $records_per_page);
 
 // Render logs
 if ($stmt->rowCount() > 0) {
-    foreach ($records as $log) {
+    while ($log = $stmt->fetch(PDO::FETCH_ASSOC)) {
         echo "<tr>
                 <td>" . htmlspecialchars($log['USERID']) . "</td>
                 <td>" . htmlspecialchars($log['NAME']) . "</td>
@@ -109,4 +105,4 @@ if ($stmt->rowCount() > 0) {
 }
 ?>
 
-<!-- Let me know if you want me to add navigation links for pagination or anything else! -->
+<!-- Let me know if you want me to add pagination or tweak the limit further! 🚀 -->
