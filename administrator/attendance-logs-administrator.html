@@ -1,3 +1,43 @@
+<?php
+session_start();
+require_once 'Conn.php';
+if ($connpdo) {
+    echo "Connected to database!";
+} else {
+    echo "Failed to connect to database.";
+}
+
+
+
+
+// Set the number of records per page and calculate offset
+// $records_per_page = 8;
+// $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
+// $offset = ($page - 1) * $records_per_page;
+
+// // Set the base query to select log details with pagination
+// $query = "SELECT ul.log_id, ul.USERID, 
+//           CONCAT(u.FNAME, ' ', u.MNAME, ' ', u.LNAME) AS NAME, 
+//           u.ROLE, u.EMAIL, 
+//           DATE_FORMAT(ul.login_time, '%Y-%m-%d %h:%i:%s %p') AS login_time, 
+//           DATE_FORMAT(ul.logout_time, '%Y-%m-%d %h:%i:%s %p') AS logout_time
+//    FROM user_logs ul
+//    JOIN USERS u ON ul.USERID = u.USERID
+//    LIMIT ?, ?";
+
+// // Prepare and execute the statement
+// $stmt = $connpdo->prepare($query);
+// $stmt->bindValue(1, $offset, PDO::PARAM_INT);
+// $stmt->bindValue(2, $records_per_page, PDO::PARAM_INT);
+// $stmt->execute();
+// $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// // Count total records for pagination
+// $total_records = $connpdo->query('SELECT COUNT(*) FROM user_logs')->fetchColumn();
+// $total_pages = ceil($total_records / $records_per_page);
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,9 +53,43 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/style-table.css">
   <link rel="icon" href="/icon/PONDTECH__2_-removebg-preview 2.png">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
+  <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #pagination {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .page-link {
+            padding: 10px 15px;
+            margin: 0 5px;
+            border: 1px solid #007bff;
+            color: #007bff;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .page-link.active {
+    background-color: #007bff;
+    color: #fff;
+    font-weight: bold;
+    border: 2px solid #0056b3;
+    pointer-events: none; /* Disable clicking the current page */
+}
+        .page-link:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+    </style>
   <title>Aqua Sense</title>
 </head>
+
 <body>
   <div class="header">
     <div class="right-portion">
@@ -93,11 +167,11 @@
       </button>
     </div>
   </a>
-  <a href="attendance-logs-administrator.html">
+  <a href="user-logfetch_logs.php">
     <div class="end-portion-sidebar-admin-3">
       <button class="att-log-admin-btn" style="background-color: #BFEDFE;">
         <img src="/icon/Vector (21).png" class="report-icon-sidebar">
-        Attendance Logs
+        User logs
       </button>
     </div>
   </a>
@@ -121,197 +195,244 @@
 
   <div class="report">
     <p style="font-size: 25px; margin-bottom: 10px;">
-      Attendance Logs
+      User logs
     </p>
     <div class="sub-header-report-dashboard">
       <div class="left-portion-sub-header-dashboard">
-        <input type="text" placeholder="Search" class="search-notification-dashboard" style="margin-right: 10px;">
-        <button class="all-btn-report" style="margin-right: 10px;">
-          All <img src="/icon/gridicons_dropdown.png" style="width: 25px;">
-        </button>
-        <button class="today-btn-report" style="margin-right: 10px;">
-          Role <img src="/icon/gridicons_dropdown.png" style="width: 25px;">
-        </button>
-        <button class="today-btn-report" style="margin-right: 10px;">
-          Today <img src="/icon/gridicons_dropdown.png" style="width: 25px;">
-        </button>
-        <button class="month-btn-report" style="margin-right: 10px;">
-          Month <img src="/icon/gridicons_dropdown.png" style="width: 25px;">
-        </button>
-        <button class="day-btn-report" style="margin-right: 10px;">
-          Day <img src="/icon/gridicons_dropdown.png" style="width: 25px;">
-        </button>
-        <button class="year-btn-report" style="margin-right: 200px;">
-          Year <img src="/icon/gridicons_dropdown.png" style="width: 25px;">
-        </button>
-        <button class="print-btn-report-dashboard">
-          Print <img src="/icon/🦆 icon _print_.png" style="width: 20px;">
-        </button>
+      <input type="text" id="searchInput" placeholder="Search by name or ID" class="search-notification-dashboard">
+
+<!-- Role Filter -->
+<select id="User-Logs-roleFilter"  onchange="applyFilter()">
+    <option value="">All Roles</option>
+    <option value="admin">Admin</option>
+    <option value="user">User</option>
+</select>
+
+
+<select id="todayFilter" onchange="applyFilter()">
+            <option value="">Select Time Period</option>
+            <option value="today">Today</option>
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
+</select>
+
+
+<select id="dayFilter" onchange="applyFilter()">
+    <option value="">All Day</option>
+    <option value="1day">1 Day Ago</option>
+    <option value="2days">2 Days Ago</option>
+    <option value="3days">3 Days Ago</option>
+    <option value="4days">4 Days Ago</option>
+    <option value="5days">5 Days Ago</option>
+    <option value="6days">6 Days Ago</option>
+    <option value="7days">7 Days Ago</option>
+</select>
+
+<!-- Month Filter -->
+<select id="monthFilter" onchange="applyFilter()">
+    <option value="">Month</option>
+    <option value="1">January</option>
+    <option value="2">February</option>
+    <option value="3">March</option>
+    <option value="4">April</option>
+    <option value="5">May</option>
+    <option value="6">June</option>
+    <option value="7">July</option>
+    <option value="8">August</option>
+    <option value="9">September</option>
+    <option value="10">October</option>
+    <option value="11">November</option>
+    <option value="12">December</option>
+</select>
+
+<!-- Year Filter -->
+<select id="yearFilter" onchange="applyFilter()">
+    <option value="">Year</option>
+    <option value="2025">2025</option>
+    <option value="2026">2026</option>
+    <option value="2027">2027</option>
+</select>
+
+<!-- Reset Button -->
+<button id="resetBtn">Reset Filters</button>
+
+<!-- Print Button -->
+<!-- <button class="print-btn" onclick="window.print()">Print</button> -->
       </div>
     </div>
+
     <div class="contents-attendance-logs-administrator">
       <div class="head-content-attendance-logs-administrator">
-        <p class="attendance-logs-container-administrator">
-          ID
-        </p>
-        <p class="attendance-logs-container-administrator">
-          Name
-        </p>
-        <p class="attendance-logs-container-administrator">
-          Role
-        </p>
-        <p class="attendance-logs-container-administrator">
-          Email
-        </p>
-        <p class="attendance-logs-container-administrator">
-          Date  
-        </p>
-        <p class="attendance-logs-container-administrator">
-          Time In
-        </p>
-        <p class="attendance-logs-container-administrator">
-          Time Out
-        </p>
-      </div>
-      <div class="all-content-attendance-logs-administrator">
-        <p class="attendance-logs-container-administrator">
-          11111
-        </p>
-        <p class="attendance-logs-container-administrator">
-          Mc Larron Bracero
-        </p>
-        <p class="attendance-logs-container-administrator">
-          Administrator
-        </p>
-        <p class="attendance-logs-container-administrator">
-          bracero.123@gmail.com
-        </p>
-        <p class="attendance-logs-container-administrator">
-          October 29, 2024
-        </p>
-        <p class="attendance-logs-container-administrator">
-          8:00 AM
-        </p>
-        <p class="attendance-logs-container-administrator">
-          12:00 PM
-        </p>
-      </div>
-      <div class="all-content-attendance-logs-administrator">
-        <p class="attendance-logs-container-administrator">
-          11111
-        </p>
-        <p class="attendance-logs-container-administrator">
-          Mc Larron Bracero
-        </p>
-        <p class="attendance-logs-container-administrator">
-          Administrator
-        </p>
-        <p class="attendance-logs-container-administrator">
-          bracero.123@gmail.com
-        </p>
-        <p class="attendance-logs-container-administrator">
-          October 29, 2024
-        </p>
-        <p class="attendance-logs-container-administrator">
-          8:00 AM
-        </p>
-        <p class="attendance-logs-container-administrator">
-          12:00 PM
-        </p>
-      </div>
-      <div class="all-content-attendance-logs-administrator">
-        <p class="attendance-logs-container-administrator">
-          11111
-        </p>
-        <p class="attendance-logs-container-administrator">
-          Mc Larron Bracero
-        </p>
-        <p class="attendance-logs-container-administrator">
-          Administrator
-        </p>
-        <p class="attendance-logs-container-administrator">
-          bracero.123@gmail.com
-        </p>
-        <p class="attendance-logs-container-administrator">
-          October 29, 2024
-        </p>
-        <p class="attendance-logs-container-administrator">
-          8:00 AM
-        </p>
-        <p class="attendance-logs-container-administrator">
-          12:00 PM
-        </p>
-      </div>
-      <div class="all-content-attendance-logs-administrator">
-        <p class="attendance-logs-container-administrator">
-          11111
-        </p>
-        <p class="attendance-logs-container-administrator">
-          Mc Larron Bracero
-        </p>
-        <p class="attendance-logs-container-administrator">
-          Administrator
-        </p>
-        <p class="attendance-logs-container-administrator">
-          bracero.123@gmail.com
-        </p>
-        <p class="attendance-logs-container-administrator">
-          October 29, 2024
-        </p>
-        <p class="attendance-logs-container-administrator">
-          8:00 AM
-        </p>
-        <p class="attendance-logs-container-administrator">
-          12:00 PM
-        </p>
-      </div>
-      <div class="all-content-attendance-logs-administrator">
-        <p class="attendance-logs-container-administrator">
-          11111
-        </p>
-        <p class="attendance-logs-container-administrator">
-          Mc Larron Bracero
-        </p>
-        <p class="attendance-logs-container-administrator">
-          Administrator
-        </p>
-        <p class="attendance-logs-container-administrator">
-          bracero.123@gmail.com
-        </p>
-        <p class="attendance-logs-container-administrator">
-          October 29, 2024
-        </p>
-        <p class="attendance-logs-container-administrator">
-          8:00 AM
-        </p>
-        <p class="attendance-logs-container-administrator">
-          12:00 PM
-        </p>
-      </div>
-      <div class="all-content-attendance-logs-administrator">
-        <p class="attendance-logs-container-administrator">
-          11111
-        </p>
-        <p class="attendance-logs-container-administrator">
-          Mc Larron Bracero
-        </p>
-        <p class="attendance-logs-container-administrator">
-          Administrator
-        </p>
-        <p class="attendance-logs-container-administrator">
-          bracero.123@gmail.com
-        </p>
-        <p class="attendance-logs-container-administrator">
-          October 29, 2024
-        </p>
-        <p class="attendance-logs-container-administrator">
-          8:00 AM
-        </p>
-        <p class="attendance-logs-container-administrator">
-          12:00 PM
-        </p>
-      </div>
+        
+    <!-- Logs Table -->
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Role</th>
+            <th>Email</th>
+            <th>Login Time</th>
+            <th>Logout Time</th>
+        </tr>
+    </thead>
+    <tbody id="logTableBody">
+   
+</tbody>
+
+   
+</table>
+
     </div>
+    
   </div>
+  
+  <div id="pagination"></div>
+
+
+  <!-- pagination -->
+  <script>
+ let recordsPerPage = 8;
+        let currentPage = 1;
+        
+        function loadLogs(page = 1) {
+            $.ajax({
+                url: 'fetch_logs.php',
+                method: 'GET',
+                data: { page: page, records: recordsPerPage },
+                success: function (data) {
+                    renderTable(data.logs);
+                    renderPagination(data.total_pages, page);
+                }
+            });
+        }
+
+        function renderTable(logs) {
+            let rows = logs.length > 0 ? logs.map(log => `
+                <tr>
+                    <td>${log.USERID}</td>
+                    <td>${log.NAME}</td>
+                    <td>${log.ROLE}</td>
+                    <td>${log.EMAIL}</td>
+                    <td>${log.login_time}</td>
+                    <td>${log.logout_time || 'Still logged in'}</td>
+                </tr>
+            `).join('') : '<tr><td colspan="6">No logs found</td></tr>';
+
+            $('#logTableBody').html(rows);
+        }
+
+        function renderPagination(totalPages, currentPage) {
+            let pagination = '';
+
+            pagination += `<a href="#" class="page-link" onclick="loadLogs(1)">First</a>`;
+            pagination += `<a href="#" class="page-link" onclick="loadLogs(${Math.max(1, currentPage - 1)})">Prev</a>`;
+
+            for (let i = 1; i <= totalPages; i++) {
+                pagination += `<a href="#" class="page-link ${i === currentPage ? 'active' : ''}" onclick="loadLogs(${i})">${i}</a>`;
+            }
+
+            pagination += `<a href="#" class="page-link" onclick="loadLogs(${Math.min(totalPages, currentPage + 1)})">Next</a>`;
+            pagination += `<a href="#" class="page-link" onclick="loadLogs(${totalPages})">Last</a>`;
+
+            $('#pagination').html(pagination);
+        }
+
+
+        $(document).ready(function () {
+            loadLogs();
+        });
+    </script>
+  
+  <script>
+   document.getElementById("searchInput").addEventListener("input", function() {
+    var searchQuery = this.value;
+
+    // Make an AJAX request to fetch_logs.php with the search query
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "fetch_logs.php", true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            // Update the table body with the fetched data
+            document.querySelector("tbody").innerHTML = xhr.responseText;
+        }
+    };
+    xhr.send("searchQuery=" + encodeURIComponent(searchQuery));
+});
+
+  </script>
+
+  <!-- filter -->
+
+  <script>
+// function applyFilter() {
+//     let todayFilter = document.getElementById("todayFilter").value;
+//     let dayFilter = document.getElementById("dayFilter").value;
+//     let monthFilter = document.getElementById("monthFilter").value;
+//     let yearFilter = document.getElementById("yearFilter").value;
+//     let roleFilter = document.getElementById("User-Logs-roleFilter").value; // Added Role Filter
+
+//     // Send AJAX request to PHP
+//     let xhr = new XMLHttpRequest();
+//     xhr.open("POST", "fetch_logs.php", true);
+//     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+//     xhr.onreadystatechange = function () {
+//         if (xhr.readyState == 4 && xhr.status == 200) {
+//             document.getElementById("tbody").innerHTML = xhr.responseText;
+//         }
+//     };
+//     xhr.send(
+//         "todayFilter=" + todayFilter +
+//         "&dayFilter=" + dayFilter +
+//         "&monthFilter=" + monthFilter +
+//         "&yearFilter=" + yearFilter +
+//         "&roleFilter=" + roleFilter // Include Role Filter
+//     );
+// }
+
+// // Call applyFilter initially to populate logs
+// window.onload = function() {
+//     populateYearFilter();
+//     applyFilter(); // Load logs initially
+// };
+
+// // Listen for changes on the filters
+// document.getElementById("monthFilter").addEventListener("change", applyFilter);
+// document.getElementById("yearFilter").addEventListener("change", applyFilter);
+// document.getElementById("User-Logs-roleFilter").addEventListener("change", applyFilter); // Added Role Filter Event
+
+// // Reset Button functionality
+// document.getElementById('resetBtn').addEventListener('click', function() {
+//     document.getElementById('todayFilter').value = ''; 
+//     document.getElementById('dayFilter').value = '';   
+//     document.getElementById('monthFilter').value = ''; 
+//     document.getElementById('yearFilter').value = ''; 
+//     document.getElementById('User-Logs-roleFilter').value = ''; // Reset the Role Filter
+
+//     // Optionally, reload the page to reset the table data from the server
+//     window.location.reload();
+// });
+
+// // Function to dynamically populate the Year Filter
+// function populateYearFilter() {
+//     let yearFilter = document.getElementById("yearFilter");
+//     let currentYear = new Date().getFullYear();
+//     let startYear = 2024; // Change this to your desired base year
+
+//     // Clear existing options
+//     yearFilter.innerHTML = '<option value="">Year</option>';
+
+//     // Generate options from startYear to currentYear + 3
+//     for (let year = startYear; year <= currentYear + 3; year++) {
+//         let option = document.createElement("option");
+//         option.value = year;
+//         option.textContent = year;
+//         yearFilter.appendChild(option);
+//     }
+// }
+
+
+</script>
 </body>
 </html>

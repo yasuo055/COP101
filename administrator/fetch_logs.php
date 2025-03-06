@@ -1,5 +1,9 @@
 <?php
-include('Conn.php');
+require_once 'Conn.php';
+
+$records_per_page = isset($_GET['records']) ? (int)$_GET['records'] : 8;
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$offset = ($page - 1) * $records_per_page;
 
 // Get filters and search query from POST or GET requests
 $todayFilter = $_REQUEST['todayFilter'] ?? '';
@@ -9,22 +13,17 @@ $yearFilter = $_REQUEST['yearFilter'] ?? '';
 $roleFilter = $_REQUEST['roleFilter'] ?? '';
 $searchQuery = trim($_REQUEST['searchQuery'] ?? '');
 
-// Pagination logic
-$records_per_page = 8;
-$page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
-$offset = ($page - 1) * $records_per_page;
+$query = "
+    SELECT ul.log_id, ul.USERID, 
+           CONCAT(u.FNAME, ' ', u.MNAME, ' ', u.LNAME) AS NAME, 
+           u.ROLE, u.EMAIL, 
+           DATE_FORMAT(ul.login_time, '%Y-%m-%d %h:%i:%s %p') AS login_time,
+           DATE_FORMAT(ul.logout_time, '%Y-%m-%d %h:%i:%s %p') AS logout_time
+    FROM user_logs ul
+    JOIN USERS u ON ul.USERID = u.USERID
+    WHERE 1=1
+";
 
-// Set the base query to select log details
-$query = "SELECT ul.log_id, ul.USERID, 
-          CONCAT(u.FNAME, ' ', u.MNAME, ' ', u.LNAME) AS NAME, 
-          u.ROLE, u.EMAIL, 
-          DATE_FORMAT(ul.login_time, '%Y-%m-%d %h:%i:%s %p') AS login_time, 
-          DATE_FORMAT(ul.logout_time, '%Y-%m-%d %h:%i:%s %p') AS logout_time
-   FROM user_logs ul
-   JOIN users u ON ul.USERID = u.USERID
-   WHERE 1";
-
-// Prepare an array to bind parameters
 $bindParams = [];
 
 // Apply the Search Filter
@@ -33,19 +32,17 @@ if (!empty($searchQuery)) {
                      u.FNAME LIKE ? OR 
                      u.MNAME LIKE ? OR 
                      u.LNAME LIKE ? OR 
-                     CONCAT(u.FNAME, ' ', u.MNAME, ' ', u.LNAME) LIKE ? )";
+                     CONCAT(u.FNAME, ' ', u.MNAME, ' ', u.LNAME) LIKE ?)
+    ";
     $searchParam = '%' . $searchQuery . '%';
     array_push($bindParams, $searchParam, $searchParam, $searchParam, $searchParam, $searchParam);
 }
 
-// Apply filters
+// Apply filters (Today, Day, Month, Year, Role)
 if (!empty($todayFilter)) {
     switch ($todayFilter) {
         case 'today':
             $query .= " AND DATE(ul.login_time) = CURDATE()";
-            break;
-        case 'day':
-            $query .= " AND DATEDIFF(CURDATE(), DATE(ul.login_time)) = 1";
             break;
         case 'week':
             $query .= " AND WEEK(ul.login_time) = WEEK(CURDATE())";
@@ -76,37 +73,51 @@ if (!empty($roleFilter)) {
     $bindParams[] = $roleFilter;
 }
 
-// Add pagination
-// Update the query with filters and pagination
-$query .= " ORDER BY ul.login_time DESC LIMIT $offset, $records_per_page";
+// Add ORDER BY and LIMIT
+$query .= " ORDER BY ul.login_time DESC LIMIT ?, ?";
+array_push($bindParams, $offset, $records_per_page);
 
-
-// Prepare and execute the query
 $stmt = $connpdo->prepare($query);
-$stmt->execute($bindParams);
 
-// Fetch records
+// Bind parameters dynamically
+foreach ($bindParams as $key => $value) {
+    $stmt->bindValue($key + 1, $value, is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR);
+}
+
+$stmt->execute();
 $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Count total records for pagination
-$total_records = $connpdo->query('SELECT COUNT(*) FROM user_logs')->fetchColumn();
+// Get total count for pagination
+$total_records_query = "SELECT COUNT(*)
+                        FROM user_logs ul
+                        JOIN USERS u ON ul.USERID = u.USERID
+                        WHERE 1=1";
+
+if (!empty($searchQuery)) {
+    $total_records_query .= " AND (ul.USERID LIKE ? OR 
+                                   u.FNAME LIKE ? OR 
+                                   u.MNAME LIKE ? OR 
+                                   u.LNAME LIKE ? OR 
+                                   CONCAT(u.FNAME, ' ', u.MNAME, ' ', u.LNAME) LIKE ?)
+    ";
+}
+
+$count_stmt = $connpdo->prepare($total_records_query);
+
+if (!empty($searchQuery)) {
+    foreach (array_fill(0, 5, '%' . $searchQuery . '%') as $key => $value) {
+        $count_stmt->bindValue($key + 1, $value, PDO::PARAM_STR);
+    }
+}
+
+$count_stmt->execute();
+$total_records = $count_stmt->fetchColumn();
 $total_pages = ceil($total_records / $records_per_page);
 
-// Render logs
-if ($stmt->rowCount() > 0) {
-    foreach ($records as $log) {
-        echo "<tr>
-                <td>" . htmlspecialchars($log['USERID']) . "</td>
-                <td>" . htmlspecialchars($log['NAME']) . "</td>
-                <td>" . htmlspecialchars($log['ROLE']) . "</td>
-                <td>" . htmlspecialchars($log['EMAIL']) . "</td>
-                <td>" . htmlspecialchars($log['login_time']) . "</td>
-                <td>" . ($log['logout_time'] ? htmlspecialchars($log['logout_time']) : 'Still logged in') . "</td>
-              </tr>";
-    }
-} else {
-    echo "<tr><td colspan='6'>No logs found</td></tr>";
-}
-?>
+header('Content-Type: application/json');
+echo json_encode([
+    'logs' => $records,
+    'total_pages' => $total_pages
+]);
 
-<!-- Let me know if you want me to add navigation links for pagination or anything else! -->
+?>

@@ -19,6 +19,7 @@ $query = "SELECT ul.log_id, ul.USERID,
                  DATE_FORMAT(ul.login_time, '%Y-%m-%d %h:%i:%s %p') AS login_time, 
                  DATE_FORMAT(ul.logout_time, '%Y-%m-%d %h:%i:%s %p') AS logout_time
           FROM user_logs ul
+          ORDER BY ul.login_time DESC
           JOIN users u ON ul.USERID = u.USERID
           WHERE 1";
 

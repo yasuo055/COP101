@@ -1,33 +1,40 @@
 <?php
 session_start();
-include('Conn.php');
+require_once 'Conn.php';
+if ($connpdo) {
+    echo "Connected to database!";
+} else {
+    echo "Failed to connect to database.";
+}
+
+
 
 
 // Set the number of records per page and calculate offset
-$records_per_page = 8;
-$page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
-$offset = ($page - 1) * $records_per_page;
+// $records_per_page = 8;
+// $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
+// $offset = ($page - 1) * $records_per_page;
 
-// Set the base query to select log details with pagination
-$query = "SELECT ul.log_id, ul.USERID, 
-          CONCAT(u.FNAME, ' ', u.MNAME, ' ', u.LNAME) AS NAME, 
-          u.ROLE, u.EMAIL, 
-          DATE_FORMAT(ul.login_time, '%Y-%m-%d %h:%i:%s %p') AS login_time, 
-          DATE_FORMAT(ul.logout_time, '%Y-%m-%d %h:%i:%s %p') AS logout_time
-   FROM user_logs ul
-   JOIN USERS u ON ul.USERID = u.USERID
-   LIMIT ?, ?";
+// // Set the base query to select log details with pagination
+// $query = "SELECT ul.log_id, ul.USERID, 
+//           CONCAT(u.FNAME, ' ', u.MNAME, ' ', u.LNAME) AS NAME, 
+//           u.ROLE, u.EMAIL, 
+//           DATE_FORMAT(ul.login_time, '%Y-%m-%d %h:%i:%s %p') AS login_time, 
+//           DATE_FORMAT(ul.logout_time, '%Y-%m-%d %h:%i:%s %p') AS logout_time
+//    FROM user_logs ul
+//    JOIN USERS u ON ul.USERID = u.USERID
+//    LIMIT ?, ?";
 
-// Prepare and execute the statement
-$stmt = $connpdo->prepare($query);
-$stmt->bindValue(1, $offset, PDO::PARAM_INT);
-$stmt->bindValue(2, $records_per_page, PDO::PARAM_INT);
-$stmt->execute();
-$records = $stmt->fetchAll(PDO::FETCH_ASSOC);
+// // Prepare and execute the statement
+// $stmt = $connpdo->prepare($query);
+// $stmt->bindValue(1, $offset, PDO::PARAM_INT);
+// $stmt->bindValue(2, $records_per_page, PDO::PARAM_INT);
+// $stmt->execute();
+// $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Count total records for pagination
-$total_records = $connpdo->query('SELECT COUNT(*) FROM user_logs')->fetchColumn();
-$total_pages = ceil($total_records / $records_per_page);
+// // Count total records for pagination
+// $total_records = $connpdo->query('SELECT COUNT(*) FROM user_logs')->fetchColumn();
+// $total_pages = ceil($total_records / $records_per_page);
 
 ?>
 
@@ -48,54 +55,36 @@ $total_pages = ceil($total_records / $records_per_page);
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="/style-table.css">
   <link rel="icon" href="/icon/PONDTECH__2_-removebg-preview 2.png">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
   <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
   <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
         }
-        
-        table {
-            /* width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px; */
-        }
-        
-        table, th, td {
-            /* border: 1px solid #ccc; */
-        }
-        
-        th, td {
-            /* padding: 10px;
-            text-align: left; */
-        }
-        
-        th {
-            /* background-color: #f2f2f2; */
-        }
-        
-        .pagination {
-            display: flex;
-            justify-content: center;
+        #pagination {
             margin-top: 20px;
+            text-align: center;
         }
-        
-        .pagination a {
+        .page-link {
             padding: 10px 15px;
             margin: 0 5px;
+            border: 1px solid #007bff;
+            color: #007bff;
             text-decoration: none;
+            border-radius: 5px;
+        }
+        .page-link.active {
+    background-color: #007bff;
+    color: #fff;
+    font-weight: bold;
+    border: 2px solid #0056b3;
+    pointer-events: none; /* Disable clicking the current page */
+}
+        .page-link:hover {
             background-color: #007bff;
             color: #fff;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-        }
-        
-        .pagination a:hover {
-            background-color: #0056b3;
-        }
-        
-        .pagination a.active {
-            background-color: #28a745;
         }
     </style>
   <title>Aqua Sense</title>
@@ -287,21 +276,8 @@ $total_pages = ceil($total_records / $records_per_page);
             <th>Logout Time</th>
         </tr>
     </thead>
-    <tbody id="logData">
-    <?php if ($stmt->rowCount() > 0): ?>
-        <?php foreach ($records as $log): ?>
-            <tr>
-                <td><?= htmlspecialchars($log['USERID']) ?></td>
-                <td><?= htmlspecialchars($log['NAME']) ?></td>
-                <td><?= htmlspecialchars($log['ROLE']) ?></td>
-                <td><?= htmlspecialchars($log['EMAIL']) ?></td>
-                <td><?= htmlspecialchars($log['login_time']) ?></td>
-                <td><?= $log['logout_time'] ? htmlspecialchars($log['logout_time']) : 'Still logged in' ?></td>
-            </tr>
-        <?php endforeach; ?>
-    <?php else: ?>
-        <tr><td colspan="6">No logs found</td></tr>
-    <?php endif; ?>
+    <tbody id="logTableBody">
+   
 </tbody>
 
    
@@ -310,90 +286,105 @@ $total_pages = ceil($total_records / $records_per_page);
     </div>
     
   </div>
-  <!-- Pagination links -->
-  <div class="pagination">
-    <?php if ($page > 1): ?>
-        <a href="?page=<?= $page - 1 ?>">Previous</a>
-    <?php endif; ?>
-
-    <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-        <a href="?page=<?= $i ?>" <?= ($i === $page) ? 'class="active"' : '' ?>>
-            <?= $i ?>
-        </a>
-    <?php endfor; ?>
-
-    <?php if ($page < $total_pages): ?>
-        <a href="?page=<?= $page + 1 ?>">Next</a>
-    <?php endif; ?>
-</div>
+  
+  <div id="pagination"></div>
 
 
   <!-- pagination -->
-  <!-- <script>
-let currentPage = 1;
-const rowsPerPage = 10;
+  <!-- Combined Logs, Search, Filters, and Pagination -->
+<script>
+    let recordsPerPage = 8;
+    let currentPage = 1;
 
-function fetchLogs(page = 1) {
-    currentPage = page;
-    
-    const formData = new FormData();
-    formData.append('page', page);
-    formData.append('rowsPerPage', rowsPerPage);
+    function fetchLogs(page = 1) {
+        currentPage = page;
+        let searchQuery = document.getElementById("searchInput").value;
+        let todayFilter = document.getElementById("todayFilter").value;
+        let dayFilter = document.getElementById("dayFilter").value;
+        let monthFilter = document.getElementById("monthFilter").value;
+        let yearFilter = document.getElementById("yearFilter").value;
+        let roleFilter = document.getElementById("User-Logs-roleFilter").value;
 
-    fetch('fetch_logs.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        renderTable(data.logs);
-        renderPagination(data.totalPages, data.currentPage);
-    })
-    .catch(error => console.error('Error fetching logs:', error));
-}
-
-function renderTable(logs) {
-    const tbody = document.querySelector("#userLogsTable tbody");
-    tbody.innerHTML = "";
-
-    if (logs.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='6'>No logs found</td></tr>";
-    } else {
-        logs.forEach(log => {
-            tbody.innerHTML += `
-                <tr>
-                    <td>${log.USERID}</td>
-                    <td>${log.NAME}</td>
-                    <td>${log.ROLE}</td>
-                    <td>${log.EMAIL}</td>
-                    <td>${log.login_time}</td>
-                    <td>${log.logout_time || 'Still logged in'}</td>
-                </tr>
-            `;
+        $.ajax({
+            url: 'fetch_logs.php',
+            method: 'GET',
+            data: {
+                page: page,
+                records: recordsPerPage,
+                searchQuery: searchQuery,
+                todayFilter: todayFilter,
+                dayFilter: dayFilter,
+                monthFilter: monthFilter,
+                yearFilter: yearFilter,
+                roleFilter: roleFilter
+            },
+            success: function (data) {
+                renderTable(data.logs);
+                renderPagination(data.total_pages, page);
+            }
         });
     }
-}
 
-function renderPagination(totalPages, currentPage) {
-    const paginationControls = document.getElementById("paginationControls");
-    paginationControls.innerHTML = "";
+    function renderTable(logs) {
+        let rows = logs.length > 0 ? logs.map(log => `
+            <tr>
+                <td>${log.USERID}</td>
+                <td>${log.NAME}</td>
+                <td>${log.ROLE}</td>
+                <td>${log.EMAIL}</td>
+                <td>${log.login_time}</td>
+                <td>${log.logout_time || 'Still logged in'}</td>
+            </tr>
+        `).join('') : '<tr><td colspan="6">No logs found</td></tr>';
 
-    if (totalPages > 1) {
-        for (let i = 1; i <= totalPages; i++) {
-            const btn = document.createElement("button");
-            btn.innerText = i;
-            btn.className = i === currentPage ? "active" : "";
-            btn.onclick = () => fetchLogs(i);
-            paginationControls.appendChild(btn);
-        }
+        $('#logTableBody').html(rows);
     }
-}
 
-fetchLogs();
+    function renderPagination(totalPages, currentPage) {
+        let pagination = '';
 
-</script> -->
+        pagination += `<a href="#" class="page-link" onclick="fetchLogs(1)">First</a>`;
+        pagination += `<a href="#" class="page-link" onclick="fetchLogs(${Math.max(1, currentPage - 1)})">Prev</a>`;
+
+        for (let i = 1; i <= totalPages; i++) {
+            pagination += `<a href="#" class="page-link ${i === currentPage ? 'active' : ''}" onclick="fetchLogs(${i})">${i}</a>`;
+        }
+
+        pagination += `<a href="#" class="page-link" onclick="fetchLogs(${Math.min(totalPages, currentPage + 1)})">Next</a>`;
+        pagination += `<a href="#" class="page-link" onclick="fetchLogs(${totalPages})">Last</a>`;
+
+        $('#pagination').html(pagination);
+    }
+
+    function applyFilter() {
+        fetchLogs(1); // Refresh logs on filter change
+    }
+
+    $(document).ready(function () {
+        fetchLogs();
+
+        // Search input listener
+        $('#searchInput').on('input', function () {
+            fetchLogs(1);
+        });
+
+        // Filter change listeners
+        $('#monthFilter, #yearFilter, #User-Logs-roleFilter').on('change', function () {
+            applyFilter();
+        });
+
+        // Reset button functionality
+        $('#resetBtn').on('click', function () {
+            $('#searchInput, #todayFilter, #dayFilter, #monthFilter, #yearFilter, #User-Logs-roleFilter').val('');
+            fetchLogs(1);
+        });
+    });
+</script>
+
   
-  <script>
+
+  <!-- filter -->
+  <!-- <script>
    document.getElementById("searchInput").addEventListener("input", function() {
     var searchQuery = this.value;
 
@@ -412,6 +403,8 @@ fetchLogs();
 
   </script>
 
+
+
   <script>
 function applyFilter() {
     let todayFilter = document.getElementById("todayFilter").value;
@@ -426,7 +419,7 @@ function applyFilter() {
     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4 && xhr.status == 200) {
-            document.getElementById("logData").innerHTML = xhr.responseText;
+            document.getElementById("tbody").innerHTML = xhr.responseText;
         }
     };
     xhr.send(
@@ -480,6 +473,8 @@ function populateYearFilter() {
 }
 
 
-</script>
+</script> -->
+
+
 </body>
 </html>
