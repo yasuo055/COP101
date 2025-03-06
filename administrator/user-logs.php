@@ -56,6 +56,7 @@ if ($connpdo) {
   <link rel="stylesheet" href="/style-table.css">
   <link rel="icon" href="/icon/PONDTECH__2_-removebg-preview 2.png">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  
 
   <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
   <style>
@@ -65,7 +66,7 @@ if ($connpdo) {
         }
         #pagination {
             margin-top: 20px;
-            text-align: center;
+            text-align: left;
         }
         .page-link {
             padding: 10px 15px;

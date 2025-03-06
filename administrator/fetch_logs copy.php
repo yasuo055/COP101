@@ -17,9 +17,9 @@ $query = "SELECT ul.log_id, ul.USERID,
                  CONCAT(u.FNAME, ' ', u.MNAME, ' ', u.LNAME) AS NAME, 
                  u.ROLE, u.EMAIL, 
                  DATE_FORMAT(ul.login_time, '%Y-%m-%d %h:%i:%s %p') AS login_time, 
-                 DATE_FORMAT(ul.logout_time, '%Y-%m-%d %h:%i:%s %p') AS logout_time
+                 DATE_FORMAT(ul.logout_time, '%Y-%m-%d %h:%i:%s %p') AS logout_time,
+                 ORDER BY ul.login_time DESC
           FROM user_logs ul
-          ORDER BY ul.login_time DESC
           JOIN users u ON ul.USERID = u.USERID
           WHERE 1";
 
