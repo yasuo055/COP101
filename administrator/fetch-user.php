@@ -5,7 +5,8 @@ $sql = "
     SELECT USERID, FNAME, MNAME, LNAME, USERNAME, EMAIL, CONTACT, 
            DATE_FORMAT(DATECREATED, '%Y-%m-%d %r') AS DATECREATED, ROLE 
     FROM users 
-    WHERE archived = 0";  // Show only non-archived users
+    WHERE archived = 0
+    ORDER BY DATECREATED DESC";  // Show only non-archived users
 
 $stmt = $connpdo->prepare($sql);
 $stmt->execute();
