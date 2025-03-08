@@ -16,24 +16,24 @@ if (!empty($role)) {
 
 
 // Apply the "Today" filter based on the dropdown value
-if (!empty($todayFilter)) {
-    switch ($todayFilter) {
-        case 'today':
-            $sql .= " AND DATE(ul.login_time) = CURDATE()";
-            break;
-        case 'day':
-            $sql .= " AND DATEDIFF(CURDATE(), DATE(ul.login_time)) = 1";
-            break;
-        case 'week':
-            $sql .= " AND WEEK(ul.login_time) = WEEK(CURDATE())";
-            break;
-        case 'month':
-            $sql .= " AND MONTH(ul.login_time) = MONTH(CURDATE())";
-            break;
-        default:
-            break;
-    }
-}
+// if (!empty($todayFilter)) {
+//     switch ($todayFilter) {
+//         case 'today':
+//             $sql .= " AND DATE(ul.login_time) = CURDATE()";
+//             break;
+//         case 'day':
+//             $sql .= " AND DATEDIFF(CURDATE(), DATE(ul.login_time)) = 1";
+//             break;
+//         case 'week':
+//             $sql .= " AND WEEK(ul.login_time) = WEEK(CURDATE())";
+//             break;
+//         case 'month':
+//             $sql .= " AND MONTH(ul.login_time) = MONTH(CURDATE())";
+//             break;
+//         default:
+//             break;
+//     }
+// }
 
 
 $stmt = $connpdo->prepare($sql);
@@ -56,12 +56,11 @@ if ($stmt->rowCount() > 0) {
                 <td>{$row['DATECREATED']}</td>
                 <td>{$row['ROLE']}</td>
                 <td>
-                    <a href='restore-user.php?userid={$row['USERID']}'>
-                        <button class='action-btn restore-btn'>Restore</button>
-                    </a>
+                     <button class='action-btn restore-btn' data-id='{$row['USERID']}'>Restore</button
                     <a href='delete-user.php?userid={$row['USERID']}'>
-                        <button class='action-btn delete-btn'>Delete</button>
+                       
                     </a>
+                     <button class='action-btn delete-btn' data-id='{$row['USERID']}'>Delete</button>
                 </td>
               </tr>";
     }

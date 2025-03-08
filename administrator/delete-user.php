@@ -1,8 +1,8 @@
 <?php
 require 'Conn.php'; // Your database connection file
 
-if (isset($_GET['userid'])) {
-    $userid = $_GET['userid'];
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['userid'])) {
+    $userid = $_POST['userid'];
 
     // Delete user permanently
     $sql = "DELETE FROM users WHERE USERID = :userid";
@@ -10,9 +10,11 @@ if (isset($_GET['userid'])) {
     $stmt->bindParam(':userid', $userid, PDO::PARAM_INT);
 
     if ($stmt->execute()) {
-        echo "<script>alert('User deleted permanently!'); window.location.href='archived-users.php';</script>";
+        echo "User deleted permanently!";
     } else {
-        echo "<script>alert('Error deleting user!'); window.history.back();</script>";
+        echo "Error deleting user!";
     }
+} else {
+    echo "Invalid request!";
 }
 ?>

@@ -25,6 +25,130 @@ include('Conn.php');
   <link rel="icon" href="/icon/PONDTECH__2_-removebg-preview 2.png">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
  
+  <style>
+
+   
+
+    /* Custom Modal Styles */
+#custom-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+}
+#custom-modal .message-modal-content {
+    background-color: #f0f8ff;
+    color: #003366;
+    padding: 20px;
+    border: 2px solid #007bff;
+    border-radius: 10px;
+    width: 60%;
+    max-width: 500px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.message-modal-content{
+
+   background-color: white;
+    width: 90%;
+    max-width: 350px; /* Limits width */
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.3s ease, top 0.3s ease;
+}
+
+#custom-modal p {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+/* Button container for horizontal layout */
+#modal-button-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+#modal-confirm-btn, #modal-cancel-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#modal-confirm-btn {
+    background-color: #007bff;
+    color: #fff;
+}
+
+#modal-cancel-btn {
+    background-color: #cccccc;
+    color: #333;
+}
+
+#modal-confirm-btn:hover {
+    background-color: #0056b3;
+}
+
+#modal-cancel-btn:hover {
+    background-color: #b3b3b3;
+}
+
+/* Success/Info Message Modal */
+#success-message-modal {
+    display: none; /* Hide the modal by default */
+    position: fixed;
+    z-index: 9999;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    width: 300px;
+    text-align: center;
+}
+
+
+#success-message-modal .message-modal-content {
+    background-color: #f0f8ff;
+    color: #003366;
+    padding: 20px;
+    border: 2px solid #007bff;
+    border-radius: 10px;
+    width: 60%;
+    max-width: 500px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+#message-close-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    background-color: #007bff;
+    color: #fff;
+}
+
+#message-close-btn:hover {
+    background-color: #0056b3;
+}
+
+
+  </style>
 
   <title>Aqua Lense</title>
 </head>
@@ -361,6 +485,26 @@ include('Conn.php');
     </div>
 </div>
 
+<!-- Custom Message Modal -->
+<div id="custom-modal" class="modal">
+    <div class="message-modal-content">
+        <p id="modal-message"></p>
+        <button id="modal-confirm-btn">Confirm</button>
+        <button id="modal-cancel-btn">Cancel</button>
+    </div>
+</div>
+
+
+<!-- Success/Info Message Modal -->
+<div id="success-message-modal">
+    <div class="message-modal-content">
+        <p id="message-text"></p>
+        <button id="message-close-btn">OK</button>
+    </div>
+</div>
+
+
+
     <!-- ADD USER  -->
     <script>
        function openModal() {
@@ -653,34 +797,69 @@ window.onload = () => {
     document.addEventListener("click", function (event) {
         if (event.target.classList.contains("archive-btn")) {
             let userID = event.target.getAttribute("data-id");
+            showConfirmationModal("Are you sure you want to archive this user?", () => {
+              fetch("archive-user.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: "userid=" + userID
+})
+.then(response => response.text())
+.then(data => {
+    showMessageModal("User archived successfully!");
+    setTimeout(() => {
+        location.reload(); // Reload after 1 seconds
+    }, 1000);
+});
 
-            if (confirm("Are you sure you want to archive this user?")) {
-                fetch("archive-user.php", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                    body: "userid=" + userID
-                })
-                .then(response => response.text())
-                .then(data => {
-                    alert(data); // Show success message
-                    location.reload(); // Refresh the table
-                });
-            }
+           });
         }
     });
 });
 
- </script>
+// Custom Modal Logic
+function showConfirmationModal(message, onConfirm) {
+    const modal = document.getElementById("custom-modal");
+    const modalMessage = document.getElementById("modal-message");
+    const confirmBtn = document.getElementById("modal-confirm-btn");
+    const cancelBtn = document.getElementById("modal-cancel-btn");
 
-<!-- FOR RESTORE FUNCTION -->
- <script>
+    modalMessage.textContent = message;
+    modal.style.display = "block";
+
+    confirmBtn.onclick = () => {
+        modal.style.display = "none";
+        if (onConfirm) onConfirm();
+    };
+
+    cancelBtn.onclick = () => {
+        modal.style.display = "none";
+    };
+    
+}
+
+// Show Message Modal
+function showMessageModal(message) {
+    const messageModal = document.getElementById("success-message-modal");
+    const messageText = document.getElementById("message-text");
+
+    messageText.innerText = message;
+    messageModal.style.display = "flex";
+
+    const closeBtn = document.getElementById("message-close-btn");
+    closeBtn.onclick = function () {
+        messageModal.style.display = "none";
+        if (onClose) onClose(); // Reload when OK is clicked
+    };
+}
+
+// RESTORE
 
 document.addEventListener("DOMContentLoaded", function () {
     document.addEventListener("click", function (event) {
         if (event.target.classList.contains("restore-btn")) {
             let userID = event.target.getAttribute("data-id");
 
-            if (confirm("Are you sure you want to restore this user?")) {
+            showConfirmationModal("Are you sure you want to restore this user?", () => {
                 fetch("restore-user.php", {
                     method: "POST",
                     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -688,25 +867,32 @@ document.addEventListener("DOMContentLoaded", function () {
                 })
                 .then(response => response.text())
                 .then(data => {
-                    alert(data); // Show success message
-                    location.reload(); // Refresh the table
+                    showMessageModal(data, () => {
+                        location.reload(); // Immediate reload if "OK" is clicked
+                    });
+
+                    // Auto-reload after 1 seconds
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                })
+                .catch(error => {
+                    showMessageModal("An error occurred while restoring the user.");
                 });
-            }
+            });
         }
     });
 });
 
-
- </script>
-
-<!-- FOR Delete FUNCTION -->
- <script>
+// DELETE
 
 document.addEventListener("click", function (event) {
-        if (event.target.classList.contains("delete-btn")) {
-            let userID = event.target.getAttribute("data-id");
+    if (event.target.classList.contains("delete-btn")) {
+        let userID = event.target.getAttribute("data-id");
 
-            if (confirm("Are you sure you want to delete this user? This action cannot be undone!")) {
+        showConfirmationModal(
+            "Are you sure you want to delete this user? This action cannot be undone!", 
+            () => {
                 fetch("delete-user.php", {
                     method: "POST",
                     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -714,12 +900,75 @@ document.addEventListener("click", function (event) {
                 })
                 .then(response => response.text())
                 .then(data => {
-                    alert(data); // Show success message
-                    location.reload(); // Refresh the table
+                    showMessageModal(data, () => {
+                        location.reload(); // Refresh if "OK" is clicked
+                    });
+
+                    // Auto-reload after 1 seconds
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                })
+                .catch(error => {
+                    showMessageModal("An error occurred while deleting the user.");
                 });
             }
-        }
-    });
+        );
+    }
+});
+
+
+
+ </script>
+
+<!-- FOR RESTORE FUNCTION -->
+ <script>
+
+// document.addEventListener("DOMContentLoaded", function () {
+//     document.addEventListener("click", function (event) {
+//         if (event.target.classList.contains("restore-btn")) {
+//             let userID = event.target.getAttribute("data-id");
+
+//             if (confirm("Are you sure you want to restore this user?")) {
+//                 fetch("restore-user.php", {
+//                     method: "POST",
+//                     headers: { "Content-Type": "application/x-www-form-urlencoded" },
+//                     body: "userid=" + userID
+//                 })
+//                 .then(response => response.text())
+//                 .then(data => {
+//                     alert(data); // Show success message
+//                     location.reload(); // Refresh the table
+//                 });
+//             }
+//         }
+//     });
+// });
+
+
+ </script>
+
+<!-- FOR Delete FUNCTION -->
+ <script>
+
+// document.addEventListener("click", function (event) {
+//         if (event.target.classList.contains("delete-btn")) {
+//             let userID = event.target.getAttribute("data-id");
+
+//             if (confirm("Are you sure you want to delete this user? This action cannot be undone!")) {
+//                 fetch("delete-user.php", {
+//                     method: "POST",
+//                     headers: { "Content-Type": "application/x-www-form-urlencoded" },
+//                     body: "userid=" + userID
+//                 })
+//                 .then(response => response.text())
+//                 .then(data => {
+//                     alert(data); // Show success message
+//                     location.reload(); // Refresh the table
+//                 });
+//             }
+//         }
+//     });
 
 
  </script>
