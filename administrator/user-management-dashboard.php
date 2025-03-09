@@ -120,6 +120,11 @@ include('Conn.php');
     text-align: center;
 }
 
+/* Warning/Notification Modal */
+#warning-message-modal .message-modal-content {
+    background-color: #fff3cd;
+    border: 1px solid #ffeeba;
+}
 
 #success-message-modal .message-modal-content {
     background-color: #f0f8ff;
@@ -146,7 +151,10 @@ include('Conn.php');
 #message-close-btn:hover {
     background-color: #0056b3;
 }
-
+#warning-close-btn {
+    background-color: #ffc107;
+    color: #212529;
+}
 
   </style>
 
@@ -453,6 +461,7 @@ include('Conn.php');
         <h2>Add User</h2>
 
         <form id="addUserForm">
+        <div id="error-message"></div>
 
           <label>First Name:</label>
       <input type="text" id="fname" name="fname" pattern="[A-Za-z\s]+" title="Letters and spaces only" placeholder="e.g., John Michael" required><br>
@@ -503,10 +512,76 @@ include('Conn.php');
     </div>
 </div>
 
+<!-- Warning/Notification Modal -->
+<div id="warning-message-modal" class="modal">
+    <div class="message-modal-content">
+        <p id="warning-message-text"></p>
+        <button id="warning-close-btn">OK</button>
+    </div>
+</div>
+
 
 
     <!-- ADD USER  -->
     <script>
+// Get modal elements
+const customModal = document.getElementById("custom-modal");
+const successModal = document.getElementById("success-message-modal");
+const warningModal = document.getElementById("warning-message-modal");
+
+
+// Get modal buttons
+const modalConfirmBtn = document.getElementById("modal-confirm-btn");
+const modalCancelBtn = document.getElementById("modal-cancel-btn");
+const messageCloseBtn = document.getElementById("message-close-btn");
+const warningCloseBtn = document.getElementById("warning-close-btn");
+
+
+// Get message elements
+const modalMessage = document.getElementById("modal-message");
+const successMessageText = document.getElementById("message-text");
+const warningMessageText = document.getElementById("warning-message-text");
+
+
+// Show custom message modal
+function showCustomModal(message, onConfirm, onCancel) {
+    modalMessage.innerText = message;
+    customModal.style.display = "block";
+
+    // Handle confirm button
+    modalConfirmBtn.onclick = function() {
+        customModal.style.display = "none";
+        if (onConfirm) onConfirm();
+    };
+
+    // Handle cancel button
+    modalCancelBtn.onclick = function() {
+        customModal.style.display = "none";
+        if (onCancel) onCancel();
+    };
+}
+
+// Show success/info message modal
+function showSuccessModal(message) {
+    successMessageText.innerText = message;
+    successModal.style.display = "block";
+
+    // Close on OK button
+    messageCloseBtn.onclick = function() {
+        successModal.style.display = "none";
+    };
+}
+
+// Show warning/notification message modal
+function showWarningModal(message) {
+    warningMessageText.innerText = message;
+    warningModal.style.display = "block";
+
+    warningCloseBtn.onclick = function() {
+        warningModal.style.display = "none";
+    };
+}
+
        function openModal() {
     document.getElementById("addUserModal").style.display = "block";
 }
@@ -515,7 +590,7 @@ function closeModal() {
     document.getElementById("addUserModal").style.display = "none";
 }
 
-// Handle form submission with Fetch API
+// Handle form submission with Fetch API, FOR SUBMITTING ADD USER FORM
 document.getElementById("addUserForm").addEventListener("submit", async function(event) {
     event.preventDefault();
 
@@ -527,30 +602,36 @@ document.getElementById("addUserForm").addEventListener("submit", async function
 
     const formData = new FormData(form);
     const submitButton = form.querySelector("button[type='submit']");
-    submitButton.disabled = true; // Prevent double submission
+    submitButton.disabled = true;
 
-    try {
-        const response = await fetch("add-user.php", {
-            method: "POST",
-            body: formData
-        });
+    // Show confirmation modal
+    showCustomModal("Are you sure you want to add this user?", async () => {
+        try {
+            const response = await fetch("add-user.php", {
+                method: "POST",
+                body: formData
+            });
 
-        const result = await response.text();
-        alert(result);
+            const result = await response.text();
 
-        if (response.ok) {
-            form.reset(); // Clear form fields
-            document.getElementById("addUserModal").style.display = "none";
-            loadUsers(); // Refresh table after adding a new user
-            // Optional: Reload the page
-            // location.reload();
+            if (result.includes("already")) {
+                showWarningModal(result); // Show error message
+            } else {
+                showSuccessModal(result); // Show success message
+                form.reset(); // Clear form fields
+                document.getElementById("addUserModal").style.display = "none";
+                loadUsers(); // Refresh the user list
+            }
+        } catch (error) {
+            console.error("Error adding user:", error);
+            showWarningModal("Failed to add user. Please try again.");
+        } finally {
+            submitButton.disabled = false;
         }
-    } catch (error) {
-        console.error("Error adding user:", error);
-        alert("Failed to add user. Please try again.");
-    } finally {
+    }, () => {
+        // On cancel
         submitButton.disabled = false;
-    }
+    });
 });
 
     </script>
@@ -799,22 +880,22 @@ window.onload = () => {
             let userID = event.target.getAttribute("data-id");
             showConfirmationModal("Are you sure you want to archive this user?", () => {
               fetch("archive-user.php", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: "userid=" + userID
-})
-.then(response => response.text())
-.then(data => {
-    showMessageModal("User archived successfully!");
-    setTimeout(() => {
-        location.reload(); // Reload after 1 seconds
-    }, 1000);
-});
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: "userid=" + userID
+                })
+                .then(response => response.text())
+                .then(data => {
+                    showMessageModal("User archived successfully!");
+                    setTimeout(() => {
+                        location.reload(); // Reload after 1 seconds
+                    }, 1000);
+                });
 
-           });
-        }
-    });
-});
+                        });
+                        }
+                    });
+                });
 
 // Custom Modal Logic
 function showConfirmationModal(message, onConfirm) {
@@ -852,6 +933,21 @@ function showMessageModal(message) {
     };
 }
 
+// Show Warning Message Modal
+function showWarningModal(message, onClose = null) {
+    const warningModal = document.getElementById("warning-message-modal");
+    const warningText = document.getElementById("warning-text");
+
+    warningText.innerText = message;
+    warningModal.style.display = "flex";
+
+    const closeBtn = document.getElementById("warning-close-btn");
+    closeBtn.onclick = function () {
+        warningModal.style.display = "none";
+        if (onClose) onClose(); // Reload or perform action on close
+    };
+}
+
 // RESTORE
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -877,7 +973,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     }, 1000);
                 })
                 .catch(error => {
-                    showMessageModal("An error occurred while restoring the user.");
+                    showWarningModal("An error occurred while restoring the user.");
                 });
             });
         }
@@ -910,7 +1006,7 @@ document.addEventListener("click", function (event) {
                     }, 1000);
                 })
                 .catch(error => {
-                    showMessageModal("An error occurred while deleting the user.");
+                    showWarningModal("An error occurred while deleting the user.");
                 });
             }
         );
