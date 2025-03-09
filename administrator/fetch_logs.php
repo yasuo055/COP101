@@ -21,8 +21,7 @@ $query = "
            DATE_FORMAT(ul.logout_time, '%Y-%m-%d %h:%i:%s %p') AS logout_time
     FROM user_logs ul
     JOIN USERS u ON ul.USERID = u.USERID
-    WHERE 1=1
-";
+    WHERE 1=1";
 
 $bindParams = [];
 
