@@ -26,62 +26,42 @@ include('Conn.php');
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
  
   <style>
-
-   
-
-    /* Custom Modal Styles */
-#custom-modal {
+    
+/* Modal Container */
+.message-modal {
     display: none;
     position: fixed;
     z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(5px);
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+    max-width: 500px;
+    text-align: center;
+  
+    /* background-color: rgba(0, 0, 0, 0.5); */
+    /* backdrop-filter: blur(5px); */
 }
-#custom-modal .message-modal-content {
+
+/* Custom Modal */
+.custom-modal-content {
     background-color: #f0f8ff;
     color: #003366;
     padding: 20px;
     border: 2px solid #007bff;
     border-radius: 10px;
-    width: 60%;
-    max-width: 500px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: center;
 }
 
-.message-modal-content{
-
-   background-color: white;
-    width: 90%;
-    max-width: 350px; /* Limits width */
-    padding: 30px;
-    border-radius: 10px;
-    text-align: center;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    transition: opacity 0.3s ease, top 0.3s ease;
-}
-
-#custom-modal p {
-    font-size: 18px;
-    margin-bottom: 20px;
-}
-
-/* Button container for horizontal layout */
-#modal-button-container {
+/* Button container */
+#custom-modal-buttons {
     display: flex;
     justify-content: center;
     gap: 10px;
 }
 
-#modal-confirm-btn, #modal-cancel-btn {
+#modal-confirm-btn,
+#modal-cancel-btn {
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
@@ -108,34 +88,15 @@ include('Conn.php');
 }
 
 /* Success/Info Message Modal */
-#success-message-modal {
-    display: none; /* Hide the modal by default */
-    position: fixed;
-    z-index: 9999;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+.info-modal-content {
+    background-color: #e0f7fa;
+    color: #00796b;
     padding: 20px;
+    border: 2px solid #004d40;
+    border-radius: 10px;
     width: 300px;
     text-align: center;
-}
-
-/* Warning/Notification Modal */
-#warning-message-modal .message-modal-content {
-    background-color: #fff3cd;
-    border: 1px solid #ffeeba;
-}
-
-#success-message-modal .message-modal-content {
-    background-color: #f0f8ff;
-    color: #003366;
-    padding: 20px;
-    border: 2px solid #007bff;
-    border-radius: 10px;
-    width: 60%;
-    max-width: 500px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    text-align: center;
 }
 
 #message-close-btn {
@@ -151,10 +112,33 @@ include('Conn.php');
 #message-close-btn:hover {
     background-color: #0056b3;
 }
+
+/* Warning/Notification Modal */
+.alert-modal-content {
+    background-color: #fff3cd;
+    border: 1px solid #ffeeba;
+    color: #856404;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
 #warning-close-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
     background-color: #ffc107;
     color: #212529;
 }
+
+#warning-close-btn:hover {
+    background-color: #ffca28;
+}
+
 
   </style>
 
@@ -494,28 +478,29 @@ include('Conn.php');
     </div>
 </div>
 
-<!-- Custom Message Modal -->
-<div id="custom-modal" class="modal">
-    <div class="message-modal-content">
+<!-- Custom Confirmation Modal -->
+<div id="custom-modal" class="message-modal">
+    <div class="custom-modal-content">
         <p id="modal-message"></p>
-        <button id="modal-confirm-btn">Confirm</button>
-        <button id="modal-cancel-btn">Cancel</button>
+        <div id="custom-modal-buttons">
+            <button id="modal-confirm-btn">Confirm</button>
+            <button id="modal-cancel-btn">Cancel</button>
+        </div>
     </div>
 </div>
 
-
 <!-- Success/Info Message Modal -->
-<div id="success-message-modal">
-    <div class="message-modal-content">
+<div id="success-message-modal" class="message-modal">
+    <div class="info-modal-content">
         <p id="message-text"></p>
         <button id="message-close-btn">OK</button>
     </div>
 </div>
 
 <!-- Warning/Notification Modal -->
-<div id="warning-message-modal" class="modal">
-    <div class="message-modal-content">
-        <p id="warning-message-text"></p>
+<div id="warning-message-modal" class="message-modal">
+    <div class="alert-modal-content">
+        <p id="warning-text"></p>
         <button id="warning-close-btn">OK</button>
     </div>
 </div>
@@ -524,11 +509,11 @@ include('Conn.php');
 
     <!-- ADD USER  -->
     <script>
+        
 // Get modal elements
 const customModal = document.getElementById("custom-modal");
 const successModal = document.getElementById("success-message-modal");
 const warningModal = document.getElementById("warning-message-modal");
-
 
 // Get modal buttons
 const modalConfirmBtn = document.getElementById("modal-confirm-btn");
@@ -536,11 +521,11 @@ const modalCancelBtn = document.getElementById("modal-cancel-btn");
 const messageCloseBtn = document.getElementById("message-close-btn");
 const warningCloseBtn = document.getElementById("warning-close-btn");
 
-
 // Get message elements
 const modalMessage = document.getElementById("modal-message");
 const successMessageText = document.getElementById("message-text");
-const warningMessageText = document.getElementById("warning-message-text");
+const warningMessageText = document.getElementById("warning-text");
+
 
 
 // Show custom message modal
@@ -589,6 +574,8 @@ function showWarningModal(message) {
 function closeModal() {
     document.getElementById("addUserModal").style.display = "none";
 }
+
+
 
 // Handle form submission with Fetch API, FOR SUBMITTING ADD USER FORM
 document.getElementById("addUserForm").addEventListener("submit", async function(event) {
@@ -915,7 +902,6 @@ function showConfirmationModal(message, onConfirm) {
     cancelBtn.onclick = () => {
         modal.style.display = "none";
     };
-    
 }
 
 // Show Message Modal
@@ -947,6 +933,7 @@ function showWarningModal(message, onClose = null) {
         if (onClose) onClose(); // Reload or perform action on close
     };
 }
+
 
 // RESTORE
 
