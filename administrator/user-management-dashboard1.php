@@ -1,0 +1,1168 @@
+<?php 
+include('Conn.php'); 
+
+
+
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/style-table.css">
+  <link rel="stylesheet" href="/style-tab.css">
+  <link rel="icon" href="/icon/PONDTECH__2_-removebg-preview 2.png">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+ 
+  <style>
+/* Modal Container */
+.message-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+    max-width: 500px;
+    text-align: center;
+  
+    /* background-color: rgba(0, 0, 0, 0.5); */
+    /* backdrop-filter: blur(5px); */
+}
+
+/* Custom Modal */
+.custom-modal-content {
+    background-color: #f0f8ff;
+    color: #003366;
+    padding: 20px;
+    border: 2px solid #007bff;
+    border-radius: 10px;
+   
+    text-align: center;
+}
+
+/* Button container */
+#custom-modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+#modal-confirm-btn,
+#modal-cancel-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#modal-confirm-btn {
+    background-color: #007bff;
+    color: #fff;
+}
+
+#modal-cancel-btn {
+    background-color: #cccccc;
+    color: #333;
+}
+
+#modal-confirm-btn:hover {
+    background-color: #0056b3;
+}
+
+#modal-cancel-btn:hover {
+    background-color: #b3b3b3;
+}
+
+/* Success/Info Message Modal */
+.info-modal-content {
+    background-color: #e0f7fa;
+    color: #00796b;
+    padding: 20px;
+    border: 2px solid #004d40;
+    border-radius: 10px;
+    width: 300px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#message-close-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    background-color: #007bff;
+    color: #fff;
+}
+
+#message-close-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Warning/Notification Modal */
+.alert-modal-content {
+    background-color: #fff3cd;
+    border: 1px solid #ffeeba;
+    color: #856404;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#warning-close-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    background-color: #ffc107;
+    color: #212529;
+}
+
+#warning-close-btn:hover {
+    background-color: #ffca28;
+}
+
+
+  </style>
+
+  <title>Aqua Lense</title>
+</head>
+<body>
+  <div class="header">
+    <div class="right-portion">
+      <img src="/icon/PONDTECH__2_-removebg-preview 2.png" class="head-right">
+    </div>
+    <div class="left-portion">
+      <p class="tme">
+        October 26, 2024 - 12:00:06PM
+      </p>
+      <img src="/icon/Ellipse 2 (1).png" class="head-left">
+      <div class="user-name">
+        <p class="user-full-name">
+          Angel Sofia Balatucan
+        </p>
+        <p class="user-type">
+          User
+        </p>  
+      </div>
+    </div>
+  </div>
+  <div class="sidebar">
+    <div class="upper-portion-2">
+      <a href="dashboard.html">
+      <img src="/icon/Vector (17).png" class="side-wat">
+        <p class="drp">
+          Dashboard
+        </p>
+      </a>
+    </div>
+    <div class="upper-portion-1">
+      <a href="user.html">
+      <img src="/icon/Vector.png" class="side-wat">
+      <p class="drp">
+        Water Parameters
+      </p>
+      </a>
+    </div>
+    <div class="middle-portion-admin">
+      <a href="ph-lvl-admin.html">
+      <button class="ph-admin">
+        <img src="/icon/Group.png" class="ph-icon">
+        PH Level
+      </button>
+      </a>
+      <a href="temp-lvl-admin.html">
+        <button class="temp-admin">
+          <img src="/icon/Vector (1).png" class="temp-icon">
+          Temperature
+        </button>
+      </a>
+      <a href="amn-lvl-admin.html">
+        <button class="amn-admin">
+          <img src="/icon/Vector (2).png" class="amn-icon">
+          Amonia
+        </button>
+      </a>
+      <a href="oxy-lvl-admin.html">
+        <button class="oxy-admin">
+          <img src="/icon/Vector (3).png" class="oxy-icon">
+          Oxygen
+        </button>
+      </a>
+    </div>
+
+    <div class="end-portion-sidebar-admin-1">
+      <a href="report-administrator.html" class="reports-admin-btn-sample">
+        <img src="/icon/Group (4).png" class="report-icon-sidebar">
+        Reports
+      </a>
+    </div>
+
+  <a href="notification-admin.html">
+    <div class="end-portion-sidebar-admin-2">
+      <button class="notif-admin-btn">
+        <img src="/icon/Vector (20).png" class="report-icon-sidebar">
+        Notifications
+      </button>
+    </div>
+  </a>
+  <a href="user-logs.php">
+    <div class="end-portion-sidebar-admin-3">
+      <button class="att-log-admin-btn">
+        <img src="/icon/Vector (21).png" class="report-icon-sidebar">
+        User Logs
+      </button>
+    </div>
+  </a>
+  <a href="user-management-dashboard.html">
+    <div class="end-portion-sidebar-admin-4" >
+      <button class="user-manag-admin-btn" style="background-color: #BFEDFE;">
+        <img src="/icon/carbon_id-management.png" class="report-icon-sidebar">
+        User Management
+      </button>
+    </div>
+  </a>
+    <div class="bottom-portion">
+      <button class="log-out" onclick="logout()">
+        <img src="/icon/solar_logout-2-broken.png" class="side-log">
+        <p class="log">
+          Log Out
+        </p>
+      </button>
+    </div>
+  </div>
+  <div class="report">
+    <p style="font-size: 25px; margin-bottom: 10px;">
+      User Management
+    </p>
+
+    <div class="container-user-management-border-dashboard">
+      
+    <div class="head-user-management-dashboard">
+    <button class="tab-item" id="all-user">All User</button>
+    <!-- <button class="tab-item" id="request">Request</button> -->
+    <button class="tab-item" id="archive">Archive</button>
+</div>
+
+
+      <!-- <div class="middle-sub-header-user-management-dashboard">
+        <div class="left-portion-user-management-dashboard">
+         
+        </div>
+        <div class="right-portion-user-management-dashboard">
+          <p style="font-size: 13px; margin-right: 10px;">
+            Filter By:
+          </p>
+          <button class="status-user-management-dashboard">
+            Status <img src="/icon/gridicons_dropdown.png" style="width: 18px; ">
+          </button>
+          <button class="status-user-management-dashboard">
+            Role <img src="/icon/gridicons_dropdown.png" style="width: 18px;">
+          </button>
+          <input type="text" placeholder="Search by name, email, or ID" class="search-user-management-database">
+        </div>
+      </div> -->
+
+      <div class="tab-content">
+    <div class="content" id="content-all-user">
+    
+    <div class="middle-sub-header-user-management-dashboard">
+          <div class="left-portion-user-management-dashboard">
+          <button class="btn-user-management-add-user" onclick="openModal()">
+          
+        <img src="/icon/Vector (25).png" style="width: 15px; margin-right: 5px;">Add User
+    </button>
+          </div>
+          <div class="right-portion-user-management-dashboard">
+          <p style="font-size: 13px; margin-right: 10px;">
+            Filter By:
+          </p>
+
+          <select id="statusFilterActive">
+            <option value="">Select Time Period</option>
+            <option value="today">Today</option>
+            <!-- <option value="day">Day</option> -->
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
+          </select>
+
+          <select id="roleFilterActive">
+              <option value="">All Roles</option>
+              <option value="admin">Admin</option>
+              <option value="user">User</option>
+          </select>
+          <button id="resetFilterActive">Reset</button>
+          
+            <input type="text" id="searchInput" placeholder="Search by name, email, or ID" class="search-user-management-database">
+          </div>
+        </div>
+
+    <div class="main-content-user-management-dashboard">
+      <!-- <div class="container-user-management-border-dashboard"> -->
+      
+
+            <!-- <div class="main-content-user-management-dashboard"> -->
+                <table border="0" width="100%" id="userTable">
+                    <thead>
+                        <tr>
+                            <th>Employee ID</th>
+                            <th>Name</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Contact Number</th>
+                            <th>Date Created</th>
+                            <th>Role</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <div id="loading" style="display:none;">Loading...</div>
+                    <tbody id="userTableBody">
+                   <!-- load data -->
+                   
+                    </tbody>
+                </table>
+            <!-- </div> -->
+        <!-- </div> -->
+  </div>
+    </div>
+
+
+
+    <div class="content" id="content-archive">
+    <div class="middle-sub-header-user-management-dashboard">
+          <div class="left-portion-user-management-dashboard">
+          
+          </div>
+          <div class="right-portion-user-management-dashboard">
+            <p style="font-size: 13px; margin-right: 10px;">
+              Filter By:
+            </p>
+
+            <!-- <select id="StatusFilterArchive">
+              <option value="">Select Time Period</option>
+              <option value="today">Today</option>
+              <option value="day">Day</option>
+              <option value="week">Week</option>
+              <option value="month">Month</option>
+            </select> -->
+
+          <select id="roleFilterArchive">
+              <option value="">All Roles</option>
+              <option value="admin">Admin</option>
+              <option value="user">User</option>
+          </select>
+          <button id="resetFilterArchive" disabled>Reset</button>
+            <input type="text" id="search-Archive-Input" placeholder="Search by name, email, or ID" class="search-user-management-database">
+                    </div>
+        </div>
+        
+      <table border="0" width="100%" id="archiveTables">
+        <thead>
+          <tr>
+              <th>Employee ID</th>
+              <th>Name</th>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Contact Number</th>
+              <th>Date Created</th>
+            <th>Role</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody id="user-search-Archive-Input-TableBody">
+    <?php include 'fetch-archived-users.php'; ?>  <!-- Load initial user data -->
+          
+      
+        </tbody>
+    </table>
+    <div id="loading" style="display:none;">Loading...</div>
+    </div>
+</div>
+
+
+
+  <!-- Edit User Modal -->
+  <div id="editUserModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Edit User</h2>
+            <form id="editUserForm">
+                <input type="hidden" id="userid" name="userid">
+                
+                <label>First Name:</label>
+                <input type="text" id="fname" name="fname" pattern="[A-Za-z]+" title="Letters only" placeholder="e.g., John" required><br>
+
+                <label>Middle Name:</label>
+                <input type="text" id="mname" name="mname" pattern="[A-Za-z]+" title="Letters only" placeholder="e.g., Michael"><br>
+
+                <label>Last Name:</label>
+                <input type="text" id="lname" name="lname" pattern="[A-Za-z]+" title="Letters only" placeholder="e.g., Doe" required><br>
+
+                <label>Username:</label>
+                <input type="text" id="username" name="username" pattern="[A-Za-z]+" title="Letters only" placeholder="e.g., johndoe" required><br>
+
+                <label>Email:</label>
+                <input type="email" id="email" name="email" placeholder="e.g., johndoe@example.com" required><br>
+
+                <label>Contact Number:</label>
+                <input type="text" id="contact" name="contact" pattern="[0-9]+" title="Numbers only" placeholder="e.g., 09123456789" required><br>
+
+                <label>Role:</label>
+                <select id="role" name="role" required>
+                    <option value="" disabled selected>Select a role</option>
+                    <option value="Admin">Admin</option>
+                    <option value="User">User</option>
+                </select><br>
+
+
+
+                <button type="submit">Update User</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADD USER MODAL -->
+    <div id="addUserModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <h2>Add User</h2>
+
+        <form id="addUserForm">
+        <div id="error-message"></div>
+
+          <label>First Name:</label>
+      <input type="text" id="fname" name="fname" pattern="[A-Za-z\s]+" title="Letters and spaces only" placeholder="e.g., John Michael" required><br>
+
+      <label>Middle Name (Optional):</label>
+      <input type="text" id="mname" name="mname" pattern="[A-Za-z]+" title="Letters only" placeholder="e.g., Michael"><br>
+
+      <label>Last Name:</label>
+      <input type="text" id="lname" name="lname" pattern="[A-Za-z]+" title="Letters only" placeholder="e.g., Doe" required><br>
+
+      <label>Username:</label>
+      <input type="text" id="username" name="username" pattern="[A-Za-z0-9_ ]+" title="Letters, numbers, underscores, and spaces only" placeholder="e.g., john_doe" required><br>
+
+      <label>Email:</label>
+      <input type="email" id="email" name="email" placeholder="e.g., johndoe@example.com" required><br>
+
+      <label>Contact Number:</label>
+      <input type="text" id="contact" name="contact" pattern="09[0-9]{9}" title="Must start with '09' and contain exactly 11 digits" placeholder="e.g., 09123456789" required><br>
+
+      <label>Role:</label>
+      <select id="role" name="role" required>
+          <option value="" disabled selected>Select a role</option>
+          <option value="Admin">Admin</option>
+          <option value="User">User</option>
+      </select><br> 
+
+
+            <button type="submit">Add User</button>
+        </form>
+    </div>
+</div>
+
+<!-- Custom Confirmation Modal -->
+<div id="custom-modal" class="message-modal">
+    <div class="custom-modal-content">
+        <p id="modal-message"></p>
+        <div id="custom-modal-buttons">
+            <button id="modal-confirm-btn">Confirm</button>
+            <button id="modal-cancel-btn">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Success/Info Message Modal -->
+<div id="success-message-modal" class="message-modal">
+    <div class="info-modal-content">
+        <p id="message-text"></p>
+        <button id="message-close-btn">OK</button>
+    </div>
+</div>
+
+<!-- Warning/Notification Modal -->
+<div id="warning-message-modal" class="message-modal">
+    <div class="alert-modal-content">
+        <p id="warning-text"></p>
+        <button id="warning-close-btn">OK</button>
+    </div>
+</div>
+
+
+
+    <!-- ADD USER  -->
+    <script>
+        
+// Get modal elements
+const customModal = document.getElementById("custom-modal");
+const successModal = document.getElementById("success-message-modal");
+const warningModal = document.getElementById("warning-message-modal");
+
+// Get modal buttons
+const modalConfirmBtn = document.getElementById("modal-confirm-btn");
+const modalCancelBtn = document.getElementById("modal-cancel-btn");
+const messageCloseBtn = document.getElementById("message-close-btn");
+const warningCloseBtn = document.getElementById("warning-close-btn");
+
+// Get message elements
+const modalMessage = document.getElementById("modal-message");
+const successMessageText = document.getElementById("message-text");
+const warningMessageText = document.getElementById("warning-text");
+
+
+
+// Show custom message modal
+function showCustomModal(message, onConfirm, onCancel) {
+    modalMessage.innerText = message;
+    customModal.style.display = "block";
+
+    // Handle confirm button
+    modalConfirmBtn.onclick = function() {
+        customModal.style.display = "none";
+        if (onConfirm) onConfirm();
+    };
+
+    // Handle cancel button
+    modalCancelBtn.onclick = function() {
+        customModal.style.display = "none";
+        if (onCancel) onCancel();
+    };
+}
+
+// Show success/info message modal
+function showSuccessModal(message) {
+    successMessageText.innerText = message;
+    successModal.style.display = "block";
+
+    // Close on OK button
+    messageCloseBtn.onclick = function() {
+        successModal.style.display = "none";
+    };
+}
+
+// Show warning/notification message modal
+function showWarningModal(message) {
+    warningMessageText.innerText = message;
+    warningModal.style.display = "block";
+
+    warningCloseBtn.onclick = function() {
+        warningModal.style.display = "none";
+    };
+}
+
+       function openModal() {
+    document.getElementById("addUserModal").style.display = "block";
+}
+
+function closeModal() {
+    document.getElementById("addUserModal").style.display = "none";
+}
+
+// Handle form submission with Fetch API, FOR SUBMITTING ADD USER FORM
+document.getElementById("addUserForm").addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const form = this;
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+
+    const formData = new FormData(form);
+    const submitButton = form.querySelector("button[type='submit']");
+    submitButton.disabled = true;
+
+    // Show confirmation modal
+    showCustomModal("Are you sure you want to add this user?", async () => {
+        try {
+            const response = await fetch("add-user.php", {
+                method: "POST",
+                body: formData
+            });
+
+            const result = await response.text();
+
+            if (result.includes("already")) {
+                showWarningModal(result); // Show error message
+            } else {
+                showSuccessModal(result); // Show success message
+                form.reset(); // Clear form fields
+                document.getElementById("addUserModal").style.display = "none";
+                loadUsers(); // Refresh the user list
+            }
+        } catch (error) {
+            console.error("Error adding user:", error);
+            showWarningModal("Failed to add user. Please try again.");
+        } finally {
+            submitButton.disabled = false;
+        }
+    }, () => {
+        // On cancel
+        submitButton.disabled = false;
+    });
+});
+
+    </script>
+
+   
+
+<!-- LOGOUT -->
+    <script>
+function logout() {
+    window.location.href = "/logout.php"; // Redirect to logout script
+}
+</script>
+
+
+ <!-- FOR ARCHIVE FILTER -->
+
+ <script>
+document.addEventListener("DOMContentLoaded", function () {
+    const roleFilterArchive = document.getElementById("roleFilterArchive");
+    const resetFilterArchive = document.getElementById("resetFilterArchive");
+    const tableBody = document.getElementById("user-search-Archive-Input-TableBody");
+
+    // Function to fetch filtered users
+    function fetchFilteredUsers(role) {
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", "fetch-archived-users.php?role=" + encodeURIComponent(role), true);
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                tableBody.innerHTML = xhr.responseText;
+            }
+        };
+        xhr.send();
+    }
+
+    // Event Listener for Filter Change
+    roleFilterArchive.addEventListener("change", function () {
+        const selectedRole = roleFilterArchive.value;
+        fetchFilteredUsers(selectedRole);
+
+        // Enable reset button if a filter is applied
+        resetFilterArchive.disabled = selectedRole === "";
+    });
+
+    // Reset Filter
+    resetFilterArchive.addEventListener("click", function () {
+        roleFilterArchive.value = "";
+        fetchFilteredUsers(""); // Fetch all users again
+        resetFilterArchive.disabled = true;
+    });
+});
+</script>
+
+<!-- FOR FILTER TIME PERIOD -->
+
+<script>
+$(document).ready(function () {
+    // Function to fetch and update users based on selected time period
+    function fetchUsersByTimePeriod(timePeriod) {
+        $("#loading").show(); // Show loading indicator
+        $.ajax({
+            url: "fetch-users.php", // Make sure this file correctly handles time period filtering
+            type: "POST",
+            data: { timePeriod: timePeriod },
+            success: function (response) {
+                $("#userTable tbody").html(response);
+                $("#loading").hide(); // Hide loading indicator
+            },
+            error: function () {
+                alert("Error fetching users based on time period.");
+                $("#loading").hide();
+            }
+        });
+    }
+
+    // Trigger filter when time period dropdown changes
+    $("#statusFilterActive").change(function () {
+        var selectedTimePeriod = $(this).val();
+        fetchUsersByTimePeriod(selectedTimePeriod);
+        $("#resetFilterActive").prop("disabled", selectedTimePeriod === ""); // Disable reset if no filter applied
+    });
+
+    // Reset filter
+    $("#resetFilterActive").click(function () {
+        $("#statusFilterActive").val(""); // Reset dropdown to default "Select Time Period"
+        fetchUsersByTimePeriod(""); // Fetch all users
+        $(this).prop("disabled", true); // Disable reset button
+    });
+
+    // Initial load (optional)
+    fetchUsersByTimePeriod(""); // Load all users on page load
+});
+</script>
+
+<!-- FOR ARCHIVE FILTER TIME PERIOD  -->
+
+<script>
+$(document).ready(function () {
+    // Function to fetch and update users based on selected time period
+    function fetchUsersByTimePeriod(timePeriod) {
+        $("#loading").show(); // Show loading indicator
+        $.ajax({
+            url: "fetch-archived-users.php", // Make sure this file correctly handles time period filtering
+            type: "POST",
+            data: { timePeriod: timePeriod },
+            success: function (response) {
+                $("#archiveTables tbody").html(response);
+                $("#loading").hide(); // Hide loading indicator
+            },
+            error: function () {
+                alert("Error fetching users based on time period.");
+                $("#loading").hide();
+            }
+        });
+    }
+
+    // Trigger filter when time period dropdown changes
+    $("#statusFilterArchive").change(function () {
+        var selectedTimePeriod = $(this).val();
+        fetchUsersByTimePeriod(selectedTimePeriod);
+        $("#resetFilterArchive").prop("disabled", selectedTimePeriod === ""); // Disable reset if no filter applied
+    });
+
+    // Reset filter
+    $("#resetFilterActive").click(function () {
+        $("#statusFilterArchive").val(""); // Reset dropdown to default "Select Time Period"
+        fetchUsersByTimePeriod(""); // Fetch all users
+        $(this).prop("disabled", true); // Disable reset button
+    });
+
+    // Initial load (optional)
+    fetchUsersByTimePeriod(""); // Load all users on page load  
+});
+</script>
+
+ 
+
+    <!-- FOR FILTER ACTIVE USER-->
+    <script>
+
+$(document).ready(function () {
+    // Function to fetch and update archived users based on selected role
+    function fetchActivedUsers(role) {
+        $("#loading").show(); // Show loading indicator
+        $.ajax({
+            url: "fetch-users.php", // Make sure this file correctly handles role filtering
+            type: "POST",
+            data: { role: role },
+            success: function (response) {
+                $("#userTable tbody").html(response);
+                $("#loading").hide(); // Hide loading indicator
+            },
+            error: function () {
+                alert("Error fetching Actived users.");
+                $("#loading").hide();
+            }
+        });
+    }
+
+    // Trigger filter when role dropdown changes
+    $("#roleFilterActive").change(function () {
+        var selectedRole = $(this).val();
+        fetchActivedUsers(selectedRole);
+        $("#resetFilterActive").prop("disabled", selectedRole === ""); // Disable reset if no filter applied
+    });
+
+    // Reset filter
+    $("#resetFilterActive").click(function () {
+        $("#roleFilterActive").val(""); // Reset dropdown to default "All Roles"
+        fetchActivedUsers(""); // Fetch all Actived users
+        $(this).prop("disabled", true); // Disable reset button
+    });
+
+    // Initial load (optional)
+    fetchActivedUsers(""); // Load all archived users on page load
+});
+
+
+ </script>
+
+<!-- SEARCH BOX -->
+
+<script>
+
+document.getElementById("searchInput").addEventListener("keyup", function() {
+    let searchQuery = this.value;
+
+    let xhr = new XMLHttpRequest();
+    xhr.open("GET", "search-all-users.php?search=" + encodeURIComponent(searchQuery), true);
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            document.getElementById("userTableBody").innerHTML = xhr.responseText;
+        }
+    };
+    xhr.send();
+});
+
+document.getElementById("search-Archive-Input").addEventListener("keyup", function() {
+    let searchQuery = this.value;
+
+    let xhr = new XMLHttpRequest();
+    xhr.open("GET", "search-archived-users.php?search=" + encodeURIComponent(searchQuery), true);
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            document.getElementById("user-search-Archive-Input-TableBody").innerHTML = xhr.responseText;
+        }
+    };
+    xhr.send();
+});
+
+
+</script>
+
+
+<!-- FOR TAB -->
+<script>
+document.querySelectorAll('.tab-item').forEach(tab => {
+    tab.addEventListener('click', () => {
+        // Remove active class from all tabs and content
+        document.querySelectorAll('.tab-item').forEach(item => item.classList.remove('active'));
+        document.querySelectorAll('.content').forEach(content => content.classList.remove('active'));
+
+        // Add active class to clicked tab
+        tab.classList.add('active');
+
+        // Show the corresponding content
+        const contentId = `content-${tab.id}`;
+        document.getElementById(contentId).classList.add('active');
+    });
+});
+
+// Ensure 'All User' tab is active by default on page load
+window.onload = () => {
+    // Simulate a click on the 'All User' tab
+    document.getElementById('all-user').click();
+};
+
+</script>
+
+
+<!-- FOR ARCHIVE FUNCTION -->
+ <script>
+  
+  document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("click", function (event) {
+        if (event.target.classList.contains("archive-btn")) {
+            let userID = event.target.getAttribute("data-id");
+            showConfirmationModal("Are you sure you want to archive this user?", () => {
+              fetch("archive-user.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: "userid=" + userID
+                })
+                .then(response => response.text())
+                .then(data => {
+                    showMessageModal("User archived successfully!");
+                    setTimeout(() => {
+                        location.reload(); // Reload after 1 seconds
+                    }, 1000);
+                });
+
+                        });
+                        }
+                    });
+                });
+
+// Custom Modal Logic
+function showConfirmationModal(message, onConfirm) {
+    const modal = document.getElementById("custom-modal");
+    const modalMessage = document.getElementById("modal-message");
+    const confirmBtn = document.getElementById("modal-confirm-btn");
+    const cancelBtn = document.getElementById("modal-cancel-btn");
+
+    modalMessage.textContent = message;
+    modal.style.display = "block";
+
+    confirmBtn.onclick = () => {
+        modal.style.display = "none";
+        if (onConfirm) onConfirm();
+    };
+
+    cancelBtn.onclick = () => {
+        modal.style.display = "none";
+    };
+}
+
+// Show Message Modal
+function showMessageModal(message) {
+    const messageModal = document.getElementById("success-message-modal");
+    const messageText = document.getElementById("message-text");
+
+    messageText.innerText = message;
+    messageModal.style.display = "flex";
+
+    const closeBtn = document.getElementById("message-close-btn");
+    closeBtn.onclick = function () {
+        messageModal.style.display = "none";
+        if (onClose) onClose(); // Reload when OK is clicked
+    };
+}
+
+// Show Warning Message Modal
+function showWarningModal(message, onClose = null) {
+    const warningModal = document.getElementById("warning-message-modal");
+    const warningText = document.getElementById("warning-text");
+
+    warningText.innerText = message;
+    warningModal.style.display = "flex";
+
+    const closeBtn = document.getElementById("warning-close-btn");
+    closeBtn.onclick = function () {
+        warningModal.style.display = "none";
+        if (onClose) onClose(); // Reload or perform action on close
+    };
+}
+
+
+// RESTORE
+
+document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("click", function (event) {
+        if (event.target.classList.contains("restore-btn")) {
+            let userID = event.target.getAttribute("data-id");
+
+            showConfirmationModal("Are you sure you want to restore this user?", () => {
+                fetch("restore-user.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: "userid=" + userID
+                })
+                .then(response => response.text())
+                .then(data => {
+                    showMessageModal(data, () => {
+                        location.reload(); // Immediate reload if "OK" is clicked
+                    });
+
+                    // Auto-reload after 1 seconds
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                })
+                .catch(error => {
+                    showWarningModal("An error occurred while restoring the user.");
+                });
+            });
+        }
+    });
+});
+
+// DELETE
+
+document.addEventListener("click", function (event) {
+    if (event.target.classList.contains("delete-btn")) {
+        let userID = event.target.getAttribute("data-id");
+
+        showConfirmationModal(
+            "Are you sure you want to delete this user? This action cannot be undone!", 
+            () => {
+                fetch("delete-user.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: "userid=" + userID
+                })
+                .then(response => response.text())
+                .then(data => {
+                    showMessageModal(data, () => {
+                        location.reload(); // Refresh if "OK" is clicked
+                    });
+
+                    // Auto-reload after 1 seconds
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                })
+                .catch(error => {
+                    showWarningModal("An error occurred while deleting the user.");
+                });
+            }
+        );
+    }
+});
+
+
+
+ </script>
+
+<!-- FOR RESTORE FUNCTION -->
+ <script>
+
+// document.addEventListener("DOMContentLoaded", function () {
+//     document.addEventListener("click", function (event) {
+//         if (event.target.classList.contains("restore-btn")) {
+//             let userID = event.target.getAttribute("data-id");
+
+//             if (confirm("Are you sure you want to restore this user?")) {
+//                 fetch("restore-user.php", {
+//                     method: "POST",
+//                     headers: { "Content-Type": "application/x-www-form-urlencoded" },
+//                     body: "userid=" + userID
+//                 })
+//                 .then(response => response.text())
+//                 .then(data => {
+//                     alert(data); // Show success message
+//                     location.reload(); // Refresh the table
+//                 });
+//             }
+//         }
+//     });
+// });
+
+
+ </script>
+
+<!-- FOR Delete FUNCTION -->
+ <script>
+
+// document.addEventListener("click", function (event) {
+//         if (event.target.classList.contains("delete-btn")) {
+//             let userID = event.target.getAttribute("data-id");
+
+//             if (confirm("Are you sure you want to delete this user? This action cannot be undone!")) {
+//                 fetch("delete-user.php", {
+//                     method: "POST",
+//                     headers: { "Content-Type": "application/x-www-form-urlencoded" },
+//                     body: "userid=" + userID
+//                 })
+//                 .then(response => response.text())
+//                 .then(data => {
+//                     alert(data); // Show success message
+//                     location.reload(); // Refresh the table
+//                 });
+//             }
+//         }
+//     });
+
+
+ </script>
+
+ 
+
+<!-- FOR EDIT -->
+<script>
+document.addEventListener("DOMContentLoaded", loadUsers);
+
+// Function to load users via Fetch API
+async function loadUsers() {
+    try {
+        const response = await fetch("fetch-user.php");
+        const data = await response.json();
+
+        const tableBody = document.getElementById("userTableBody");
+        tableBody.innerHTML = ""; // Clear table before appending new rows
+
+        const fragment = document.createDocumentFragment(); // Improve performance
+
+        data.forEach(user => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${user.USERID}</td>
+                <td>${user.FNAME} ${user.MNAME || ""} ${user.LNAME}</td>
+                <td>${user.USERNAME}</td>
+                <td>${user.EMAIL}</td>
+                <td>${user.CONTACT || "N/A"}</td>
+                <td>${user.DATECREATED}</td>
+                <td>${user.ROLE}</td>
+                <td>
+                    <button class="edit-btn" data-userid="${user.USERID}">Edit</button>
+                    <button class="action-btn archive-btn" data-id="${user.USERID}">Archive</button>
+                </td>
+            `;
+            fragment.appendChild(row);
+        });
+
+        tableBody.appendChild(fragment);
+    } catch (error) {
+        console.error("Error loading users:", error);
+        alert("Failed to load users. Please try again later.");
+    }
+}
+
+// Event Delegation for Edit Button Click
+document.getElementById("userTableBody").addEventListener("click", async function(event) {
+    if (event.target.classList.contains("edit-btn")) {
+        const userId = event.target.dataset.userid;
+        try {
+            const response = await fetch(`get-user.php?userid=${userId}`);
+            const user = await response.json();
+            openEditModal(user);
+        } catch (error) {
+            console.error("Error fetching user details:", error);
+            alert("Failed to fetch user details.");
+        }
+    }
+});
+
+// Open Edit Modal Function
+function openEditModal(user) {
+    document.getElementById("userid").value = user.USERID || "";
+    document.getElementById("fname").value = user.FNAME || "";
+    document.getElementById("mname").value = user.MNAME || "";
+    document.getElementById("lname").value = user.LNAME || "";
+    document.getElementById("username").value = user.USERNAME || "";
+    document.getElementById("email").value = user.EMAIL || "";
+    document.getElementById("contact").value = user.CONTACT || "";
+    document.getElementById("role").value = user.ROLE || "";
+
+    document.getElementById("editUserModal").style.display = "block";
+}
+
+// Close Modal when clicking the Close Button
+document.querySelector(".close-btn").addEventListener("click", () => {
+    document.getElementById("editUserModal").style.display = "none";
+});
+
+// Handle form submission with Fetch API
+document.getElementById("editUserForm").addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const formData = new FormData(this);
+    const submitButton = this.querySelector("button[type='submit']");
+    submitButton.disabled = true; // Prevent double submission
+
+    try {
+        const response = await fetch("update-user.php", {
+            method: "POST",
+            body: formData
+        });
+
+        const result = await response.text();
+        alert(result);
+        document.getElementById("editUserModal").style.display = "none";
+        loadUsers(); // Refresh table after updating
+    } catch (error) {
+        console.error("Error updating user:", error);
+        alert("Failed to update user. Please try again.");
+    } finally {
+        submitButton.disabled = false;
+    }
+});
+
+
+</script>
+
+
+
+
+
+<script src="script.js"></script>
+</body>
+</html>
