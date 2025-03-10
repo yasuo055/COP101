@@ -140,6 +140,85 @@ include('Conn.php');
 }
 
 
+/* logout */
+
+.logout-button {
+    background-color: #f44336;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.logout-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+}
+
+.logout-text {
+    margin: 0;
+}
+
+.modal-overlay {
+    display: none;
+     position: fixed;
+    z-index: 1000;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+    max-width: 500px;
+    text-align: center;
+}
+
+.modal-box {
+    background-color: #fff;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 300px;
+    text-align: center;
+    border-radius: 5px;
+    
+}
+
+.modal-close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.modal-close:hover,
+.modal-close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.confirm-btn, .cancel-btn {
+    padding: 10px;
+    margin: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.confirm-btn {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.cancel-btn {
+    background-color: #ccc;
+    color: #333;
+}
+
+
   </style>
 
   <title>Aqua Lense</title>
@@ -505,7 +584,39 @@ include('Conn.php');
     </div>
 </div>
 
+<div class="bottom-portion">
+    <button class="logout-button" onclick="showLogoutModal()">
+        <img src="/icon/solar_logout-2-broken.png" class="logout-icon">
+        <p class="logout-text">Log Out</p>
+    </button>
+</div>
 
+<div id="confirmLogoutModal" class="modal-overlay">
+    <div class="modal-box">
+        <span class="modal-close" onclick="hideLogoutModal()">&times;</span>
+        <p>Are you sure you want to log out?</p>
+        <a href="../backend/unset_session.php"><button class="confirm-btn">Yes</button></a>
+        <button class="cancel-btn" onclick="hideLogoutModal()">No</button>
+    </div>
+</div>
+
+<!-- LOGOUT -->
+
+<script>
+function showLogoutModal() {
+    document.getElementById('confirmLogoutModal').style.display = 'block';
+}
+
+function hideLogoutModal() {
+    document.getElementById('confirmLogoutModal').style.display = 'none';
+}
+
+window.onclick = function(event) {
+    if (event.target == document.getElementById('confirmLogoutModal')) {
+        hideLogoutModal();
+    }
+}
+</script>
 
     <!-- ADD USER  -->
     <script>
