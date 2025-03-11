@@ -439,7 +439,7 @@ include('Conn.php');
                 <input type="hidden" id="userid" name="userid">
                 
                 <label>First Name:</label>
-                <input type="text" id="fname" name="fname" pattern="[A-Za-z]+" title="Letters only" placeholder="e.g., John" required><br>
+                <input type="text" id="fname" name="fname" pattern="[A-Za-z\s]+" title="Letters and spaces only" placeholder="e.g., John Michael" required><br>
 
                 <label>Middle Name:</label>
                 <input type="text" id="mname" name="mname" pattern="[A-Za-z]+" title="Letters only" placeholder="e.g., Michael"><br>
@@ -1041,7 +1041,6 @@ document.addEventListener("click", function (event) {
 
  
 
-<!-- FOR EDIT -->
 <script>
 
  // Load users when page loads
@@ -1076,12 +1075,15 @@ async function loadUsers() {
 }
 
 // Event delegation for Edit Button
+let initialUserData = {};
+
 document.getElementById("userTableBody").addEventListener("click", async function(event) {
   if (event.target.classList.contains("edit-btn")) {
     const userId = event.target.dataset.userid;
     try {
       const response = await fetch(`get-user.php?userid=${userId}`);
       const user = await response.json();
+      initialUserData = { ...user }; // Store initial data
       openEditModal(user);
     } catch (error) {
       showWarningModal("Failed to fetch user details.");
@@ -1113,6 +1115,30 @@ document.getElementById("editUserForm").addEventListener("submit", async functio
   const submitButton = this.querySelector("button[type='submit']");
   submitButton.disabled = true;
 
+  // Check for changes
+  const fieldMapping = {
+    USERID: "userid",
+    FNAME: "fname",
+    MNAME: "mname",
+    LNAME: "lname",
+    USERNAME: "username",
+    EMAIL: "email",
+    CONTACT: "contact",
+    ROLE: "role"
+  };
+
+  const hasChanges = Object.keys(initialUserData).some(key => {
+    const inputId = fieldMapping[key];
+    const input = document.getElementById(inputId);
+    return input && input.value !== initialUserData[key];
+  });
+
+  if (!hasChanges) {
+    showWarningModal("No changes made. Please edit at least one field.");
+    submitButton.disabled = false;
+    return;
+  }
+
   try {
     const response = await fetch("update-user.php", {
       method: "POST",
@@ -1137,9 +1163,8 @@ document.getElementById("editUserForm").addEventListener("submit", async functio
   }
 });
 
-
-
 </script>
+
 
 
 
