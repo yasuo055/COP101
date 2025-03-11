@@ -65,9 +65,13 @@ if ($connpdo) {
             margin: 20px;
         }
         #pagination {
-            margin-top: 20px;
-            text-align: left;
-        }
+    margin-top: 20px;
+    text-align: left;
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping */
+    gap: 5px; /* Optional: Add space between items */
+}
+
         .page-link {
             padding: 10px 15px;
             margin: 0 5px;

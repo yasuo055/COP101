@@ -33,12 +33,9 @@ if ($stmt->rowCount() > 0) {
             echo "<td>" . htmlspecialchars($row['DATECREATED']) . "</td>";
             echo "<td>" . htmlspecialchars($row['ROLE']) . "</td>";
             echo "<td>
-                    <a href='restore-user.php?userid=" . $row['USERID'] . "'>
-                        <button class='action-btn restore-btn'>Restore</button>
-                    </a>
-                    <a href='delete-user.php?userid=" . $row['USERID'] . "' onclick='return'>
-                        <button class='action-btn delete-btn'>Delete</button>
-                    </a>
+                    <button class='action-btn restore-btn' data-id='" . htmlspecialchars($row['USERID']) . "'>Restore</button>
+                    
+                    <button class='action-btn delete-btn' data-id='" . htmlspecialchars($row['USERID']) . "'>Delete</button>
                   </td>";
             echo "</tr>";
         }
@@ -48,3 +45,9 @@ if ($stmt->rowCount() > 0) {
 
 ?>
 
+<!-- <a href='delete-user.php?userid=" . $row['USERID'] . "' onclick='return'>
+                        <button class='action-btn delete-btn'>Delete</button>
+                    </a> -->
+<!-- <a href='restore-user.php?userid=" . $row['USERID'] . "'>
+                        <button class='action-btn restore-btn'>Restore</button>
+                    </a> -->

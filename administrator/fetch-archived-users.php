@@ -8,7 +8,7 @@ $sql = "SELECT USERID, FNAME, MNAME, LNAME, USERNAME, EMAIL, CONTACT,
            DATE_FORMAT(DATECREATED, '%Y-%m-%d %r') AS DATECREATED, ROLE 
     FROM users 
     WHERE archived = 1
-    ORDER BY DATECREATED DESC";
+    ";
 
 // Apply role filter if selected
 if (!empty($role)) {

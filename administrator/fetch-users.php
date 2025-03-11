@@ -61,7 +61,7 @@ if ($stmt->rowCount() > 0) {
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         echo "<tr>";
         echo "<td>" . htmlspecialchars($row['USERID']) . "</td>";
-        echo "<td>" . htmlspecialchars($row['FULLNAME']) . "</td>";
+        echo "<td>" . htmlspecialchars($row['FNAME'] . ' ' . $row['MNAME'] . ' ' . $row['LNAME']) . "</td>";
         echo "<td>" . htmlspecialchars($row['USERNAME']) . "</td>";
         echo "<td>" . htmlspecialchars($row['EMAIL']) . "</td>";
         echo "<td>" . htmlspecialchars($row['CONTACT']) . "</td>"; 
