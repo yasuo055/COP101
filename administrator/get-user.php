@@ -6,7 +6,9 @@ if (isset($_GET['userid'])) {
     
     $sql = "SELECT USERID, FNAME, MNAME, LNAME, USERNAME, EMAIL, CONTACT, ROLE 
             FROM users 
-            WHERE USERID = :userid";
+            WHERE USERID = :userid
+            ORDER BY DATECREATED DESC";
+
     $stmt = $connpdo->prepare($sql);
     $stmt->bindParam(':userid', $userid, PDO::PARAM_INT);
     $stmt->execute();
