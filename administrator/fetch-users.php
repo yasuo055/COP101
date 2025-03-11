@@ -18,7 +18,8 @@ $sql = "SELECT
     DATE_FORMAT(DATECREATED, '%Y-%m-%d %r') AS DATECREATED, 
     ROLE 
 FROM users 
-WHERE archived != 1";
+WHERE archived != 1
+ORDER BY DATECREATED DESC";
 
 // Prepare parameters
 $params = [];
