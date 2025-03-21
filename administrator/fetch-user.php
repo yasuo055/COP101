@@ -6,7 +6,7 @@ $sql = "
            DATE_FORMAT(DATECREATED, '%Y-%m-%d %r') AS DATECREATED, ROLE 
     FROM users 
     WHERE archived = 0
-    ORDER BY DATECREATED DESC";  // Show only non-archived users
+    ";  // Show only non-archived users
 
 $stmt = $connpdo->prepare($sql);
 $stmt->execute();

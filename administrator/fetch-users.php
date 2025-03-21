@@ -1,25 +1,21 @@
-
 <?php
 include 'Conn.php'; // Include your PDO database connection
 
 // Fetch parameters from POST
 $role = isset($_POST['role']) ? trim($_POST['role']) : '';
-$timePeriod = isset($_POST['timePeriod']) ? trim($_POST['timePeriod']) : ''; // Get the timePeriod filter
+$timePeriod = isset($_POST['timePeriod']) ? trim($_POST['timePeriod']) : '';
 
 // Base SQL Query
 $sql = "SELECT 
     USERID, 
-    FNAME, 
-    MNAME, 
-    LNAME, 
+    CONCAT(FNAME, ' ', MNAME, ' ', LNAME) AS FULLNAME,  -- Combine names
     USERNAME, 
     EMAIL, 
     CONTACT, 
-    DATE_FORMAT(DATECREATED, '%Y-%m-%d %r') AS DATECREATED, 
+    DATE_FORMAT(DATECREATED, '%Y-%m-%d') AS DATECREATED, 
     ROLE 
 FROM users 
-WHERE archived != 1
-ORDER BY DATECREATED DESC";
+WHERE archived != 1";  // Base WHERE condition
 
 // Prepare parameters
 $params = [];
@@ -45,19 +41,22 @@ if (!empty($timePeriod)) {
         case 'month':
             $sql .= " AND MONTH(DATECREATED) = MONTH(CURDATE())";
             break;
-        default:
-            // No specific time period filter
-            break;
     }
 }
 
+// Finalize with ORDER BY
+$sql .= " ORDER BY DATECREATED DESC";
+
 $stmt = $connpdo->prepare($sql);
 
+// Bind parameters
 foreach ($params as $key => $value) {
     $stmt->bindValue($key, $value, PDO::PARAM_STR);
 }
 
 $stmt->execute();   
+
+// Output results
 if ($stmt->rowCount() > 0) {
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         echo "<tr>";
@@ -87,4 +86,3 @@ if ($stmt->rowCount() > 0) {
     echo "<tr><td colspan='8'>No users found</td></tr>";
 }
 ?>
-
